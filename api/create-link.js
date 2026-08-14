@@ -24,18 +24,18 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Required fields missing' });
         }
 
-        // Newly provided PhonePe V2 Sandbox (Testing) Credentials
-        const clientId = "ISKCONISONLINE_260731175";
-        const clientSecret = "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
+        // Live PhonePe V2 Production Credentials
+        const clientId = "SU2608031047283544010005";
+        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const clientVersion = 1;
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
 
-        // Updated: Adding 'seva' and 'phone' inside URL so verify page can send Whatsapp msg with exact info
-        const redirectUrl = `https://${req.headers.host}/index.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&phone=${encodeURIComponent(phone)}&transactionId=${transactionId}`;
+        // Success redirect points back to your receipt.html success callback page on Vercel
+        const redirectUrl = `https://${req.headers.host}/index.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&transactionId=${transactionId}`;
 
-        // STEP 1: Sandbox OAuth Token Generation
-        const tokenUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
+        // STEP 1: Production OAuth Token Generation (Using standard production identity-manager) [5.2.1]
+        const tokenUrl = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
         const tokenPayload = qs.stringify({
             client_id: clientId,
             client_version: clientVersion,
@@ -56,12 +56,12 @@ export default async function handler(req, res) {
 
         if (!accessToken) {
             return res.status(500).json({ 
-                error: "Failed to generate PhonePe PG V2 Sandbox OAuth Token. Raw Response: " + JSON.stringify(tokenData) 
+                error: "Failed to generate PhonePe PG V2 Production OAuth Token. Raw Response: " + JSON.stringify(tokenData) 
             });
         }
 
-        // STEP 2: Create Payment Session using Sandbox Checkout API
-        const payUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay";
+        // STEP 2: Create Payment Session using Production Checkout API [5.1.2, 5.1.3]
+        const payUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
         const paymentPayload = {
             merchantOrderId: transactionId,
             amount: amountInPaise,
@@ -78,18 +78,19 @@ export default async function handler(req, res) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "O-Bearer " + accessToken
+                "Authorization": "O-Bearer " + accessToken // O-Bearer authorization is required for V2 [5.1.2]
             },
             body: JSON.stringify(paymentPayload)
         });
 
         const payData = await payResponse.json();
 
+        // PhonePe V2 returns checkout page URL inside redirectUrl [5.2.6]
         if (payResponse.status === 200 && payData.redirectUrl) {
             return res.status(200).json({ payment_url: payData.redirectUrl });
         } else {
             return res.status(500).json({ 
-                error: "PhonePe PG V2 Sandbox Pay-link initiation failed.", 
+                error: "PhonePe PG V2 Production Pay-link initiation failed.", 
                 debug: payData 
             });
         }
