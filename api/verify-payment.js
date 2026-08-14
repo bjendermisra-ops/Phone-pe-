@@ -28,7 +28,7 @@ export default async function handler(req, res) {
         const clientVersion = 1;
         const merchantId = "ISKCONISONLINE";
 
-        // STEP 1: Generate OAuth Token (Production URL) [5.2.1]
+        // STEP 1: Generate OAuth Token (Production URL)
         const tokenUrl = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
         const tokenPayload = qs.stringify({
             client_id: clientId,
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: "Failed to generate status OAuth token." });
         }
 
-        // STEP 2: Call V2 Production Status Check API securely [6.3.6]
+        // STEP 2: Call V2 Production Status Check API securely
         const statusUrl = `https://api.phonepe.com/apis/pg/checkout/v2/order/${cleanTxId}/status`;
 
         const response = await fetch(statusUrl, {
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        // PhonePe V2 returns COMPLETED or SUCCESS status [6.3.3]
+        // PhonePe V2 returns COMPLETED or SUCCESS status
         if (response.status === 200 && (data.state === "COMPLETED" || data.state === "SUCCESS")) {
             return res.status(200).json({ 
                 status: 'success', 
