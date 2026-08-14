@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         // Success redirect points back to your receipt.html success callback page on Vercel
         const redirectUrl = `https://${req.headers.host}/index.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&transactionId=${transactionId}`;
 
-        // STEP 1: Production OAuth Token Generation (Using standard production identity-manager) [5.2.1]
+        // STEP 1: Production OAuth Token Generation (Using standard production identity-manager)
         const tokenUrl = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
         const tokenPayload = qs.stringify({
             client_id: clientId,
@@ -60,7 +60,7 @@ export default async function handler(req, res) {
             });
         }
 
-        // STEP 2: Create Payment Session using Production Checkout API [5.1.2, 5.1.3]
+        // STEP 2: Create Payment Session using Production Checkout API
         const payUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
         const paymentPayload = {
             merchantOrderId: transactionId,
@@ -78,14 +78,14 @@ export default async function handler(req, res) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "O-Bearer " + accessToken // O-Bearer authorization is required for V2 [5.1.2]
+                "Authorization": "O-Bearer " + accessToken // O-Bearer authorization is required for V2
             },
             body: JSON.stringify(paymentPayload)
         });
 
         const payData = await payResponse.json();
 
-        // PhonePe V2 returns checkout page URL inside redirectUrl [5.2.6]
+        // PhonePe V2 returns checkout page URL inside redirectUrl
         if (payResponse.status === 200 && payData.redirectUrl) {
             return res.status(200).json({ payment_url: payData.redirectUrl });
         } else {
