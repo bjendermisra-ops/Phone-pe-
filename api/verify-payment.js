@@ -14,8 +14,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const payloadData = req.method === 'POST' ? req.body : req.query;
-        const { payment_id, phone, name, amount, seva } = payloadData;
+        const { payment_id } = req.method === 'POST' ? req.body : req.query;
 
         if (!payment_id) {
             return res.status(400).json({ error: 'Transaction ID / UTR is required.' });
@@ -23,14 +22,14 @@ export default async function handler(req, res) {
 
         const cleanTxId = payment_id.trim();
 
-        // PhonePe V2 Sandbox Credentials
-        const clientId = "ISKCONISONLINE_260731175";
-        const clientSecret = "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
+        // PhonePe V2 Production Credentials
+        const clientId = "SU2608031047283544010005";
+        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const clientVersion = 1;
         const merchantId = "ISKCONISONLINE";
 
-        // STEP 1: Generate OAuth Token (PhonePe)
-        const tokenUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
+        // STEP 1: Generate OAuth Token (Production URL) [5.2.1]
+        const tokenUrl = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
         const tokenPayload = qs.stringify({
             client_id: clientId,
             client_version: clientVersion,
@@ -40,7 +39,9 @@ export default async function handler(req, res) {
 
         const tokenResponse = await fetch(tokenUrl, {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
             body: tokenPayload
         });
 
@@ -51,8 +52,9 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: "Failed to generate status OAuth token." });
         }
 
-        // STEP 2: Call V2 Sandbox Status Check API
-        const statusUrl = `https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/${cleanTxId}/status`;
+        // STEP 2: Call V2 Production Status Check API securely [6.3.6]
+        const statusUrl = `https://api.phonepe.com/apis/pg/checkout/v2/order/${cleanTxId}/status`;
+
         const response = await fetch(statusUrl, {
             method: "GET",
             headers: {
@@ -64,74 +66,12 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        // STEP 3: If Payment is Success, Send WhatsApp Receipt using DoubleTick
+        // PhonePe V2 returns COMPLETED or SUCCESS status [6.3.3]
         if (response.status === 200 && (data.state === "COMPLETED" || data.state === "SUCCESS")) {
-            
-            let whatsappDeliveryStatus = "Not Sent (Missing Phone Number)";
-            
-            if (phone) {
-                try {
-                    // DoubleTick API Credentials
-                    const DOUBLETICK_KEY = "key_pdepb15p8SLYGrjoHFNX68hl6H8iDi7Mmq8JdzTidYqYFNJ4adCtVfpSoanH0uNIIWfpolvJdvezN2RdyQPQiTuO6wpRlXDSsNNRut4CXTKTWpSkbNHFhT6g53tNLWBl1NmX6Lqy4TKD7N3OxW7ZlV9diDqRnu40BIUX3PU8jW9ckrTAMLqeo8jobTxNpMcYAQLhMbRuZoM5CJ5EoXxxLk8L4XQzXoL229XOAFlUlCJ4Xabstw3tk9qvcte";
-                    
-                    // User ka Phone format (Customer)
-                    let formattedPhone = phone.trim();
-                    if (!formattedPhone.startsWith('+')) {
-                        formattedPhone = formattedPhone.startsWith('91') ? `+${formattedPhone}` : `+91${formattedPhone}`;
-                    }
-
-                    // Nayi Documentation ke hisaab se Exact Payload
-                    const dtPayload = {
-                        messages: [
-                            {
-                                from: "+919226167380", // Official Sender Number REQUIRED
-                                to: formattedPhone, // Customer Number
-                                content: {
-                                    templateName: "app_registration",
-                                    language: "en",
-                                    templateData: {
-                                        header: {
-                                            type: "DOCUMENT",
-                                            mediaUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", // Temporary Dummy PDF for WhatsApp Document Header
-                                            filename: `Receipt_${cleanTxId}.pdf`
-                                        },
-                                        body: {
-                                            placeholders: [
-                                                name || "Devotee", 
-                                                amount ? amount.toString() : "0", 
-                                                seva || "Devotional Seva"
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
-                        ]
-                    };
-
-                    // Correct new Endpoint: https://public.doubletick.io/whatsapp/message/template
-                    const dtResponse = await fetch('https://public.doubletick.io/whatsapp/message/template', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${DOUBLETICK_KEY}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(dtPayload)
-                    });
-
-                    const dtJson = await dtResponse.json();
-                    whatsappDeliveryStatus = dtResponse.ok ? "Delivered via DoubleTick" : `Failed DoubleTick: ${JSON.stringify(dtJson)}`;
-                    
-                } catch (err) {
-                    console.error("WhatsApp sending error: ", err);
-                    whatsappDeliveryStatus = "Error triggering WhatsApp message";
-                }
-            }
-
             return res.status(200).json({ 
                 status: 'success', 
                 message: 'Transaction successfully verified by PhonePe V2!',
                 verified_payment_id: cleanTxId,
-                whatsapp_status: whatsappDeliveryStatus,
                 payment_details: {
                     contact: 'UPI',
                     method: 'PHONEPE V2'
