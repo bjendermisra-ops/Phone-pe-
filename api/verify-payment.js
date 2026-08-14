@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import qs from 'querystring';
 
 export default async function handler(req, res) {
     // Dynamic CORS Setup
@@ -22,23 +22,43 @@ export default async function handler(req, res) {
 
         const cleanTxId = payment_id.trim();
 
-        // PhonePe V1 Live Production Credentials
+        // PhonePe V2 Sandbox Credentials
+        const clientId = "SU2608031047283544010005";
+        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
+        const clientVersion = 1;
         const merchantId = "ISKCONISONLINE";
-        const saltKey = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
-        const saltIndex = "1";
 
-        // PhonePe V1 Status Check API endpoint [1.1.1]
-        const statusCheckUrl = `https://api.phonepe.com/apis/hermes/pg/v1/status/${merchantId}/${cleanTxId}`;
+        // STEP 1: Generate OAuth Token (Sandbox URL) [5.2.1]
+        const tokenUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
+        const tokenPayload = qs.stringify({
+            client_id: clientId,
+            client_version: clientVersion,
+            client_secret: clientSecret,
+            grant_type: "client_credentials"
+        });
 
-        // Calculate V1 Status Check X-VERIFY signature [1.1.2, 1.1.3]
-        const signatureInput = `/pg/v1/status/${merchantId}/${cleanTxId}` + saltKey;
-        const sha256Hash = crypto.createHash('sha256').update(signatureInput).digest('hex');
-        const xVerify = sha256Hash + "###" + saltIndex;
+        const tokenResponse = await fetch(tokenUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: tokenPayload
+        });
 
-        const response = await fetch(statusCheckUrl, {
+        const tokenData = await tokenResponse.json();
+        const accessToken = tokenData.access_token;
+
+        if (!accessToken) {
+            return res.status(500).json({ error: "Failed to generate status OAuth token." });
+        }
+
+        // STEP 2: Call V2 Sandbox Status Check API securely (No 'pg/' inside URL in Sandbox) [6.3.6]
+        const statusUrl = `https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/${cleanTxId}/status`;
+
+        const response = await fetch(statusUrl, {
             method: "GET",
             headers: {
-                "X-VERIFY": xVerify,
+                "Authorization": "O-Bearer " + accessToken,
                 "X-MERCHANT-ID": merchantId,
                 "accept": "application/json"
             }
@@ -46,25 +66,25 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        // PhonePe V1 returns PAYMENT_SUCCESS on completed transactions
-        if (data.success && data.code === "PAYMENT_SUCCESS") {
+        // PhonePe V2 returns COMPLETED or SUCCESS status [6.3.3]
+        if (response.status === 200 && (data.state === "COMPLETED" || data.state === "SUCCESS")) {
             return res.status(200).json({ 
                 status: 'success', 
-                message: 'Transaction successfully verified by PhonePe V1!',
+                message: 'Transaction successfully verified by PhonePe V2!',
                 verified_payment_id: cleanTxId,
                 payment_details: {
                     contact: 'UPI',
-                    method: 'PHONEPE V1'
+                    method: 'PHONEPE V2'
                 }
             });
         } else {
             return res.status(400).json({ 
-                error: data.message || 'Transaction verification failed.' 
+                error: `PhonePe Status: ${data.state || 'FAILED'}. message: ${data.message || ''}` 
             });
         }
 
     } catch (error) {
         console.error("Verification server error: ", error);
-        return res.status(500).json({ error: 'Server PhonePe V1 status verification failed.' });
+        return res.status(500).json({ error: 'Server PhonePe V2 status verification failed.' });
     }
 }
