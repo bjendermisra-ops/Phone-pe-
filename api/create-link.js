@@ -1,4 +1,4 @@
-import qs from 'querystring';
+import crypto from 'crypto';
 
 export default async function handler(req, res) {
     // Dynamic CORS Setup
@@ -24,79 +24,58 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Required fields missing' });
         }
 
-        // Live PhonePe V2 Production Credentials
-        const clientId = "SU2608031047283544010005";
-        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
-        const clientVersion = 1;
+        // Live PhonePe V1 Production Credentials (Hermes)
+        const merchantId = "ISKCONISONLINE";
+        const saltKey = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
+        const saltIndex = "1";
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
 
-        // Success redirect points back to your receipt.html success callback
+        // Success redirect points back to your receipt/index success callback page
         const redirectUrl = `https://${req.headers.host}/index.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&transactionId=${transactionId}`;
 
-        // STEP 1: Production OAuth Token Generation (Using standard production identity-manager)
-        const tokenUrl = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
-        const tokenPayload = qs.stringify({
-            client_id: clientId,
-            client_version: clientVersion,
-            client_secret: clientSecret,
-            grant_type: "client_credentials"
-        });
-
-        const tokenResponse = await fetch(tokenUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: tokenPayload
-        });
-
-        const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.access_token;
-
-        if (!accessToken) {
-            return res.status(500).json({ 
-                error: "Failed to generate PhonePe PG V2 Production OAuth Token. Raw Response: " + JSON.stringify(tokenData) 
-            });
-        }
-
-        // STEP 2: Create Payment Session using Production Checkout API
-        const payUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
-        const paymentPayload = {
-            merchantOrderId: transactionId,
+        const requestPayload = {
+            merchantId: merchantId,
+            merchantTransactionId: transactionId,
+            merchantUserId: "USER_" + phone,
             amount: amountInPaise,
-            expireAfter: 1200,
-            paymentFlow: {
-                type: "PG_CHECKOUT",
-                merchantUrls: {
-                    redirectUrl: redirectUrl
-                }
+            redirectUrl: redirectUrl,
+            redirectMode: "POST", // FIXED: "POST" as per V1 standard
+            callbackUrl: redirectUrl, 
+            mobileNumber: phone,
+            paymentInstrument: {
+                type: "PAY_PAGE"
             }
         };
 
-        const payResponse = await fetch(payUrl, {
+        const base64Payload = Buffer.from(JSON.stringify(requestPayload)).toString('base64');
+        const signatureInput = base64Payload + "/pg/v1/pay" + saltKey;
+        const sha256Hash = crypto.createHash('sha256').update(signatureInput).digest('hex');
+        const xVerify = sha256Hash + "###" + saltIndex;
+
+        const phonePeUrl = "https://api.phonepe.com/apis/hermes/pg/v1/pay"; // Production URL
+
+        const response = await fetch(phonePeUrl, {
             method: "POST",
             headers: {
+                "X-VERIFY": xVerify,
                 "Content-Type": "application/json",
-                "Authorization": "O-Bearer " + accessToken // O-Bearer authorization is required for V2
+                "accept": "application/json"
             },
-            body: JSON.stringify(paymentPayload)
+            body: JSON.stringify({ request: base64Payload })
         });
 
-        const payData = await payResponse.json();
+        const data = await response.json();
 
-        // PhonePe V2 returns checkout page URL inside redirectUrl
-        if (payResponse.status === 200 && payData.redirectUrl) {
-            return res.status(200).json({ payment_url: payData.redirectUrl });
+        if (data.success && data.data && data.data.instrumentResponse) {
+            const payUrl = data.data.instrumentResponse.redirectInfo.url;
+            return res.status(200).json({ payment_url: payUrl });
         } else {
-            return res.status(500).json({ 
-                error: "PhonePe PG V2 Production Pay-link initiation failed.", 
-                debug: payData 
-            });
+            return res.status(500).json({ error: data.message || "PhonePe API failed to generate Pay-link." });
         }
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: error.message || 'Server PhonePe V2 link generation failed' });
+        return res.status(500).json({ error: error.message || 'Server PhonePe V1 link generation failed' });
     }
 }
