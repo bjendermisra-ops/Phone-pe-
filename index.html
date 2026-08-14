@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <!-- FIXED: PhonePe official Referrer Policy added securely to prevent redirect security block -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <title>Donate Now - Devotional Seva</title>
+    
+    <!-- Firebase SDK Compat Core and Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- FontAwesome Vector Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary-color: #f28c28; 
+            --bg-color: #f7f9fa;
+            --text-color: #333;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            margin: 0; 
+            padding: 0; 
+            padding-bottom: 80px; 
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .header { 
+            background-color: var(--primary-color); 
+            color: white; 
+            display: flex;
+            align-items: center;
+            padding: 15px; 
+            font-weight: bold; 
+            font-size: 18px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+        }
+        .back-btn {
+            color: white;
+            font-size: 1.25rem;
+            margin-right: 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .back-btn:active {
+            transform: scale(0.9);
+        }
+
+        .lang-chips-container { 
+            display: flex; 
+            gap: 5px; 
+            margin: 15px; 
+            background: rgba(150,150,150,0.06); 
+            padding: 5px; 
+            border-radius: 12px; 
+            border: 1.5px solid rgba(255,143,0,0.12); 
+        }
+        .lang-chip { 
+            flex: 1; 
+            text-align: center; 
+            padding: 8px 3px; 
+            font-size: 0.78rem; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: var(--transition); 
+            border: 1.5px solid transparent; 
+            color: var(--text-color); 
+            opacity: 0.75; 
+        }
+        .lang-chip.active { 
+            background: white; 
+            color: var(--primary-color); 
+            border-color: var(--primary-color); 
+            opacity: 1; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+        }
+
+        .tabs-container { display: flex; justify-content: space-around; background: white; padding: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .tab { padding: 8px 16px; border-radius: 20px; border: none; background: #e0e0e0; font-weight: bold; font-size: 14px; cursor: pointer; color: #555; transition: var(--transition); }
+        .tab.active { background: var(--primary-color); color: white; }
+
+        .feed-container { max-width: 500px; margin: 0 auto; padding: 10px; box-sizing: border-box; }
+        .seva-card { background: white; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #eee; display: flex; flex-direction: column; transition: outline 0.3s ease; }
+        .seva-img { width: 100%; height: 200px; object-fit: cover; }
+        .seva-info { padding: 15px; text-align: left; }
+        
+        .seva-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+        .seva-title { font-size: 16px; font-weight: bold; color: #a0522d; margin: 0; }
+        
+        .share-card-btn { 
+            display: none !important; 
+            background: none; 
+            border: none; 
+            color: #a0522d; 
+            cursor: pointer; 
+            font-size: 16px; 
+            padding: 0 5px; 
+            transition: var(--transition); 
+        }
+        .share-card-btn:active { transform: scale(0.85); }
+        
+        .seva-desc { font-size: 13px; color: #666; line-height: 1.4; margin-bottom: 15px; }
+        .donate-btn { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 25px; font-weight: bold; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; }
+        .modal-card { background: white; border-top-left-radius: 20px; border-top-right-radius: 20px; width: 100%; max-width: 500px; padding: 20px; max-height: 85vh; overflow-y: auto; box-sizing: border-box; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .modal-header { font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 20px; position: relative; }
+        .close-btn { position: absolute; right: 0; top: -5px; font-size: 24px; cursor: pointer; color: #888; background: none; border: none; }
+        
+        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .amt-btn { padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .amt-btn.selected { border-color: var(--primary-color); background: #fff3e6; color: var(--primary-color); }
+        
+        label { display: block; text-align: left; font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        input[type="text"], input[type="number"], input[type="email"], input[type="tel"] { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: var(--transition); }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="tel"]:focus { border-color: var(--primary-color); box-shadow: 0 0 5px rgba(242, 140, 40, 0.3); }
+        input[readonly] { background-color: #f1f1f1; color: #666; }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: left;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            display: block;
+            animation: slideDownError 0.2s ease-out;
+        }
+        @keyframes slideDownError {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .input-error {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 5px rgba(231, 76, 60, 0.2) !important;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            text-align: left;
+            margin-top: 15px;
+        }
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+            margin: 0;
+        }
+        .checkbox-container label {
+            margin: 0;
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+        .tax-subtext {
+            font-size: 11px;
+            color: #777;
+            text-align: left;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+        #tax-fields {
+            margin-top: 15px;
+            border-top: 1.5px dashed #eee;
+            padding-top: 15px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 12px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; z-index: 500; }
+        
+        .live-btn { 
+            background: linear-gradient(135deg, #222222, #333333); 
+            color: white; 
+            border: none; 
+            padding: 12px 30px; 
+            border-radius: 25px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 14px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 10px; 
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2), 0 0 10px rgba(242, 140, 40, 0.2);
+            transition: var(--transition);
+            animation: buttonGlow 3s infinite alternate;
+        }
+        .live-btn:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes buttonGlow {
+            0% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2), 0 0 8px rgba(242, 140, 40, 0.3);
+            }
+            100% {
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 20px rgba(242, 140, 40, 0.7);
+                background: linear-gradient(135deg, #2d3033, #1f2124);
+            }
+        }
+
+        .live-pulse-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+            animation: pulse-green 1.6s infinite;
+        }
+        @keyframes pulse-green {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+            }
+            70% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+            }
+        }
+
+        .live-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: rotate(30deg);
+            transition: none;
+            animation: shimmerSweep 4s infinite ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes shimmerSweep {
+            0% { left: -60%; }
+            25% { left: 140%; }
+            100% { left: 140%; }
+        }
+        
+        .donation-item { display: flex; justify-content: space-between; padding: 12px 5px; border-bottom: 1px solid #eee; align-items: center; }
+        .donor-details { text-align: left; }
+        .donor-name { font-weight: bold; font-size: 14px; margin-bottom: 2px; }
+        .donor-time { font-size: 11px; color: #888; }
+        .donor-amt { font-weight: bold; color: green; font-size: 15px; }
+
+        .toast-container {
+            position: fixed;
+            bottom: 80px; 
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #222;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 2000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .toast-container.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .toast-container i {
+            color: var(--primary-color);
+            font-size: 15px;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <a href="go:home" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <span id="title-donate-now" data-key="header_title">Donate Now</span>
+    </div>
+
+    <!-- Saffron Language Selector Chips -->
+    <div class="lang-chips-container shadow-sm">
+        <div class="lang-chip active" id="chip-en" onclick="setLanguage('en')">🇬🇧 English</div>
+        <div class="lang-chip" id="chip-hi" onclick="setLanguage('hi')">🇮🇳 हिन्दी</div>
+        <div class="lang-chip" id="chip-mr" onclick="setLanguage('mr')">🚩 मराठी</div>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="tabs-container">
+        <button class="tab active" id="tab-all" onclick="filterCategory('All')" data-key="tab_all">All</button>
+        <button class="tab" id="tab-gau" onclick="filterCategory('Gau Seva')" data-key="tab_gau">Gau Seva</button>
+        <button class="tab" id="tab-temple" onclick="filterCategory('Temple')" data-key="tab_temple">Temple</button>
+        <button class="tab" id="tab-annadan" onclick="filterCategory('Annadan')" data-key="tab_annadan">Annadan</button>
+    </div>
+
+    <!-- Feed Cards Container -->
+    <div class="feed-container" id="feed-list">
+        <!-- Card 1: Gau Seva -->
+        <div class="seva-card" data-category="Gau Seva" id="seva-card-gau-poshana">
+            <img class="seva-img" src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=500" alt="Gau Seva">
+            <div class="seva-info">
+                <div class="seva-title-row">
+                    <div class="seva-title" id="card1-title" data-key="card1_title">Cow Care & Feeding (Gau Poshana)</div>
+                    <button class="share-card-btn" onclick="copySevaLink('gau-poshana', 'Gau Seva')" data-key="share_title" title="Share this Seva">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+                <div class="seva-desc" id="card1-desc" data-key="card1_desc">Feed hungry souls with love. Your prasadam brings nourishment to 90+ sacred cows daily.</div>
+                <button class="donate-btn" onclick="openAmountModal('Cow Care & Feeding (Gau Poshana)', 'gau-poshana')" data-key="btn_donate">DONATE ❤</button>
+            </div>
+        </div>
+
+        <!-- Card 2: Gau Seva -->
+        <div class="seva-card" data-category="Gau Seva" id="seva-card-gau-chikitsa">
+            <img class="seva-img" src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=500" alt="Gau Chikitsa">
+            <div class="seva-info">
+                <div class="seva-title-row">
+                    <div class="seva-title" id="card2-title" data-key="card2_title">Cow Medical Treatment (Gau Chikitsa)</div>
+                    <button class="share-card-btn" onclick="copySevaLink('gau-chikitsa', 'Gau Seva')" data-key="share_title" title="Share this Seva">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+                <div class="seva-desc" id="card2-desc" data-key="card2_desc">Support emergency medical care, routine check-ups, and specialized treatments for injured cows.</div>
+                <button class="donate-btn" onclick="openAmountModal('Cow Medical Treatment (Gau Chikitsa)', 'gau-chikitsa')" data-key="btn_donate">DONATE ❤</button>
+            </div>
+        </div>
+
+        <!-- Card 3: Temple Seva -->
+        <div class="seva-card" data-category="Temple" id="seva-card-marble">
+            <img class="seva-img" src="https://images.unsplash.com/photo-1609137144814-7e9b08581e28?w=500" alt="Marble Seva">
+            <div class="seva-info">
+                <div class="seva-title-row">
+                    <div class="seva-title" id="card3-title" data-key="card3_title">Sponsor Marble Seva</div>
+                    <button class="share-card-btn" onclick="copySevaLink('marble', 'Temple')" data-key="share_title" title="Share this Seva">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+                <div class="seva-desc" id="card3-desc" data-key="card3_desc">By sponsoring marble, you help decorate the sacred floors and altars where Lord Krishna will be worshipped.</div>
+                <button class="donate-btn" onclick="openAmountModal('Sponsor Marble Seva', 'marble')" data-key="btn_donate">DONATE ❤</button>
+            </div>
+        </div>
+
+        <!-- Card 4: Annadan -->
+        <div class="seva-card" data-category="Annadan" id="seva-card-ekadashi">
+            <img class="seva-img" src="https://images.unsplash.com/photo-1544025162-d76694265947?w=500" alt="Ekadashi Seva">
+            <div class="seva-info">
+                <div class="seva-title-row">
+                    <div class="seva-title" id="card4-title" data-key="card4_title">Ekadashi Special Seva (Annadan)</div>
+                    <button class="share-card-btn" onclick="copySevaLink('ekadashi', 'Annadan')" data-key="share_title" title="Share this Seva">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+                <div class="seva-desc" id="card4-desc" data-key="card4_desc">Sponsor special grain-free meals for fasting pilgrims and devotees.</div>
+                <button class="donate-btn" onclick="openAmountModal('Ekadashi Special Seva (Annadan)', 'ekadashi')" data-key="btn_donate">DONATE ❤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Bottom Bar -->
+    <div class="bottom-bar">
+        <button class="live-btn" onclick="navigateToLiveDonations()" data-key="view_live">
+            <span class="live-pulse-dot"></span>
+            👥 View Live Donations
+        </button>
+    </div>
+
+    <!-- MODAL: Payment Form -->
+    <div id="payment-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span id="selected-seva-title">Seva Name</span>
+                <button class="close-btn" onclick="closeModal('payment-modal')">&times;</button>
+            </div>
+            
+            <!-- Step 1: Amount Selection -->
+            <div id="step-amount">
+                <h4 style="text-align: left; margin: 0 0 10px 0;" data-key="modal_amt_title">Select Donation Amount</h4>
+                <div class="amount-grid">
+                    <button class="amt-btn" onclick="selectAmount(500, this)">₹500</button>
+                    <button class="amt-btn" onclick="selectAmount(1000, this)">₹1000</button>
+                    <button class="amt-btn" onclick="selectAmount(1500, this)">₹1500</button>
+                    <button class="amt-btn" onclick="selectAmount(2000, this)">₹2000</button>
+                    <button class="amt-btn" onclick="selectAmount(5000, this)">₹5000</button>
+                    <button class="amt-btn" onclick="selectAmount(0, this)">Other</button>
+                </div>
+                <input type="number" id="custom-amount" class="hidden" placeholder="Enter custom amount" oninput="updateCustomAmount(this.value)">
+                
+                <button class="donate-btn" style="margin-top: 15px;" onclick="goToDonorInfo()" data-key="modal_proceed_info">Proceed to Donor Info</button>
+            </div>
+
+            <!-- Step 2: Donor Form -->
+            <div id="step-form" class="hidden">
+                <h4 style="text-align: left; margin: 0 0 15px 0;" data-key="modal_donor_title">Donor Information</h4>
+                
+                <label data-key="label_name">Full Name*</label>
+                <input type="text" id="donor-name" placeholder="Enter Full Name" required>
+                <span id="error-name" class="error-msg hidden"></span>
+
+                <label data-key="label_phone">Mobile Number*</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 15px;" id="phone-container">
+                    <input type="text" value="+91" style="width: 55px; text-align: center; margin: 0;" readonly>
+                    <input type="tel" id="donor-phone" placeholder="Enter Mobile Number" style="flex: 1; margin: 0;" required>
+                </div>
+                <span id="error-phone" class="error-msg hidden" style="margin-top: -10px;"></span>
+
+                <label data-key="label_email">Email Address</label>
+                <input type="email" id="donor-email" placeholder="Enter Email (Optional)">
+                <span id="error-email" class="error-msg hidden"></span>
+
+                <!-- 10BE Tax Benefit toggle section -->
+                <div class="checkbox-container">
+                    <input type="checkbox" id="tax-benefit" onchange="toggleTaxFields(this.checked)">
+                    <label for="tax-benefit" data-key="modal_tax_checkbox">I want 10BE (Income Tax Benefit) receipts</label>
+                </div>
+                <div class="tax-subtext" data-key="modal_tax_subtext">Get tax-deductible receipts for all your donations</div>
+
+                <!-- 10BE Tax Fields with inline errors -->
+                <div id="tax-fields" class="hidden">
+                    <label data-key="modal_label_pan">PAN Number*</label>
+                    <input type="text" id="pan-number" placeholder="Enter PAN Number">
+                    <span id="error-pan" class="error-msg hidden"></span>
+                    
+                    <label data-key="modal_label_address">Address*</label>
+                    <input type="text" id="address" placeholder="Enter Address">
+                    <span id="error-address" class="error-msg hidden"></span>
+                    
+                    <label data-key="modal_label_country">Country*</label>
+                    <input type="text" id="country" value="India" readonly>
+                    
+                    <label data-key="modal_label_state">State*</label>
+                    <input type="text" id="state" placeholder="Enter State">
+                    <span id="error-state" class="error-msg hidden"></span>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 0;">
+                        <div style="flex: 1;">
+                            <label data-key="modal_label_city">City*</label>
+                            <input type="text" id="city" placeholder="Enter City">
+                        </div>
+                        <div style="flex: 1;">
+                            <label data-key="modal_label_pincode">PIN Code*</label>
+                            <input type="text" id="pincode" placeholder="PIN Code">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: -10px; margin-bottom: 15px;">
+                        <div style="flex: 1;">
+                            <span id="error-city" class="error-msg hidden" style="margin: 0;"></span>
+                        </div>
+                        <div style="flex: 1;">
+                            <span id="error-pincode" class="error-msg hidden" style="margin: 0;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="donate-btn" onclick="generateSecurePaymentLink()" data-key="btn_payment">Proceed to Payment</button>
+                <button class="amt-btn" style="width:100%; margin-top: 10px;" onclick="backToAmount()" data-key="btn_back">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Live Donations List -->
+    <div id="live-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="border-radius: 20px 20px 0 0;">
+            <div class="modal-header">
+                <span data-key="modal_recent_title">Recent Live Donations</span>
+                <button class="close-btn" onclick="closeModal('live-modal')">&times;</button>
+            </div>
+            <div id="live-donations-list" style="max-height: 50vh; overflow-y: auto;">
+                <!-- Live rows -->
+            </div>
+            <button class="donate-btn" style="margin-top: 20px; background: #555;" onclick="closeModal('live-modal')" data-key="btn_close">Close</button>
+        </div>
+    </div>
+
+    <!-- Dynamic Saffron Toast Element -->
+    <div id="toast-notif" class="toast-container">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-text">Link Copied!</span>
+    </div>
+
+    <script>
+        // --- 3 languages Translation Dictionary ---
+        const langData = {
+            "en": {
+                "header_title": "Donate Now",
+                "tab_all": "All",
+                "tab_gau": "Gau Seva",
+                "tab_temple": "Temple",
+                "tab_annadan": "Annadan",
+                "btn_donate": "DONATE ❤",
+                "card1_title": "Cow Care & Feeding (Gau Poshana)",
+                "card1_desc": "Feed hungry souls with love. Your prasadam brings nourishment to 90+ sacred cows daily.",
+                "card2_title": "Cow Medical Treatment (Gau Chikitsa)",
+                "card2_desc": "Support emergency medical care, routine check-ups, and specialized treatments for injured cows.",
+                "card3_title": "Sponsor Marble Seva",
+                "card3_desc": "By sponsoring marble, you help decorate the sacred floors and altars where Lord Krishna will be worshipped.",
+                "card4_title": "Ekadashi Special Seva (Annadan)",
+                "card4_desc": "Sponsor special grain-free meals for fasting pilgrims and devotees.",
+                "view_live": "View Live Donations",
+                "modal_amt_title": "Select Donation Amount",
+                "modal_proceed_info": "Proceed to Donor Info",
+                "modal_donor_title": "Donor Information",
+                "label_name": "Full Name*",
+                "label_phone": "Mobile Number*",
+                "label_email": "Email Address",
+                "btn_payment": "Proceed to Payment",
+                "btn_back": "Back",
+                "btn_close": "Close",
+                "modal_recent_title": "Recent Live Donations",
+                "no_donations": "No donations yet!",
+                "share_title": "Share this Seva",
+                "link_copied": "Direct Seva link copied! Share it on WhatsApp.",
+                "modal_tax_checkbox": "I want 10BE (Income Tax Benefit) receipts",
+                "modal_tax_subtext": "Get tax-deductible receipts for all your donations",
+                "modal_label_pan": "PAN Number*",
+                "modal_label_address": "Address*",
+                "modal_label_country": "Country*",
+                "modal_label_state": "State*",
+                "modal_label_city": "City*",
+                "modal_label_pincode": "PIN Code*",
+                "err_name": "Please enter a valid Full Name (minimum 3 characters, alphabets only).",
+                "err_phone": "Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.",
+                "err_email": "Please enter a valid Email Address (e.g. name@example.com).",
+                "err_pan": "Please enter a valid 10-character PAN (e.g. ABCDE1234F).",
+                "err_address": "Please enter a valid Address (minimum 5 characters).",
+                "err_state": "Please enter a valid State.",
+                "err_city": "Please enter a valid City.",
+                "err_pincode": "Please enter a valid 6-digit PIN Code."
+            },
+            "hi": {
+                "header_title": "दान सेवा",
+                "tab_all": "सभी",
+                "tab_gau": "गौ सेवा",
+                "tab_temple": "मंदिर सेवा",
+                "tab_annadan": "अन्नदान",
+                "btn_donate": "दान करें ❤",
+                "card1_title": "गौ सेवा और चारा (गौ पोषण)",
+                "card1_desc": "प्यारी गायों को प्रेमपूर्वक भोजन कराएं। आपका प्रसाद दैनिक रूप से ९०+ पवित्र गायों को पोषण देता है।",
+                "card2_title": "गौ चिकित्सा (गौ चिकित्सा सेवा)",
+                "card2_desc": "घायल and बीमार गायों के लिए आपातकालीन चिकित्सा देखभाल, नियमित जांच और उपचार का समर्थन करें।",
+                "card3_title": "मार्बल सेवा प्रायोजित करें",
+                "card3_desc": "संगमरमर प्रायोजित करके, आप उन पवित्र फर्शों और वेदियों को सजाने में मदद करते हैं जहां भगवान कृष्ण की पूजा की जाएगी।",
+                "card4_title": "एकादशी विशेष सेवा (अन्नदान)",
+                "card4_desc": "व्रत रखने वाले तीर्थयात्रियों और भक्तों के लिए विशेष अनाज-मुक्त भोजन प्रायोजित करें।",
+                "view_live": "लाइव दान देखें",
+                "modal_amt_title": "दान राशि चुनें",
+                "modal_proceed_info": "दाता जानकारी पर आगे बढ़ें",
+                "modal_donor_title": "दाता की जानकारी",
+                "label_name": "पूरा नाम*",
+                "label_phone": "मोबाइल नंबर*",
+                "label_email": "ईमेल पता",
+                "btn_payment": "भुगतान के लिए आगे बढ़ें",
+                "btn_back": "पीछे",
+                "btn_close": "बंद करें",
+                "modal_recent_title": "हाल के लाइव दान",
+                "no_donations": "अभी तक कोई दान नहीं!",
+                "share_title": "यह सेवा साझा करें",
+                "link_copied": "सीधा सेवा लिंक कॉपी हो गया है! इसे व्हाट्सएप पर साझा करें।",
+                "modal_tax_checkbox": "मुझे 10BE (आयकर लाभ) रसीद चाहिए",
+                "modal_tax_subtext": "अपने सभी दानों के लिए कर-कटौती योग्य रसीदें प्राप्त करें",
+                "modal_label_pan": "पैन नंबर*",
+                "modal_label_address": "पता*",
+                "modal_label_country": "देश*",
+                "modal_label_state": "राज्य*",
+                "modal_label_city": "शहर*",
+                "modal_label_pincode": "पिन कोड*",
+                "err_name": "कृपया एक वैध पूरा नाम दर्ज करें (न्यूनतम 3 अक्षर, केवल वर्णमाला)!",
+                "err_phone": "कृपया 6, 7, 8, या 9 से शुरू होने वाला 10-अंकीय वैध मोबाइल नंबर दर्ज करें!",
+                "err_email": "कृपया एक वैध ईमेल पता दर्ज करें (जैसे name@example.com)!",
+                "err_pan": "कृपया एक वैध 10-अंकीय पैन नंबर दर्ज करें (जैसे ABCDE1234F)!",
+                "err_address": "कृपया एक वैध पूरा पता दर्ज करें (न्यूनतम 5 वर्ण)!",
+                "err_state": "कृपया एक वैध राज्य दर्ज करें!",
+                "err_city": "कृपया एक वैध शहर दर्ज करें!",
+                "err_pincode": "कृपया एक वैध 6-अंकीय पिन कोड दर्ज करें!"
+            },
+            "mr": {
+                "header_title": "दान सेवा",
+                "tab_all": "सर्व",
+                "tab_gau": "गौ सेवा",
+                "tab_temple": "मंदिर सेवा",
+                "tab_annadan": "अन्नदान",
+                "btn_donate": "दान करा ❤",
+                "card1_title": "गौ सेवा आणि चारा (गौ पोषण)",
+                "card1_desc": "प्यारी गायींना प्रेमपूर्वक भोजन द्या. तुमचा प्रसाद दररोज ९०+ पवित्र गायींना पोषण देतो.",
+                "card2_title": "गौ वैद्यकीय उपचार (गौ चिकित्सा)",
+                "card2_desc": "जखमी आणि आजारी गायींसाठी तातडीची वैद्यकीय मदत, नियमित तपासणी आणि उपचारांना हातभार लावा.",
+                "card3_title": "संगमरमर सेवा प्रायोजित करा",
+                "card3_desc": "संगमरमर प्रायोजित करून, तुम्ही त्या पवित्र मजल्यांचे आणि वेदींचे सुशोभीकरण करण्यास मदत करता जिथे भगवान श्रीकृष्णाची पूजा केली जाईल.",
+                "card4_title": "एकादशी विशेष सेवा (अन्नदान)",
+                "card4_desc": "उपवास करणाऱ्या यात्रेकरूंसाठी आणि भक्तांसाठी विशेष धान्य-मुक्त भोजन प्रायोजित करा.",
+                "view_live": "थेट दान पहा",
+                "modal_amt_title": "दान रक्कम निवडा",
+                "modal_proceed_info": "दाता माहितीवर जा",
+                "modal_donor_title": "दाता माहिती",
+                "label_name": "पूर्ण नाव*",
+                "label_phone": "मोबाईल नंबर*",
+                "label_email": "ईमेल पत्ता",
+                "btn_payment": "पैसे भरण्यासाठी पुढे जा",
+                "btn_back": "मागे",
+                "btn_close": "बंद करा",
+                "modal_recent_title": "थेट देणग्यांची यादी",
+                "no_donations": "अद्याप देणग्या नाहीत!",
+                "share_title": "ही सेवा शेअर करा",
+                "link_copied": "थेट सेवा लिंक कॉपी झाली आहे! ती व्हॉट्सॲपवर शेअर करा।",
+                "modal_tax_checkbox": "मला 10BE (आयकर लाभ) पावती हवी आहे",
+                "modal_tax_subtext": "तुमच्या सर्व देणग्यांसाठी कर-वजावट योग्य पावत्या मिळवा",
+                "modal_label_pan": "पॅन नंबर*",
+                "modal_label_address": "पत्ता*",
+                "modal_label_country": "देश*",
+                "modal_label_state": "राज्य*",
+                "modal_label_city": "शहर*",
+                "modal_label_pincode": "पिन कोड*",
+                "err_name": "कृपया वैध पूर्ण नाव प्रविष्ट करा (किमान 3 अक्षरे, फक्त वर्णमाला)!",
+                "err_phone": "कृपया 6, 7, 8, किंवा 9 ने सुरू होणारा 10-अंकी वैध मोबाईल नंबर प्रविष्ट करा!",
+                "err_email": "कृपया वैध ईमेल पत्ता प्रविष्ट करा (उदा. name@example.com)!",
+                "err_pan": "कृपया वैध 10-अंकी पॅन नंबर प्रविष्ट करा (उदा. ABCDE1234F)!",
+                "err_address": "कृपया वैध पत्ता प्रविष्ट करा (किमान 5 वर्ण)!",
+                "err_state": "कृपया वैध राज्य प्रविष्ट करा!",
+                "err_city": "कृपया वैध शहर प्रविष्ट करा!",
+                "err_pincode": "कृपया वैध 6-अंकी पिन कोड प्रविष्ट करा!"
+            }
+        };
+
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908",
+            authDomain: "iskcon-bhuvaikuntha.firebaseapp.com",
+            projectId: "iskcon-bhuvaikuntha",
+            storageBucket: "iskcon-bhuvaikuntha.firebasestorage.app",
+            messagingSenderId: "87535383708",
+            appId: "1:87535383708:web:7548e3b7d4c807faafe959",
+            measurementId: "G-ZWEB9HM0K4"
+        };
+
+        // Initialize Firebase Client
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let currentSeva = '';
+        let currentSevaId = '';
+        let selectedAmt = 500;
+        let globalLiveDonations = [];
+
+        // App lifecycle listeners
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('lang') || 'en';
+            setLanguage(savedLang);
+
+            startLiveDonationsListener();
+            syncStateFromURL();
+            setupInputSecurityListeners();
+        });
+
+        // Multi-Page Real-time Live Storage Sync Engine
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'lang') {
+                const newLang = event.newValue || 'en';
+                setLanguage(newLang);
+            }
+        });
+
+        window.addEventListener('popstate', () => {
+            syncStateFromURL();
+        });
+
+        // --- Banking-Grade Inline Error Display Helpers ---
+        function setFieldError(inputId, errorId, isValid, errorMessage) {
+            const inputEl = document.getElementById(inputId);
+            const errorEl = document.getElementById(errorId);
+            
+            if (inputEl && errorEl) {
+                if (!isValid) {
+                    inputEl.classList.add('input-error');
+                    errorEl.innerText = errorMessage;
+                    errorEl.classList.remove('hidden');
+                } else {
+                    inputEl.classList.remove('input-error');
+                    errorEl.classList.add('hidden');
+                }
+            }
+        }
+
+        // Real-time input cleaner triggers on type
+        function clearErrorOnInput(inputId, errorId) {
+            const inputEl = document.getElementById(inputId);
+            if (inputEl) {
+                inputEl.addEventListener('input', () => {
+                    inputEl.classList.remove('input-error');
+                    const errorEl = document.getElementById(errorId);
+                    if (errorEl) {
+                        errorEl.classList.add('hidden');
+                    }
+                });
+            }
+        }
+
+        // --- Keyboard Blockers and Copy-Paste Sanitizers ---
+        function setupInputSecurityListeners() {
+            const nameInput = document.getElementById('donor-name');
+            const phoneInput = document.getElementById('donor-phone');
+            const emailInput = document.getElementById('donor-email');
+            const panInput = document.getElementById('pan-number');
+            const addrInput = document.getElementById('address');
+            const stateInput = document.getElementById('state');
+            const cityInput = document.getElementById('city');
+            const pinInput = document.getElementById('pincode');
+
+            // Hook instant error cleanup listeners on type
+            clearErrorOnInput('donor-name', 'error-name');
+            clearErrorOnInput('donor-phone', 'error-phone');
+            clearErrorOnInput('donor-email', 'error-email');
+            clearErrorOnInput('pan-number', 'error-pan');
+            clearErrorOnInput('address', 'error-address');
+            clearErrorOnInput('state', 'error-state');
+            clearErrorOnInput('city', 'error-city');
+            clearErrorOnInput('pincode', 'error-pincode');
+
+            // 1. Full Name: Allow only letters and spaces. Max length 50.
+            nameInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '').slice(0, 50);
+            });
+
+            // 2. Mobile Phone: Allow only numbers. Max length 10.
+            phoneInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+            });
+
+            // 3. Email Input validation formatting
+            emailInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^a-zA-Z0-9@._-]/g, '').slice(0, 80);
+            });
+
+            // 4. PAN card validation formatting (Auto-uppercase, strictly alphanumeric, max length 10)
+            panInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+            });
+
+            // 5. Address field sanitize (block script injection markup)
+            addrInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[<>\/\\'"`;]/g, '').slice(0, 150);
+            });
+
+            // 6. State field formatting
+            stateInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '').slice(0, 30);
+            });
+
+            // 7. City field formatting
+            cityInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '').slice(0, 30);
+            });
+
+            // 8. PIN code validation formatting (Strictly numbers, max 6 digits)
+            pinInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+            });
+
+            // Apply universal copy-paste security intercepts to block hacker payloads
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    let pasteData = (e.clipboardData || window.clipboardData).getData('text');
+                    
+                    if (input.id === 'donor-phone' || input.id === 'pincode') {
+                        input.value = pasteData.replace(/\D/g, '').slice(0, input.id === 'pincode' ? 6 : 10);
+                    } else if (input.id === 'donor-name' || input.id === 'state' || input.id === 'city') {
+                        input.value = pasteData.replace(/[^a-zA-Z\s]/g, '').slice(0, 50);
+                    } else if (input.id === 'pan-number') {
+                        input.value = pasteData.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+                    } else if (input.id === 'address') {
+                        input.value = pasteData.replace(/[<>\/\\'"`;]/g, '').slice(0, 150);
+                    } else if (input.id === 'donor-email') {
+                        input.value = pasteData.replace(/[^a-zA-Z0-9@._-]/g, '').slice(0, 80);
+                    } else {
+                        input.value = pasteData.replace(/[<>\/\\'"`;]/g, '');
+                    }
+                });
+            });
+        }
+
+        // --- Language Switcher Logic ---
+        function setLanguage(lang) {
+            localStorage.setItem('lang', lang);
+            const texts = langData[lang];
+
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (texts[key]) {
+                    if (key === 'view_live') {
+                        el.innerHTML = '<span class="live-pulse-dot"></span> 👥 ' + texts[key];
+                    } else {
+                        el.innerText = texts[key];
+                    }
+                }
+            });
+
+            // Update active Lang Chip layout
+            document.querySelectorAll('.lang-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            const activeChip = document.getElementById('chip-' + lang);
+            if (activeChip) {
+                activeChip.classList.add('active');
+            }
+
+            // Sync HTML Title tag dynamically
+            const headerTitle = document.getElementById('title-donate-now');
+            if (headerTitle && texts["header_title"]) {
+                headerTitle.innerText = texts["header_title"];
+            }
+        }
+
+        // --- Real-time Firestore Listener ---
+        function startLiveDonationsListener() {
+            db.collection("donations")
+              .orderBy("date", "desc")
+              .limit(30)
+              .onSnapshot((snapshot) => {
+                  globalLiveDonations = [];
+                  snapshot.forEach((doc) => {
+                      const data = doc.data();
+                      
+                      let dateVal = '';
+                      if (data.date) {
+                          const tDate = data.date.toDate ? data.date.toDate() : new Date(data.date);
+                          dateVal = tDate.toLocaleString('en-IN', {
+                              timeZone: 'Asia/Kolkata',
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: true
+                          });
+                      }
+
+                      globalLiveDonations.push({
+                          name: data.name || 'Anonymous Donor',
+                          amount: data.amount || 0,
+                          date: dateVal
+                      });
+                  });
+              }, (error) => {
+                  console.error("Firestore live update stream interrupted: ", error);
+              });
+        }
+
+        // --- Resilient Typo-Mapping and URL State Sync Helper ---
+        function getCategoryQuerySlug(category) {
+            const clean = category.toLowerCase().trim();
+            if (clean.includes('gau') || clean.includes('poshana') || clean.includes('chikitsa') || clean.includes('cow') || clean.includes('go')) return 'gau';
+            if (clean.includes('temple') || clean.includes('marble') || clean.includes('puja')) return 'temple';
+            if (clean.includes('annadan') || clean.includes('aanadan') || clean.includes('anna-dan') || clean.includes('ekadashi')) return 'annadan';
+            return 'all';
+        }
+
+        function getCategoryFromSlug(slug) {
+            if (!slug) return 'All';
+            const clean = slug.toLowerCase().trim();
+            if (clean === 'gau' || clean === 'gau-seva' || clean === 'go' || clean === 'go-seva' || clean === 'cow' || clean === 'gau-poshana' || clean === 'gau-chikitsa') {
+                return 'Gau Seva';
+            }
+            if (clean === 'temple' || clean === 'temple-puja' || clean === 'temple-seva' || clean === 'puja' || clean === 'marble') {
+                return 'Temple';
+            }
+            if (clean === 'annadan' || clean === 'annadaan' || clean === 'aanadan' || clean === 'aanadan-dan' || clean === 'anna-dan' || clean === 'ekadashi') {
+                return 'Annadan';
+            }
+            return 'All';
+        }
+
+        function updateURL(category, sevaId = '') {
+            const url = new URL(window.location.href);
+            const slug = getCategoryQuerySlug(category);
+            
+            if (slug === 'all') {
+                url.searchParams.delete('category');
+            } else {
+                url.searchParams.set('category', slug);
+            }
+
+            if (sevaId) {
+                url.searchParams.set('seva', sevaId);
+            } else {
+                url.searchParams.delete('seva');
+            }
+            window.history.pushState({ category, sevaId }, '', url.toString());
+        }
+
+        function syncStateFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get('category');
+            const sevaParam = urlParams.get('seva');
+
+            if (categoryParam) {
+                const targetCategory = getCategoryFromSlug(categoryParam);
+                filterCategory(targetCategory, false);
+            } else {
+                filterCategory('All', false);
+            }
+
+            if (sevaParam) {
+                setTimeout(() => {
+                    const element = document.getElementById(`seva-card-${sevaParam}`);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        element.style.outline = '3px solid var(--primary-color)';
+                        element.style.outlineOffset = '2px';
+                        element.style.borderRadius = '12px';
+                        setTimeout(() => {
+                            element.style.outline = 'none';
+                        }, 3500);
+                    }
+                }, 400);
+            }
+        }
+
+        function copySevaLink(sevaId, category) {
+            const url = new URL(window.location.origin + window.location.pathname);
+            const slug = getCategoryQuerySlug(category);
+            url.searchParams.set('category', slug);
+            url.searchParams.set('seva', sevaId);
+
+            navigator.clipboard.writeText(url.toString()).then(() => {
+                const lang = localStorage.getItem('lang') || 'en';
+                const msg = langData[lang]["link_copied"] || "Direct Seva link copied!";
+                showToast(msg);
+            }).catch(err => {
+                console.error('Could not copy link: ', err);
+            });
+        }
+
+        function filterCategory(category, updateHistory = true) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            if (category === 'All') document.getElementById('tab-all').classList.add('active');
+            if (category === 'Gau Seva') document.getElementById('tab-gau').classList.add('active');
+            if (category === 'Temple') document.getElementById('tab-temple').classList.add('active');
+            if (category === 'Annadan') document.getElementById('tab-annadan').classList.add('active');
+
+            const cards = document.querySelectorAll('.seva-card');
+            cards.forEach(card => {
+                if (category === 'All' || card.getAttribute('data-category') === category) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            if (updateHistory) {
+                updateURL(category);
+            }
+        }
+
+        function openAmountModal(sevaName, sevaId = '') {
+            currentSeva = sevaName;
+            currentSevaId = sevaId;
+            document.getElementById('selected-seva-title').innerText = sevaName;
+            document.getElementById('step-amount').classList.remove('hidden');
+            document.getElementById('step-form').classList.add('hidden');
+            document.getElementById('payment-modal').classList.remove('hidden');
+
+            const activeTab = document.querySelector('.tab.active');
+            const category = activeTab ? getCategoryFromSlug(activeTab.id.replace('tab-', '')) : 'All';
+            updateURL(category, sevaId);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            
+            if (id === 'payment-modal') {
+                const taxCheckbox = document.getElementById('tax-benefit');
+                if (taxCheckbox) {
+                    taxCheckbox.checked = false;
+                    toggleTaxFields(false);
+                }
+                
+                // Clear any leftover field error markings on close
+                document.querySelectorAll('input').forEach(input => {
+                    input.classList.remove('input-error');
+                });
+                document.querySelectorAll('.error-msg').forEach(err => {
+                    err.classList.add('hidden');
+                });
+
+                const activeTab = document.querySelector('.tab.active');
+                const category = activeTab ? getCategoryFromSlug(activeTab.id.replace('tab-', '')) : 'All';
+                updateURL(category);
+            }
+        }
+
+        function selectAmount(amount, element) {
+            document.querySelectorAll('.amt-btn').forEach(btn => btn.classList.remove('selected'));
+            element.classList.add('selected');
+
+            if (amount === 0) {
+                document.getElementById('custom-amount').classList.remove('hidden');
+                selectedAmt = 0;
+            } else {
+                document.getElementById('custom-amount').classList.add('hidden');
+                selectedAmt = amount;
+            }
+        }
+
+        function updateCustomAmount(val) {
+            selectedAmt = Number(val);
+        }
+
+        function goToDonorInfo() {
+            if (selectedAmt <= 0) {
+                alert('Please enter or select a valid donation amount!');
+                return;
+            }
+            document.getElementById('step-amount').classList.add('hidden');
+            document.getElementById('step-form').classList.remove('hidden');
+        }
+
+        function backToAmount() {
+            document.getElementById('step-form').classList.add('hidden');
+            document.getElementById('step-amount').classList.remove('hidden');
+        }
+
+        function toggleTaxFields(checked) {
+            const taxFields = document.getElementById('tax-fields');
+            const inputs = taxFields.querySelectorAll('input');
+            
+            if (checked) {
+                taxFields.classList.remove('hidden');
+                inputs.forEach(input => {
+                    if (input.id !== 'country' && input.id !== 'donor-email') {
+                        input.required = true;
+                    }
+                });
+            } else {
+                taxFields.classList.add('hidden');
+                inputs.forEach(input => {
+                    input.required = false;
+                });
+            }
+        }
+
+        // SECURE API HANDOFF TO VERCEL BACKEND
+        async function generateSecurePaymentLink() {
+            const nameInput = document.getElementById('donor-name');
+            const phoneInput = document.getElementById('donor-phone');
+            const emailInput = document.getElementById('donor-email');
+
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const email = emailInput.value.trim();
+            const isTaxRequired = document.getElementById('tax-benefit').checked;
+            
+            const lang = localStorage.getItem('lang') || 'en';
+            let hasError = false;
+            let firstInvalidElement = null;
+
+            // 1. Strict Name Check
+            const isNameValid = name && name.length >= 3;
+            setFieldError('donor-name', 'error-name', isNameValid, langData[lang]["err_name"]);
+            if (!isNameValid) {
+                hasError = true;
+                if (!firstInvalidElement) firstInvalidElement = nameInput;
+            }
+
+            // 2. Strict Phone Check
+            const isPhoneValid = phone && phone.length === 10 && /^[6-9]\d{9}$/.test(phone);
+            setFieldError('donor-phone', 'error-phone', isPhoneValid, langData[lang]["err_phone"]);
+            if (!isPhoneValid) {
+                hasError = true;
+                if (!firstInvalidElement) firstInvalidElement = phoneInput;
+            }
+
+            // 3. Strict Email Check
+            let isEmailValid = true;
+            if (email) {
+                isEmailValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+            }
+            setFieldError('donor-email', 'error-email', isEmailValid, langData[lang]["err_email"]);
+            if (!isEmailValid) {
+                hasError = true;
+                if (!firstInvalidElement) firstInvalidElement = emailInput;
+            }
+
+            // 4. Tax Field Checks if toggle is checked
+            if (isTaxRequired) {
+                const panInput = document.getElementById('pan-number');
+                const addrInput = document.getElementById('address');
+                const stateInput = document.getElementById('state');
+                const cityInput = document.getElementById('city');
+                const pinInput = document.getElementById('pincode');
+
+                const pan = panInput.value.toUpperCase().trim();
+                const addr = addrInput.value.trim();
+                const state = stateInput.value.trim();
+                const city = cityInput.value.trim();
+                const pin = pinInput.value.trim();
+
+                const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+                const isPanValid = pan && panRegex.test(pan);
+                setFieldError('pan-number', 'error-pan', isPanValid, langData[lang]["err_pan"]);
+                if (!isPanValid) {
+                    hasError = true;
+                    if (!firstInvalidElement) firstInvalidElement = panInput;
+                }
+
+                const isAddrValid = addr && addr.length >= 5;
+                setFieldError('address', 'error-address', isAddrValid, langData[lang]["err_address"]);
+                if (!isAddrValid) {
+                    hasError = true;
+                    if (!firstInvalidElement) firstInvalidElement = addrInput;
+                }
+
+                const isStateValid = state && state.length >= 2;
+                setFieldError('state', 'error-state', isStateValid, langData[lang]["err_state"]);
+                if (!isStateValid) {
+                    hasError = true;
+                    if (!firstInvalidElement) firstInvalidElement = stateInput;
+                }
+
+                const isCityValid = city && city.length >= 2;
+                setFieldError('city', 'error-city', isCityValid, langData[lang]["err_city"]);
+                if (!isCityValid) {
+                    hasError = true;
+                    if (!firstInvalidElement) firstInvalidElement = cityInput;
+                }
+
+                const isPinValid = pin && pin.length === 6 && /^\d{6}$/.test(pin);
+                setFieldError('pincode', 'error-pincode', isPinValid, langData[lang]["err_pincode"]);
+                if (!isPinValid) {
+                    hasError = true;
+                    if (!firstInvalidElement) firstInvalidElement = pinInput;
+                }
+            }
+
+            // Block submission and focus on first invalid box
+            if (hasError) {
+                if (firstInvalidElement) {
+                    firstInvalidElement.focus();
+                }
+                return;
+            }
+
+            const payBtn = document.querySelector('#step-form .donate-btn');
+            payBtn.innerText = "Securing Connection...";
+            payBtn.disabled = true;
+
+            try {
+                // If running locally as offline asset (file:// protocol), route API directly to live Vercel base
+                const apiBase = window.location.protocol === 'file:' ? 'https://phone-pe-pi.vercel.app' : '';
+
+                const response = await fetch(`${apiBase}/api/create-link`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        amount: selectedAmt,
+                        phone: phone,
+                        email: email,
+                        seva: currentSeva,
+                        tax_benefit: isTaxRequired,
+                        pan: isTaxRequired ? document.getElementById('pan-number').value.toUpperCase().trim() : '',
+                        address: isTaxRequired ? document.getElementById('address').value.trim() : '',
+                        state: isTaxRequired ? document.getElementById('state').value.trim() : '',
+                        city: isTaxRequired ? document.getElementById('city').value.trim() : '',
+                        pincode: isTaxRequired ? document.getElementById('pincode').value.trim() : ''
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.payment_url) {
+                    // FIXED: Load the URL in the SAME TAB instead of a new tab to prevent PhonePe Referer security block!
+                    window.location.href = data.payment_url;
+                    closeModal('payment-modal');
+                } else {
+                    showToast('Server Error: ' + (data.error || 'Unable to initiate payment gateway.'));
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Secure Server Connection failed. Please check network and retry.');
+            } finally {
+                payBtn.innerText = "Proceed to Payment";
+                payBtn.disabled = false;
+            }
+        }
+
+        // --- DYNAMIC STREAMING REDIRECTION WITH POPUP BACKUP ---
+        function navigateToLiveDonations() {
+            window.location.href = 'go:livedon';
+            openLiveDonationsModal();
+        }
+
+        function openLiveDonationsModal() {
+            const container = document.getElementById('live-donations-list');
+            container.innerHTML = '';
+            const lang = localStorage.getItem('lang') || 'en';
+
+            if (globalLiveDonations.length === 0) {
+                const noDonationText = langData[lang]["no_donations"] || "No donations yet!";
+                container.innerHTML = `<div style="text-align:center; padding: 20px; color: #999;">${noDonationText}</div>`;
+            } else {
+                globalLiveDonations.forEach(item => {
+                    const cleanName = escapeHtml(item.name);
+                    const row = `
+                        <div class="donation-item">
+                            <div class="donor-details">
+                                <div class="donor-name">${cleanName}</div>
+                                <div class="donor-time">${item.date}</div>
+                            </div>
+                            <div class="donor-amt">₹${item.amount}</div>
+                        </div>
+                    `;
+                    container.innerHTML += row;
+                });
+            }
+            document.getElementById('live-modal').classList.remove('hidden');
+        }
+
+        // Helper to prevent dynamic string injections
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Saffron Toast Element Notifier Helper
+        function showToast(message) {
+            const toast = document.getElementById('toast-notif');
+            const toastText = document.getElementById('toast-text');
+            if (toast && toastText) {
+                toastText.innerText = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3500);
+            } else {
+                alert(message);
+            }
+        }
+    </script>
+</body>
+</html>
