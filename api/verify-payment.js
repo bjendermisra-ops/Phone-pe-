@@ -23,8 +23,8 @@ export default async function handler(req, res) {
         const cleanTxId = payment_id.trim();
 
         // PhonePe V2 Sandbox Credentials
-        const clientId = "SU2608031047283544010005";
-        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
+        const clientId = "ISKCONISONLINE_260731175";
+        const clientSecret = "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
         const clientVersion = 1;
         const merchantId = "ISKCONISONLINE";
 
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: "Failed to generate status OAuth token." });
         }
 
-        // STEP 2: Call V2 Sandbox Status Check API securely (No 'pg/' inside URL in Sandbox) [6.3.6]
+        // STEP 2: Call V2 Sandbox Status Check API (No 'pg/' inside URL in Sandbox) [6.3.6]
         const statusUrl = `https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/${cleanTxId}/status`;
 
         const response = await fetch(statusUrl, {
