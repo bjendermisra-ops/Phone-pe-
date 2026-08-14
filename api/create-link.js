@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
 
-        // Updated: Adding phone variable inside URL so verify page can send Whatsapp msg
+        // Updated: Adding 'seva' and 'phone' inside URL so verify page can send Whatsapp msg with exact info
         const redirectUrl = `https://${req.headers.host}/index.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&phone=${encodeURIComponent(phone)}&transactionId=${transactionId}`;
 
         // STEP 1: Sandbox OAuth Token Generation
