@@ -24,9 +24,9 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Required fields missing' });
         }
 
-        // Live PhonePe V2 Sandbox (Testing) Credentials
-        const clientId = "SU2608031047283544010005";
-        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
+        // Newly provided PhonePe V2 Sandbox (Testing) Credentials
+        const clientId = "ISKCONISONLINE_260731175";
+        const clientSecret = "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
         const clientVersion = 1;
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
