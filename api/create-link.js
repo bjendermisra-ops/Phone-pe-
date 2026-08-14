@@ -24,18 +24,18 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Required fields missing' });
         }
 
-        // Live PhonePe V2 Production Credentials
+        // Live PhonePe V2 Sandbox Credentials
         const clientId = "SU2608031047283544010005";
         const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const clientVersion = 1;
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
 
-        // Success redirect points back to your receipt.html success callback page on Vercel
+        // Success redirect points back to your receipt/index success callback page on Vercel
         const redirectUrl = `https://${req.headers.host}/index.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&transactionId=${transactionId}`;
 
-        // STEP 1: Production OAuth Token Generation (Using standard production identity-manager)
-        const tokenUrl = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
+        // STEP 1: Sandbox OAuth Token Generation (No 'identity-manager' inside URL in Sandbox) [5.2.1]
+        const tokenUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
         const tokenPayload = qs.stringify({
             client_id: clientId,
             client_version: clientVersion,
@@ -56,12 +56,12 @@ export default async function handler(req, res) {
 
         if (!accessToken) {
             return res.status(500).json({ 
-                error: "Failed to generate PhonePe PG V2 Production OAuth Token. Raw Response: " + JSON.stringify(tokenData) 
+                error: "Failed to generate PhonePe PG V2 Sandbox OAuth Token. Raw Response: " + JSON.stringify(tokenData) 
             });
         }
 
-        // STEP 2: Create Payment Session using Production Checkout API
-        const payUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
+        // STEP 2: Create Payment Session using Sandbox Checkout API (No 'pg/' inside URL in Sandbox) [5.1.2, 5.1.3]
+        const payUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay";
         const paymentPayload = {
             merchantOrderId: transactionId,
             amount: amountInPaise,
@@ -78,19 +78,19 @@ export default async function handler(req, res) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "O-Bearer " + accessToken // O-Bearer authorization is required for V2
+                "Authorization": "O-Bearer " + accessToken // O-Bearer authorization is required for V2 [5.1.2]
             },
             body: JSON.stringify(paymentPayload)
         });
 
         const payData = await payResponse.json();
 
-        // PhonePe V2 returns checkout page URL inside redirectUrl
+        // PhonePe V2 returns checkout page URL inside redirectUrl [5.2.6]
         if (payResponse.status === 200 && payData.redirectUrl) {
             return res.status(200).json({ payment_url: payData.redirectUrl });
         } else {
             return res.status(500).json({ 
-                error: "PhonePe PG V2 Production Pay-link initiation failed.", 
+                error: "PhonePe PG V2 Sandbox Pay-link initiation failed.", 
                 debug: payData 
             });
         }
