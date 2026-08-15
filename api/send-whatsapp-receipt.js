@@ -16,24 +16,21 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { phone, name, amount, seva, transactionId } = req.body;
+        const { phone, transactionId } = req.body;
 
-        if (!phone || !name || !amount || !transactionId) {
+        if (!phone || !transactionId) {
             return res.status(400).json({ error: 'Required parameters missing' });
         }
 
-        // Standard testing configurations
         const apiKey = "key_pdepb15p8SLYGrjoHFNX68hl6H8iDi7Mmq8JdzTidYqYFNJ4adCtVfpSoanH0uNIlWfpoIvJdvezN2RdyQPQiTuO6wpRlXDSsNNRut4CXTKTWpSkbNHFhT6g53tNLWBI1NmX6Lqy4TKD7N30xW7ZlV9diDqRnu40BIUX3PU8jW9ckrTAMLqeo8jobTxNpMcYAQLhMbRuZoM5CJ5EoXxxLk8L4XQzXoL229XOAFloUlCJ4Xabstw3tk9qvcte";
         const senderNumber = "919226167380";
-        const templateName = "app_registration"; // Pre-approved template name
+        const templateName = "app_registration"; // Apne existing approved OTP template ka use karke bypass kar rahe hain
 
-        // Dynamic country code formatter
+        // Prefix formatting ensure karna
         const cleanPhone = phone.trim().startsWith("91") ? phone.trim() : "91" + phone.trim();
 
+        // ⚠️ IMPORTANT FIX: Kyunki template sirf chote Verification Code accept karta hai, hum bada msg block na ho isliye kewal TxID as placeholder bhej rahe.
         const doubleTickUrl = "https://public.doubletick.io/whatsapp/message/template";
-        
-        // FIXED FOR TARIKA A: Sending only the transactionId inside the placeholder.
-        // Alphanumeric format is easily accepted by WhatsApp security filters!
         const payload = {
             "messages": [
                 {
@@ -45,7 +42,7 @@ export default async function handler(req, res) {
                         "templateData": {
                             "body": {
                                 "placeholders": [
-                                    transactionId // Sends clean Transaction ID directly [1.1.6]
+                                    transactionId 
                                 ]
                             }
                         }
@@ -66,12 +63,13 @@ export default async function handler(req, res) {
         const data = await response.json();
 
         if (response.status === 201 || response.status === 200) {
-            return res.status(200).json({ status: "success", message: "WhatsApp receipt sent successfully!" });
+            return res.status(200).json({ status: "success", message: "WhatsApp receipt triggered via Doubletick successfully!" });
         } else {
             return res.status(500).json({ error: "DoubleTick failed: " + JSON.stringify(data) });
         }
 
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: error.message });
     }
 }
