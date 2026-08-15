@@ -1,5 +1,3 @@
-import qs from 'querystring';
-
 export default async function handler(req, res) {
     // Dynamic CORS Setup
     const origin = req.headers.origin ? req.headers.origin : '*';
@@ -24,43 +22,78 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Required fields missing' });
         }
 
-        // Live PhonePe V2 Sandbox (Testing) Credentials
-        const clientId = "SU2608031047283544010005";
-        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
+        // Newly provided PhonePe V2 Sandbox (Testing) Credentials
+        const clientId = "ISKCONISONLINE_260731175";
+        const clientSecret = "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
         const clientVersion = 1;
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
 
-        // Success redirect points back to your receipt/index success callback page on Vercel (Includes phone for WhatsApp)
-        const redirectUrl = `https://${req.headers.host}/index.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&phone=${phone}&transactionId=${transactionId}`;
+        // Success redirect points back to your receipt/index success callback page on Vercel
+        const redirectUrl = `https://${req.headers.host}/index.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&transactionId=${transactionId}`;
 
-        // STEP 1: Sandbox OAuth Token Generation (No 'identity-manager' inside URL in Sandbox) [5.2.1]
-        const tokenUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
-        const tokenPayload = qs.stringify({
-            client_id: clientId,
-            client_version: clientVersion,
-            client_secret: clientSecret,
-            grant_type: "client_credentials"
-        });
+        // Standard URLSearchParams for robust url-encoding
+        const tokenPayload = new URLSearchParams();
+        tokenPayload.append("client_id", clientId);
+        tokenPayload.append("client_version", clientVersion.toString());
+        tokenPayload.append("client_secret", clientSecret);
+        tokenPayload.append("grant_type", "client_credentials");
 
-        const tokenResponse = await fetch(tokenUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: tokenPayload
-        });
+        let accessToken = null;
+        let tokenErrorDebug = null;
 
-        const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.access_token;
+        // --- STEP 1: Attempt OAuth Token Generation via pg-sandbox first ---
+        try {
+            const tokenUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
+            const tokenResponse = await fetch(tokenUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: tokenPayload.toString()
+            });
+
+            const tokenData = await tokenResponse.json();
+            if (tokenResponse.status === 200 && tokenData.access_token) {
+                accessToken = tokenData.access_token;
+            } else {
+                tokenErrorDebug = tokenData;
+            }
+        } catch (err) {
+            tokenErrorDebug = { error: err.message };
+        }
+
+        // --- STEP 1.5: If pg-sandbox fails (401), automatically fallback to apphub UAT server ---
+        if (!accessToken) {
+            try {
+                const fallbackTokenUrl = "https://api-preprod.phonepe.com/apis/apphub/v1/oauth/token";
+                const fallbackResponse = await fetch(fallbackTokenUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: tokenPayload.toString()
+                });
+
+                const fallbackData = await fallbackResponse.json();
+                if (fallbackResponse.status === 200 && fallbackData.access_token) {
+                    accessToken = fallbackData.access_token;
+                } else {
+                    tokenErrorDebug = fallbackData;
+                }
+            } catch (fallbackErr) {
+                tokenErrorDebug = { error: fallbackErr.message };
+            }
+        }
 
         if (!accessToken) {
             return res.status(500).json({ 
-                error: "Failed to generate PhonePe PG V2 Sandbox OAuth Token. Raw Response: " + JSON.stringify(tokenData) 
+                error: "Failed to generate PhonePe PG V2 Sandbox OAuth Token on both pg-sandbox and apphub endpoints.",
+                debug: tokenErrorDebug 
             });
         }
 
-        // STEP 2: Create Payment Session using Sandbox Checkout API (No 'pg/' inside URL in Sandbox) [5.1.2, 5.1.3]
+        // STEP 2: Create Payment Session using Sandbox Checkout API
         const payUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay";
         const paymentPayload = {
             merchantOrderId: transactionId,
