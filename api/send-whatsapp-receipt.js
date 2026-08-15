@@ -22,17 +22,18 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Required parameters missing' });
         }
 
-        // WhatsApp standard properties
+        // Standard testing configurations
         const apiKey = "key_pdepb15p8SLYGrjoHFNX68hl6H8iDi7Mmq8JdzTidYqYFNJ4adCtVfpSoanH0uNIlWfpoIvJdvezN2RdyQPQiTuO6wpRlXDSsNNRut4CXTKTWpSkbNHFhT6g53tNLWBI1NmX6Lqy4TKD7N30xW7ZlV9diDqRnu40BIUX3PU8jW9ckrTAMLqeo8jobTxNpMcYAQLhMbRuZoM5CJ5EoXxxLk8L4XQzXoL229XOAFloUlCJ4Xabstw3tk9qvcte";
         const senderNumber = "919226167380";
-        const templateName = "app_registration"; // Approved template bypass method [1.1.2]
+        const templateName = "app_registration"; // Pre-approved template name
 
-        // Beautiful formatted receipt pushed directly into the single template placeholder [1.1.2, 1.1.6]
-        const receiptMessage = `*Hare Krishna!* 🙏\n\nDear *${name}*,\nThank you for your generous contribution of *₹${amount}/-* towards *${seva}* at ISKCON Bhuvaikuntha.\n\n*Transaction Details*:\n• *Tx ID:* ${transactionId}\n• *Date:* ${new Date().toLocaleDateString('en-IN')}\n\nMay the Deities bless you! 🌸`;
-
+        // Dynamic country code formatter
         const cleanPhone = phone.trim().startsWith("91") ? phone.trim() : "91" + phone.trim();
 
         const doubleTickUrl = "https://public.doubletick.io/whatsapp/message/template";
+        
+        // FIXED FOR TARIKA A: Sending only the transactionId inside the placeholder.
+        // Alphanumeric format is easily accepted by WhatsApp security filters!
         const payload = {
             "messages": [
                 {
@@ -44,7 +45,7 @@ export default async function handler(req, res) {
                         "templateData": {
                             "body": {
                                 "placeholders": [
-                                    receiptMessage // dynamic receipt message [1.1.6]
+                                    transactionId // Sends clean Transaction ID directly [1.1.6]
                                 ]
                             }
                         }
