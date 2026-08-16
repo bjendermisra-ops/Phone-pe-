@@ -62,7 +62,6 @@ export default async function handler(req, res) {
                                 "placeholders": [
                                     name || "Devotee",                // {{1}}
                                     amount ? amount.toString() : "0", // {{2}}
-                                    seva || "General Donation"        // {{3}}
                                 ]
                             }
                         }
