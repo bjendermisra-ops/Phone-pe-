@@ -5,21 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Iskcon Bhuvaikuntha - Secure Portal</title>
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <script>
-    tailwind.config = {
-      theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { spiritual: { orange: '#FF7B00', gold: '#FFAE00', deepBlue: '#151b26', cardBg: '#1e2638' } } } }
-    }
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { spiritual: { orange: '#FF7B00', gold: '#FFAE00', deepBlue: '#151b26', cardBg: '#1e2638' } } } } }
   </script>
 
   <style>
@@ -37,7 +31,6 @@
     <div class="text-center space-y-6 fade-in">
       <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj70fNVH8m4Zrv5XknZAoDZFX3Sscp4j2QTVlw_eqUSBf1GiPw4NWEtDAXZT7IBRYpBpUwjUbs30xml-xjUPYGD0g2HoahOzWGmbdg8NQX32EVbfikjN-qXE-Zb7tfq_05M33U0MLfAlut6aBzIc4llEeGheO1c3IaKESopTDOKcd79AVHjapN56p7k7Gs/s512/1000272655.jpg" alt="ISKCON Logo" class="w-32 h-32 rounded-full border-4 border-spiritual-orange shadow-2xl mx-auto animate-pulse">
       <div class="space-y-2"><h1 class="text-2xl font-extrabold text-white tracking-wide uppercase">ISKCON BHUVAIKUNTHA</h1><p class="text-xs text-spiritual-gold font-bold uppercase tracking-widest">Jai Shree Krishna</p></div>
-      <div class="flex items-center justify-center gap-2 text-sm text-gray-400 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-spiritual-orange"></i><span>Logging you in securely...</span></div>
     </div>
   </div>
 
@@ -58,14 +51,14 @@
     <div class="p-6">
       <!-- SIGN IN TAB -->
       <div id="panel-signin" class="space-y-5 fade-in">
-        <div class="text-center mb-1"><h3 class="text-base font-bold text-white">Log in using WhatsApp</h3><p class="text-xs text-gray-400 mt-1">Get an instant secure code directly to your phone.</p></div>
+        <div class="text-center mb-1"><h3 class="text-base font-bold text-white">Log in using WhatsApp</h3></div>
 
         <div id="signin-step-send" class="space-y-4">
           <div class="space-y-2">
             <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider">WhatsApp Number</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 font-bold text-sm">+91</div>
-              <input type="tel" id="signin-phone" maxlength="10" class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-spiritual-orange" placeholder="Enter 10-digit number" required>
+              <input type="tel" id="signin-phone" class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-spiritual-orange" placeholder="Enter 10-digit number" required>
             </div>
           </div>
           <button onclick="sendSignInOtp()" id="signin-sendBtn" class="w-full bg-gradient-to-r from-spiritual-orange to-spiritual-gold text-white font-bold text-sm py-4 rounded-xl shadow-lg flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-base"></i> Send OTP on WhatsApp</button>
@@ -86,9 +79,8 @@
           <div class="relative group">
             <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white/10 bg-white/5 flex items-center justify-center shadow-lg relative">
               <img id="profile-preview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" class="w-full h-full object-cover">
-              <div id="avatar-loader" class="absolute inset-0 bg-black/75 flex items-center justify-center hidden"><i class="fa-solid fa-spinner animate-spin text-spiritual-gold text-lg"></i></div>
             </div>
-            <button type="button" onclick="triggerFileInput()" class="absolute bottom-0 right-0 w-8 h-8 bg-spiritual-orange text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-camera text-xs"></i></button>
+            <button type="button" onclick="document.getElementById('profile-file').click()" class="absolute bottom-0 right-0 w-8 h-8 bg-spiritual-orange text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-camera text-xs"></i></button>
             <input type="file" id="profile-file" accept="image/*" class="hidden" onchange="handleProfilePictureUpload(this.files[0])">
           </div>
           <input type="hidden" id="profile-picture-url" value="">
@@ -104,7 +96,7 @@
             <div class="space-y-1.5">
               <div class="flex justify-between items-center"><label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Mobile Number *</label><span id="signup-verified-badge" class="hidden text-[10px] text-emerald-400 font-bold uppercase"><i class="fa-solid fa-circle-check"></i> Verified</span></div>
               <div class="flex gap-2">
-                <div class="relative flex-1"><div class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 font-bold text-xs">+91</div><input type="tel" id="signup-phone" maxlength="10" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-2 text-xs text-white focus:outline-none focus:border-spiritual-orange" required></div>
+                <div class="relative flex-1"><div class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 font-bold text-xs">+91</div><input type="tel" id="signup-phone" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-2 text-xs text-white focus:outline-none focus:border-spiritual-orange" required></div>
                 <button type="button" onclick="sendSignupOtp()" id="signup-send-otp-btn" class="bg-spiritual-orange text-white text-[10px] font-bold px-3 py-2 rounded-xl">Send OTP</button>
               </div>
             </div>
@@ -140,8 +132,6 @@
             <select id="signup-leader" class="w-full bg-spiritual-cardBg border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-spiritual-orange" required>
               <option value="" disabled selected>Select leader</option>
               <option value="His Holiness Radhanath Swami Maharaj">H.H. Radhanath Swami Maharaj</option>
-              <option value="His Holiness Gopal Krishna Goswami Maharaj">H.H. Gopal Krishna Goswami Maharaj</option>
-              <option value="His Holiness Lokanath Swami Maharaj">H.H. Lokanath Swami Maharaj</option>
             </select>
           </div>
 
@@ -154,7 +144,7 @@
   <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 translate-y-[-50px] opacity-0 transition-all z-50 flex items-center gap-3 px-6 py-3.5 rounded-full shadow-2xl text-xs font-semibold text-white"><i id="toast-icon"></i><span id="toast-msg"></span></div>
 
   <script>
-    // 1. FIREBASE SETUP
+    // FIREBASE SETUP
     const firebaseConfig = {
       apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908",
       authDomain: "iskcon-bhuvaikuntha.firebaseapp.com",
@@ -165,30 +155,23 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
     const imgbbApiKey = "548fb47d702b5ade3a1d6bea9c4b6461";
-    // NAYA VERCEL API LINK
-    const apiBase = window.location.hostname.includes("localhost") ? "" : "https://phone-pe-pi.vercel.app";
-    const otpApiUrl = `${apiBase}/api/send-whatsapp-otp`;
+    
+    // FULL HARDCODED URL FOR API (To prevent any relative path errors)
+    const otpApiUrl = "https://phone-pe-pi.vercel.app/api/send-whatsapp-otp";
 
     let signinGeneratedOtp = "", signinPhoneNumber = "";
     let signupGeneratedOtp = "", signupPhoneNumber = "", signupVerified = false;
 
-    // AUTO LOGIN
     window.addEventListener('load', () => {
-      const isLoggedIn = localStorage.getItem("isLoggedIn");
-      if (isLoggedIn === "true") {
-        document.getElementById('splash-screen').classList.remove('hidden');
-        document.getElementById('main-console').classList.add('hidden');
-        setTimeout(() => { window.location.href = "go:home"; }, 1500);
-      }
+      document.getElementById('signin-phone').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10));
+      document.getElementById('signup-phone').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10));
     });
 
     function loadDynamicStates(country) {
       const stateSelect = document.getElementById('signup-state');
       stateSelect.innerHTML = '<option value="" disabled selected>Select state</option>';
-      const stateMap = { "India": ["Maharashtra", "Delhi", "Gujarat", "Tamil Nadu"], "USA": ["California", "Texas", "New York"] };
-      if (stateMap[country]) stateMap[country].forEach(s => { const o = document.createElement('option'); o.value = s; o.innerText = s; stateSelect.appendChild(o); });
+      if(country==="India") { ["Maharashtra", "Delhi", "Gujarat", "Tamil Nadu"].forEach(s => stateSelect.innerHTML += `<option value="${s}">${s}</option>`); }
     }
 
     function switchTab(tab) {
@@ -198,69 +181,61 @@
       document.getElementById('tab-signup').className = `w-1/2 py-4 text-sm font-bold uppercase border-b-2 ${tab === 'signup' ? 'border-spiritual-orange text-white' : 'border-transparent text-gray-400'}`;
     }
 
-    function triggerFileInput() { document.getElementById('profile-file').click(); }
-
-    async function handleProfilePictureUpload(file) {
-      if (!file) return;
-      document.getElementById('avatar-loader').classList.remove('hidden');
-      const formData = new FormData(); formData.append("image", file);
-      try {
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, { method: "POST", body: formData });
-        const data = await response.json();
-        if (data.success) {
-          document.getElementById('profile-preview').src = data.data.url;
-          document.getElementById('profile-picture-url').value = data.data.url;
-          showToast('success', 'Photo uploaded!');
-        } else showToast('error', 'Upload failed');
-      } catch (err) { showToast('error', 'Network error.'); }
-      document.getElementById('avatar-loader').classList.add('hidden');
-    }
-
-    function showToast(type, message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toast-msg').innerText = message;
-      toast.className = `fixed top-5 left-1/2 transform -translate-x-1/2 ${type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'} text-white px-6 py-3.5 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-0 opacity-100 z-50 text-xs font-semibold`;
-      document.getElementById('toast-icon').className = type === 'success' ? 'fa-solid fa-circle-check text-base' : 'fa-solid fa-circle-exclamation text-base';
-      setTimeout(() => { toast.style.opacity = '0'; }, 3000);
-    }
-
-    // ================= SIGN IN (Database Connected) =================
+    // ================= SIGN IN LOGIC (WITH AGGRESSIVE ALERTS) =================
     async function sendSignInOtp() {
-      const phoneInput = document.getElementById('signin-phone').value.trim();
       const btn = document.getElementById('signin-sendBtn');
-      if (phoneInput.length !== 10) return alert("Valid 10-digit number required.");
-      
-      signinPhoneNumber = "91" + phoneInput;
-      btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Checking DB...`;
-
       try {
-        // CHECK DATABASE FIRST
-        const docRef = await db.collection("users").doc(signinPhoneNumber).get();
+        const phoneInput = document.getElementById('signin-phone').value.replace(/\D/g, '');
+        if (phoneInput.length !== 10) { alert("ERROR: Please enter a valid 10-digit number."); return; }
+        
+        signinPhoneNumber = "91" + phoneInput;
+        btn.disabled = true; 
+        btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Checking Database...`;
+
+        // 1. Check Firebase
+        let docRef;
+        try {
+          docRef = await db.collection("users").doc(signinPhoneNumber).get();
+        } catch (fbError) {
+          alert("FIREBASE ERROR: \n" + fbError.message + "\n\n(Note: Agar ye permission error hai toh Firebase Rules allow read, write: if true; kardo)");
+          throw fbError;
+        }
+
         if (!docRef.exists) {
-          showToast('error', 'Account not found! Please Sign Up first.');
+          alert("INFO: Account not found! Please Sign Up first.");
           switchTab('signup');
           return;
         }
 
+        // 2. Call Vercel API
         signinGeneratedOtp = Math.floor(1000 + Math.random() * 9000).toString();
         btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Sending OTP...`;
 
-        // CALL VERCEL OTP API
-        const response = await fetch(otpApiUrl, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: signinPhoneNumber, otp: signinGeneratedOtp })
-        });
-        
-        const data = await response.json();
-        if (data.status === 'success') {
-          showToast('success', 'OTP sent on WhatsApp!');
-          document.getElementById('signin-step-send').classList.add('hidden');
-          document.getElementById('signin-step-verify').classList.remove('hidden');
-        } else {
-          showToast('error', 'Failed to send OTP via WhatsApp.');
+        try {
+          const response = await fetch(otpApiUrl, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ phone: signinPhoneNumber, otp: signinGeneratedOtp })
+          });
+          
+          const textData = await response.text();
+          try {
+            const data = JSON.parse(textData);
+            if (data.status === 'success') {
+              alert("SUCCESS: OTP sent on WhatsApp!");
+              document.getElementById('signin-step-send').classList.add('hidden');
+              document.getElementById('signin-step-verify').classList.remove('hidden');
+            } else {
+              alert("API ERROR: " + JSON.stringify(data));
+            }
+          } catch(e) {
+            alert("SERVER CRASH: Vercel returned invalid data: \n" + textData);
+          }
+        } catch(apiError) {
+          alert("NETWORK ERROR: Failed to connect to Vercel API.\n" + apiError.message);
         }
+
       } catch (err) {
-        showToast('error', 'Server connection failed.');
+        console.error(err);
       } finally {
         btn.disabled = false; btn.innerHTML = `<i class="fa-brands fa-whatsapp"></i> Send OTP on WhatsApp`;
       }
@@ -268,92 +243,102 @@
 
     function verifySignInOtp() {
       const otpInput = document.getElementById('signin-otp').value.trim();
-      if (otpInput !== signinGeneratedOtp) return showToast('error', 'Incorrect OTP!');
+      if (otpInput !== signinGeneratedOtp) { alert("ERROR: Incorrect OTP!"); return; }
       
-      showToast('success', 'Login Successful! Hari Bol!');
+      alert("SUCCESS: Login Successful! Hari Bol!");
       localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userPhone", signinPhoneNumber); // Save to query DB later
+      localStorage.setItem("userPhone", signinPhoneNumber);
       setTimeout(() => { window.location.href = "go:home"; }, 1000);
     }
     function resetSignInFlow() { document.getElementById('signin-step-verify').classList.add('hidden'); document.getElementById('signin-step-send').classList.remove('hidden'); }
 
-    // ================= SIGN UP (Database Connected) =================
+    // ================= SIGN UP LOGIC (WITH AGGRESSIVE ALERTS) =================
     async function sendSignupOtp() {
-      const phoneInput = document.getElementById('signup-phone').value.trim();
       const btn = document.getElementById('signup-send-otp-btn');
-      if (phoneInput.length !== 10) return alert("Valid 10-digit number required.");
-      
-      signupPhoneNumber = "91" + phoneInput;
-
-      // Check if user already exists
-      const docRef = await db.collection("users").doc(signupPhoneNumber).get();
-      if (docRef.exists) {
-        showToast('error', 'Account already exists! Please Sign In.');
-        switchTab('signin');
-        return;
-      }
-
-      signupGeneratedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-      btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-xs"></i>`;
-
       try {
-        const response = await fetch(otpApiUrl, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: signupPhoneNumber, otp: signupGeneratedOtp })
-        });
-        const data = await response.json();
-        if (data.status === 'success') {
-          showToast('success', 'OTP sent on WhatsApp!');
-          document.getElementById('signup-otp-container').classList.remove('hidden');
+        const phoneInput = document.getElementById('signup-phone').value.replace(/\D/g, '');
+        if (phoneInput.length !== 10) { alert("ERROR: Valid 10-digit number required."); return; }
+        
+        signupPhoneNumber = "91" + phoneInput;
+        btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
+
+        // 1. Check Firebase
+        let docRef;
+        try {
+          docRef = await db.collection("users").doc(signupPhoneNumber).get();
+        } catch(fbError) {
+          alert("FIREBASE ERROR: \n" + fbError.message);
+          throw fbError;
         }
-      } catch (err) { showToast('error', 'Server error'); }
-      btn.disabled = false; btn.innerHTML = `Send OTP`;
+
+        if (docRef.exists) {
+          alert("INFO: Account already exists! Please Sign In.");
+          switchTab('signin');
+          return;
+        }
+
+        // 2. Call Vercel API
+        signupGeneratedOtp = Math.floor(1000 + Math.random() * 9000).toString();
+        
+        try {
+          const response = await fetch(otpApiUrl, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ phone: signupPhoneNumber, otp: signupGeneratedOtp })
+          });
+          const textData = await response.text();
+          try {
+            const data = JSON.parse(textData);
+            if (data.status === 'success') {
+              alert("SUCCESS: OTP sent on WhatsApp!");
+              document.getElementById('signup-otp-container').classList.remove('hidden');
+            } else {
+              alert("API ERROR: " + JSON.stringify(data));
+            }
+          } catch(e) {
+            alert("SERVER CRASH: Vercel returned invalid data: \n" + textData);
+          }
+        } catch(apiError) {
+          alert("NETWORK ERROR: " + apiError.message);
+        }
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        btn.disabled = false; btn.innerHTML = `Send OTP`;
+      }
     }
 
     function verifySignupOtp() {
       const otpInput = document.getElementById('signup-otp-input').value.trim();
       if (otpInput === signupGeneratedOtp) {
-        signupVerified = true; showToast('success', 'Number Verified!');
+        signupVerified = true; alert("SUCCESS: Number Verified!");
         document.getElementById('signup-otp-container').classList.add('hidden');
         document.getElementById('signup-send-otp-btn').classList.add('hidden');
         document.getElementById('signup-verified-badge').classList.remove('hidden');
         document.getElementById('signupBtn').disabled = false;
         document.getElementById('signupBtn').classList.remove('opacity-50', 'cursor-not-allowed');
-      } else showToast('error', 'Incorrect OTP');
+      } else alert("ERROR: Incorrect OTP");
     }
 
     async function processSignUp() {
-      if (!signupVerified) return alert("Please verify number first.");
+      if (!signupVerified) { alert("ERROR: Please verify number first."); return; }
       const btn = document.getElementById('signupBtn');
       btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Saving...`;
 
-      // COLLECT ALL DATA
-      const userData = {
-        name: document.getElementById('signup-fullname').value,
-        email: document.getElementById('signup-email').value,
-        phone: signupPhoneNumber,
-        dob: document.getElementById('signup-dob').value,
-        address: document.getElementById('signup-address').value,
-        city: document.getElementById('signup-city').value,
-        pincode: document.getElementById('signup-pincode').value,
-        country: document.getElementById('signup-country').value,
-        state: document.getElementById('signup-state').value,
-        leader: document.getElementById('signup-leader').value,
-        profilePic: document.getElementById('profile-picture-url').value,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
       try {
-        // SAVE TO FIREBASE
-        await db.collection("users").doc(signupPhoneNumber).set(userData);
+        await db.collection("users").doc(signupPhoneNumber).set({
+          name: document.getElementById('signup-fullname').value,
+          email: document.getElementById('signup-email').value,
+          phone: signupPhoneNumber,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
         
-        showToast('success', 'Account created! Welcome!');
+        alert("SUCCESS: Account created! Welcome!");
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userPhone", signupPhoneNumber); // For Dashboard
-        
-        setTimeout(() => { window.location.href = "go:home"; }, 1500);
+        localStorage.setItem("userPhone", signupPhoneNumber);
+        setTimeout(() => { window.location.href = "go:home"; }, 1000);
       } catch (err) {
-        showToast('error', 'Error saving account: ' + err.message);
+        alert("FIREBASE SAVE ERROR: " + err.message);
         btn.disabled = false; btn.innerHTML = `Create Account`;
       }
     }
