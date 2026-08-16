@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="theme-color" content="#FF9933">
+    <title>ISKCON Bhuvaikuntha</title>
+    
+    <!-- ⚠️ AUTH GUARD: Security Check (If not logged in, redirect to login page) -->
+    <script>
+        if (localStorage.getItem("isLoggedIn") !== "true" || !localStorage.getItem("userPhone")) {
+            window.location.replace("login.html");
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --primary: #FF8F00; --primary-dark: #E65100; --secondary: #3E2723; 
+            --bg-color: #FDFBF7; --card-bg: #FFFFFF; --text-color: #2E2E2E; 
+            --logo-size: 42px; --slider-height: clamp(340px, 50vw, 440px); 
+            --ui-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); 
+            --powerful-shadow: 0 8px 24px rgba(230, 81, 0, 0.15); 
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            --bs-gutter-x: 1rem; 
+        }
+        [data-theme="dark"] { 
+            --bg-color: #0c0a07; --card-bg: #15110c; --text-color: #F5EFEB; 
+            --ui-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); 
+            --powerful-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); 
+        }
+        
+        body { background-color: var(--bg-color); font-family: 'Poppins', sans-serif; color: var(--text-color); transition: var(--transition); margin: 0; -webkit-tap-highlight-color: transparent; }
+        a { text-decoration: none; color: var(--primary); transition: var(--transition); }
+        * { box-sizing: border-box; }
+
+        /* Splash Screen */
+        #app-splash { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-color); z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.3s ease; }
+        body.is-loaded #app-splash { opacity: 0; pointer-events: none; }
+        .splash-logo { width: 95px; height: 95px; border-radius: 50%; box-shadow: 0 0 25px rgba(255, 143, 0, 0.4); animation: splashPulse 1.2s infinite alternate ease-in-out; margin-bottom: 18px; border: 3px solid var(--primary); background: #ffffff; }
+        .splash-text { font-family: 'Cinzel', serif; font-weight: 800; font-size: 1.4rem; color: var(--primary); letter-spacing: 2px; }
+        .splash-spinner { margin-top: 15px; width: 2.5rem; height: 2.5rem; border-width: 0.25em; color: var(--primary); }
+        @keyframes splashPulse { 0% { transform: scale3d(0.96, 0.96, 1); } 100% { transform: scale3d(1.04, 1.04, 1); } }
+
+        /* Navbar */
+        .navbar { background: #f99c1c; box-shadow: 0 4px 12px rgba(230, 81, 0, 0.15); padding: 10px 0; z-index: 1040; position: sticky; top: 0; }
+        .navbar .container-fluid { display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap !important; }
+        .nav-left-group { display: flex; align-items: center; gap: 8px; flex-grow: 1; }
+        .nav-right-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .navbar-brand { display: flex; align-items: center; gap: 6px; margin: 0; padding: 0; }
+        .theme-toggle-btn { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.35); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: var(--transition); }
+        
+        /* Ticker */
+        .mantra-ticker { background-color: #FFF3E0; color: #D84315; padding: 6px 0; overflow: hidden; white-space: nowrap; display: flex; align-items: center; border-bottom: 1.5px solid rgba(255, 143, 0, 0.2); font-family: 'Cinzel', serif; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.5px; }
+        [data-theme="dark"] .mantra-ticker { background-color: #21120A; color: #FFB74D; border-bottom-color: rgba(255, 143, 0, 0.15); }
+        .mantra-ticker-content { display: inline-block; animation: textScroll 22s linear infinite; } 
+        .ticker-span { padding-right: 40px; } 
+        .ticker-span i { font-size: 0.65rem; vertical-align: middle; color: var(--primary); margin: 0 5px; animation: spinFast 4s linear infinite; } 
+        @keyframes textScroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } } 
+        @keyframes spinFast { 100% { transform: rotate(360deg); } }
+
+        /* Sidebar Offcanvas */
+        .offcanvas { background: rgba(var(--card-bg-rgb, 255, 255, 255), 0.98); color: var(--text-color); width: 285px !important; border-radius: 0 16px 16px 0; box-shadow: 10px 0 25px rgba(0,0,0,0.15) !important; border-right: 1px solid rgba(255,143,0,0.15); transition: transform 0.25s ease-in-out; } 
+        [data-theme="dark"] .offcanvas { background: rgba(21, 18, 14, 0.98); } 
+        .offcanvas-header { background: linear-gradient(135deg, rgba(255,143,0,0.08), transparent); border-bottom: 1px solid rgba(255, 143, 0, 0.15); padding: 16px; } 
+        .menu-item { padding: 12px 14px; display: flex; align-items: center; font-size: 0.92rem; font-weight: 600; color: var(--text-color); border-radius: 10px; margin-bottom: 4px; transition: var(--transition); } 
+        .menu-item:hover { background: rgba(255,143,0,0.08); }
+        .menu-item i { width: 30px; font-size: 1.1rem; color: var(--primary); } 
+        
+        .offcanvas-start { position: fixed; top: 0; left: 0; width: 285px; height: 100vh; z-index: 1050; transform: translate3d(-100%, 0, 0); visibility: hidden; transition: transform 0.25s ease-in-out, visibility 0.25s ease-in-out; } 
+        .offcanvas.show { transform: translate3d(0, 0, 0); visibility: visible; } 
+        .offcanvas-backdrop-custom { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 1045; opacity: 0; visibility: hidden; transition: opacity 0.25s ease; } 
+        .offcanvas-backdrop-custom.show { opacity: 1; visibility: visible; } 
+        .offcanvas-body { padding: 12px; overflow-y: auto; height: calc(100vh - 70px); } 
+        .btn-close { filter: invert(0.6); }
+
+        /* Carousel */
+        .carousel-item { height: var(--slider-height); background: #110c08; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+        .slide-bg-blur { position: absolute; top: -15px; left: -15px; width: calc(100% + 30px); height: calc(100% + 30px); background-size: cover; background-position: center; filter: blur(22px) brightness(0.4); z-index: 1; }
+        .carousel-item img { position: relative; z-index: 2; object-fit: contain; width: 100%; height: 100%; max-height: var(--slider-height); }
+        .slide-overlay-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px 20px 40px 20px; z-index: 3; pointer-events: none; }
+        .slide-title-large { font-family: 'Cinzel', serif; font-size: 24px; font-weight: 800; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .slide-desc-small { font-size: 11.5px; color: rgba(255, 255, 255, 0.9); margin-top: 6px; }
+        .slide-action-btn-styled { align-self: flex-start; background: linear-gradient(135deg, #A41C1C, #6B0C0C); color: white !important; padding: 8px 22px; font-size: 11.5px; font-weight: 700; border-radius: 20px; margin-top: 14px; border: 1px solid var(--primary); pointer-events: auto !important; position: relative; z-index: 100 !important; }
+
+        /* Modals & Support */
+        .support-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.25s ease; padding: 15px; }
+        .support-modal-overlay.show { opacity: 1; visibility: visible; }
+        .support-modal-card { background: var(--card-bg); width: 100%; max-width: 380px; border-radius: 20px; padding: 20px; text-align: center; box-shadow: var(--powerful-shadow); transform: scale3d(0.85, 0.85, 1) translateY(20px); transition: all 0.25s ease; border: 1px solid rgba(255, 143, 0, 0.25); }
+        .support-modal-overlay.show .support-modal-card { transform: scale3d(1, 1, 1) translateY(0); }
+        
+        /* Premium Donation History Box */
+        .donation-history-card { background: rgba(255,143,0,0.05); border: 1px solid rgba(255,143,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+        .dh-left { flex: 1; }
+        .dh-seva { font-weight: 800; font-size: 0.95rem; color: var(--text-color); font-family: 'Cinzel', serif; }
+        .dh-date { font-size: 0.72rem; color: var(--text-color); opacity: 0.7; margin-top: 3px; font-weight: 600; }
+        .dh-right { text-align: right; }
+        .dh-amt { font-weight: 800; font-size: 1.1rem; color: #2e7d32; }
+        [data-theme="dark"] .dh-amt { color: #4caf50; }
+        .dh-btn { background: linear-gradient(135deg, #FF9800, #E65100); color: white !important; font-size: 0.7rem; padding: 6px 14px; border-radius: 20px; display: inline-block; margin-top: 6px; text-decoration: none; font-weight: 800; box-shadow: 0 4px 10px rgba(230,81,0,0.3); transition: var(--transition); }
+        .dh-btn:active { transform: scale(0.95); }
+
+        /* Other Utilities */
+        .live-donation-banner { background: linear-gradient(135deg, #2b130a, #1e0f07); border: 2px solid #FFD54F; border-radius: 18px; margin: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 10px 28px rgba(230, 81, 0, 0.28); color: white; }
+        .quick-access-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 0 12px 25px 12px; }
+        .qa-card { height: 125px; background-size: cover; border-radius: 20px; padding: 16px; box-shadow: var(--ui-shadow); display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border: 1.5px solid rgba(255, 143, 0, 0.25); text-decoration: none; }
+        .qa-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.8)); z-index: 1; }
+        .qa-icon-wrapper { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2; border: 1px solid rgba(255, 255, 255, 0.35); }
+        .qa-card span { font-size: 0.82rem; font-weight: 800; color: #ffffff !important; z-index: 2; }
+    </style>
+</head>
+<body>
+
+<div id="app-splash">
+    <img src="https://i.ibb.co/FjZhHNn/compressed-image.jpg" class="splash-logo">
+    <div class="splash-text">HARE KRISHNA</div>
+    <div class="spinner-border splash-spinner" role="status"></div>
+</div>
+
+<!-- ================= MY DONATIONS MODAL (NEW) ================= -->
+<div class="support-modal-overlay" id="donationsModalOverlay" onclick="closeMyDonations(event)">
+    <div class="support-modal-card" style="max-width: 420px; padding: 0; overflow: hidden;" id="donationsModalCard" onclick="event.stopPropagation()">
+        <div style="background: linear-gradient(135deg, #FF9933, #E65100); padding: 18px; color: white; position: relative; text-align: left;">
+            <h3 style="margin:0; font-family:'Cinzel', serif; font-weight:800; font-size:1.2rem;"><i class="fas fa-history mr-2"></i> My Seva History</h3>
+            <button onclick="closeMyDonations(null)" style="position: absolute; right: 18px; top: 18px; background: none; border: none; color: white; font-size: 1.2rem;"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="donations-list" style="padding: 16px; max-height: 65vh; overflow-y: auto; background: var(--card-bg);">
+            <!-- Donations logic will inject cards here -->
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar & Menu -->
+<div class="offcanvas-backdrop-custom" id="customBackdrop"></div>
+<div class="offcanvas offcanvas-start shadow-lg" tabindex="-1" id="appSidebar">
+    <div class="offcanvas-header mt-1 mx-1 d-flex justify-content-between align-items-center">
+        <h5 class="offcanvas-title m-0" style="font-family:'Cinzel',serif; color:var(--primary); font-weight:800; letter-spacing:1px;">ISKCON Menu</h5>
+        <button type="button" class="btn-close shadow-none" id="closeSidebarBtn"></button>
+    </div>
+    
+    <div class="offcanvas-body px-3 pb-5">
+        <!-- 👤 DYNAMIC USER PROFILE BOX -->
+        <div class="user-profile-box p-3 mb-3 rounded-4 shadow-sm" style="background: linear-gradient(135deg, rgba(255,143,0,0.12), rgba(230,81,0,0.05)); border: 1px solid rgba(255,143,0,0.25); display: flex; align-items: center; gap: 14px;">
+            <img id="sidebar-user-pic" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FF8F00'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); background: white;">
+            <div>
+                <h6 id="sidebar-user-name" style="margin: 0; font-weight: 800; font-size: 0.95rem; color: var(--text-color);">Devotee</h6>
+                <p id="sidebar-user-phone" style="margin: 0; font-size: 0.75rem; color: var(--text-color); opacity: 0.8; font-weight:600;">Loading...</p>
+            </div>
+        </div>
+
+        <div class="menu-list mt-2">
+            <a href="go:home" class="menu-item"><i class="fas fa-home"></i> <span>Home</span></a>
+            
+            <!-- 📜 NEW: MY DONATIONS BUTTON -->
+            <a href="#" onclick="openMyDonations(); return false;" class="menu-item" style="background: rgba(255, 143, 0, 0.1); border: 1.5px solid rgba(255, 143, 0, 0.2); box-shadow: 0 4px 10px rgba(255,143,0,0.1);">
+                <i class="fas fa-receipt"></i> <span style="color:var(--primary-dark); font-weight:800;">My Donations</span>
+            </a>
+            
+            <a href="go:seva" class="menu-item mt-1"><i class="fas fa-hand-holding-heart"></i> <span>Donation / Seva</span></a>
+            <a href="go:darshan" class="menu-item"><i class="fas fa-video"></i> <span>Daily Darshan</span></a>
+            
+            <div style="height:1px; background:linear-gradient(90deg,transparent,rgba(150,150,150,0.2),transparent); margin:12px 0;"></div>
+            <a href="go:contact" class="menu-item"><i class="fas fa-phone-alt"></i> <span>Contact</span></a>
+            <a href="go:about" class="menu-item"><i class="fas fa-info-circle"></i> <span>About Us</span></a>
+            <div class="menu-item" onclick="toggleTheme()"><i class="far fa-moon"></i> <span>Toggle Dark Mode</span></div>
+            
+            <!-- 🚪 NEW: LOGOUT BUTTON -->
+            <div style="height:1px; background:linear-gradient(90deg,transparent,rgba(150,150,150,0.2),transparent); margin:12px 0;"></div>
+            <a href="#" onclick="logoutApp(); return false;" class="menu-item" style="color: #D32F2F;"><i class="fas fa-sign-out-alt text-danger"></i> <span class="text-danger">Logout</span></a>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar">
+    <div class="container-fluid px-3">
+        <div class="nav-left-group">
+            <button class="navbar-toggler shadow-none border-0 p-0 me-1" type="button" id="openSidebarBtn"><i class="fas fa-bars text-white" style="font-size:1.35rem;"></i></button>
+            <a class="navbar-brand" href="#"><span style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.15rem; color: #ffffff; margin-left: 4px;">ISKCON Bhuvaikuntha</span></a>
+        </div>
+        <div class="nav-right-group">
+            <button class="theme-toggle-btn shadow-sm" onclick="toggleTheme()" id="headerThemeBtn"><i class="fas fa-moon" id="headerThemeIcon"></i></button>
+        </div>
+    </div>
+</nav>
+
+<div class="mantra-ticker">
+    <div class="mantra-ticker-content">
+        <span class="ticker-span"><i class="fas fa-sun"></i> Hare Krishna Hare Krishna Krishna Krishna Hare Hare | Hare Rama Hare Rama Rama Rama Hare Hare <i class="fas fa-sun"></i></span>
+        <span class="ticker-span"><i class="fas fa-sun"></i> Hare Krishna Hare Krishna Krishna Krishna Hare Hare | Hare Rama Hare Rama Rama Rama Hare Hare <i class="fas fa-sun"></i></span>
+    </div>
+</div>
+
+<div id="heroCarousel" class="carousel slide carousel-fade hero-slider" data-bs-ride="carousel">
+    <div class="carousel-inner" id="slider-inner" style="height: 100%;">
+        <div class="carousel-item active" data-bs-interval="4000">
+            <div class="slide-bg-blur" style="background-image: url('https://i.ibb.co/8LLYzh2h/compressed-image-5.jpg');"></div>
+            <img src="https://i.ibb.co/8LLYzh2h/compressed-image-5.jpg" alt="Temple Seva">
+            <div class="slide-overlay-content">
+                <h2 class="slide-title-large">Temple Construction Cement Seva</h2>
+                <p class="slide-desc-small">Every donation brings us one step closer to completing Krishna's temple.</p>
+                <a href="go:seva" class="slide-action-btn-styled">DONATE NOW</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid px-3 my-3">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 12px 10px 12px;">
+        <h5 style="font-family: 'Cinzel', serif; color: var(--text-color); font-size: 1.05rem; font-weight: 800; margin: 0; border-left: 5px solid var(--primary); padding-left: 8px;">Quick Access</h5>
+    </div>
+    
+    <div class="quick-access-container">
+        <a href="go:temple_se" class="qa-card shadow-sm" style="background-image: url('https://i.ibb.co/67XWtzjN/images-6.jpg');">
+            <div class="qa-icon-wrapper" style="background: linear-gradient(135deg, #FF9800, #E65100); color:white;"><i class="fas fa-gopuram"></i></div>
+            <span>Temple Seva</span>
+        </a>
+        <a href="go:deity_seva" class="qa-card shadow-sm" style="background-image: url('https://i.ibb.co/5h4bJP9j/images-1.jpg');">
+            <div class="qa-icon-wrapper" style="background: linear-gradient(135deg, #FF4081, #C2185B); color:white;"><i class="fas fa-hands-praying"></i></div>
+            <span>Deity Seva</span>
+        </a>
+        <a href="go:annadan_se" class="qa-card shadow-sm" style="background-image: url('https://i.ibb.co/sdJpq2Tk/annadan-sewa.jpg');">
+            <div class="qa-icon-wrapper" style="background: linear-gradient(135deg, #4CAF50, #1B5E20); color:white;"><i class="fas fa-bowl-food"></i></div>
+            <span>Anna Dān Seva</span>
+        </a>
+        <a href="go:go_seva" class="qa-card shadow-sm" style="background-image: url('https://i.ibb.co/tTLPtY1H/images-8.jpg');">
+            <div class="qa-icon-wrapper" style="background: linear-gradient(135deg, #8D6E63, #4E342E); color:white;"><i class="fas fa-cow"></i></div>
+            <span>Go seva</span>
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ================= FIREBASE & VERCEL LOGIC ================= -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    // Sliders Config
+    const sliderDbConfig = { apiKey: "AIzaSyDaiyXkiQgyJWAC7QsOcneHl0KU0O4kwgI", authDomain: "iskcon-slider.firebaseapp.com", databaseURL: "https://iskcon-slider-default-rtdb.firebaseio.com", projectId: "iskcon-slider" };
+    // Users & Donations Config (The Main Brain)
+    const bhuvaikunthaConfig = { apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", authDomain: "iskcon-bhuvaikuntha.firebaseapp.com", projectId: "iskcon-bhuvaikuntha" };
+
+    try {
+        const appSlider = initializeApp(sliderDbConfig, "slider"); 
+        const dbSlider = getDatabase(appSlider);
+        
+        // FIRESTORE INITIALIZATION
+        const appMain = initializeApp(bhuvaikunthaConfig, "mainDB");
+        const dbFirestore = getFirestore(appMain);
+        
+        const userPhone = localStorage.getItem("userPhone");
+        
+        // 1. Fetch User Profile for Sidebar
+        if (userPhone) {
+            document.getElementById("sidebar-user-phone").innerText = "+" + userPhone;
+            getDoc(doc(dbFirestore, "users", userPhone)).then(snapshot => {
+                if(snapshot.exists()) {
+                    const data = snapshot.data();
+                    if(data.name) document.getElementById("sidebar-user-name").innerText = data.name;
+                    if(data.profilePic) document.getElementById("sidebar-user-pic").src = data.profilePic;
+                }
+            }).catch(e => console.warn("Profile fetch skipped."));
+        }
+
+        // 2. Open My Donations Logic & Vercel API Linker
+        window.openMyDonations = async function() {
+            document.getElementById('donationsModalOverlay').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            const listContainer = document.getElementById("donations-list");
+            listContainer.innerHTML = '<div style="padding:30px; text-align:center;"><i class="fas fa-spinner fa-spin text-warning" style="font-size:2rem;"></i><p class="mt-3" style="color:var(--text-color);">Fetching your past Sevas...</p></div>';
+
+            try {
+                const q = query(collection(dbFirestore, "donations"), where("contact", "==", userPhone));
+                const querySnapshot = await getDocs(q);
+                let donations = [];
+                querySnapshot.forEach((doc) => { donations.push(doc.data()); });
+
+                // Sort by Latest Date
+                donations.sort((a,b) => {
+                    const dateA = a.date ? (a.date.seconds ? a.date.seconds * 1000 : new Date(a.date).getTime()) : 0;
+                    const dateB = b.date ? (b.date.seconds ? b.date.seconds * 1000 : new Date(b.date).getTime()) : 0;
+                    return dateB - dateA;
+                });
+
+                if(donations.length === 0) {
+                    listContainer.innerHTML = '<div style="padding:20px; text-align:center; opacity:0.8;"><i class="fas fa-box-open mb-3" style="font-size:2.5rem; color:var(--primary);"></i><p style="color:var(--text-color); font-weight:600;">No donations found yet.<br>Start your spiritual journey today!</p></div>';
+                } else {
+                    let html = '';
+                    donations.forEach(d => {
+                        const dateMs = d.date ? (d.date.seconds ? d.date.seconds * 1000 : new Date(d.date).getTime()) : Date.now();
+                        const dateStr = new Date(dateMs).toLocaleDateString('en-IN');
+                        
+                        // Link Vercel PDF Engine directly!
+                        const receiptUrl = `https://phone-pe-pi.vercel.app/api/generate-pdf?name=${encodeURIComponent(d.name || 'Devotee')}&amount=${d.amount}&seva=${encodeURIComponent(d.seva || 'Seva')}&txId=${d.paymentId}&phone=${d.contact}&date=${dateMs}&pan=${encodeURIComponent(d.pan || '')}&address=${encodeURIComponent(d.address || '')}`;
+                        
+                        html += `
+                            <div class="donation-history-card">
+                                <div class="dh-left">
+                                    <div class="dh-seva">${d.seva || 'General Donation'}</div>
+                                    <div class="dh-date">${dateStr} | Txn: ${d.paymentId}</div>
+                                </div>
+                                <div class="dh-right">
+                                    <div class="dh-amt">₹${d.amount}</div>
+                                    <a href="${receiptUrl}" target="_blank" class="dh-btn"><i class="fas fa-download"></i> Receipt</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    listContainer.innerHTML = html;
+                }
+            } catch(e) {
+                listContainer.innerHTML = '<p style="color:red; padding:20px; text-align:center;">Error loading donations. Check connection.</p>';
+            }
+        }
+
+        // Live Slider Engine
+        onValue(ref(dbSlider, 'slider_items'), (snapshot) => { 
+            const data = snapshot.val(); 
+            if (data) { 
+                let htmlContent = '';
+                Object.values(data).forEach(item => { 
+                    htmlContent += `
+                        <div class="carousel-item active" data-bs-interval="4000">
+                            <div class="slide-bg-blur" style="background-image: url('${item.img_url}');"></div>
+                            <img src="${item.img_url}" alt="Seva">
+                            <div class="slide-overlay-content">
+                                <h2 class="slide-title-large">${item.title}</h2>
+                                <p class="slide-desc-small">${item.desc}</p>
+                                <a href="${item.btn_link || 'go:seva'}" class="slide-action-btn-styled">${item.btn_text || 'DONATE NOW'}</a>
+                            </div>
+                        </div>`;
+                });
+                document.getElementById('slider-inner').innerHTML = htmlContent;
+            } 
+        });
+
+    } catch (e) { console.log("Firebase status: error.", e); }
+</script>
+
+<script>
+    // General Functions
+    function toggleTheme() { 
+        const isDark = document.body.getAttribute('data-theme') === 'dark'; 
+        document.body.setAttribute('data-theme', isDark ? 'light' : 'dark'); 
+        localStorage.setItem('theme', isDark ? 'light' : 'dark'); 
+        document.getElementById('headerThemeIcon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    
+    if(localStorage.getItem('theme') === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        document.getElementById('headerThemeIcon').className = 'fas fa-sun';
+    }
+
+    // Sidebar Functions
+    document.getElementById('openSidebarBtn').addEventListener('click', () => {
+        document.getElementById('appSidebar').classList.add('show');
+        document.getElementById('customBackdrop').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    });
+    
+    function closeSidebar() {
+        document.getElementById('appSidebar').classList.remove('show');
+        document.getElementById('customBackdrop').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    document.getElementById('closeSidebarBtn').addEventListener('click', closeSidebar);
+    document.getElementById('customBackdrop').addEventListener('click', closeSidebar);
+
+    // Modal Close
+    window.closeMyDonations = function(e) {
+        if(e && e.target !== document.getElementById('donationsModalOverlay') && e !== null) return;
+        document.getElementById('donationsModalOverlay').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    // 🚪 LOGOUT SYSTEM
+    window.logoutApp = function() {
+        if(confirm("Are you sure you want to log out from ISKCON Bhuvaikuntha?")) {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userPhone");
+            window.location.replace("login.html");
+        }
+    }
+
+    setTimeout(() => { document.body.classList.add('is-loaded'); }, 1000);
+</script>
+</body>
+</html>
