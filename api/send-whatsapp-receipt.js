@@ -1,3 +1,4 @@
+// File: api/send-whatsapp-receipt.js
 export default async function handler(req, res) {
     // 1. Dynamic CORS Setup (Security)
     const origin = req.headers.origin ? req.headers.origin : '*';
@@ -17,7 +18,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { phone, transactionId, name, amount, seva, pdfUrl } = req.body;
+        const { phone, transactionId, name, amount, seva } = req.body;
 
         if (!phone) {
             return res.status(400).json({ error: 'Phone number is required' });
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
         
         const templateName = "donation_receipt_2025_v3"; 
 
-        // Phone Formatting
+        // Phone Formatting (Ensuring 91 at the start)
         let cleanPhone = phone.toString().trim().replace(/\D/g, ''); 
         if (cleanPhone.length === 10) {
             cleanPhone = "91" + cleanPhone;
@@ -37,13 +38,22 @@ export default async function handler(req, res) {
             cleanPhone = "91" + cleanPhone.substring(1);
         }
 
-        // PDF URL (Fallback to dummy PDF for testing)
-        const finalPdfUrl = pdfUrl || "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+        // ==========================================
+        // MAGIC TRICK: Dynamic PDF URL Generator
+        // ==========================================
+        const protocol = req.headers['x-forwarded-proto'] || 'https';
+        const host = req.headers.host;
+        const encodedName = encodeURIComponent(name || 'Devotee');
+        const encodedSeva = encodeURIComponent(seva || 'General Donation');
+        const timestamp = Date.now();
+        
+        // Ye link call hote hi PDF generate hoga! DoubleTick yahi se download karega.
+        const finalPdfUrl = `${protocol}://${host}/api/generate-pdf?name=${encodedName}&amount=${amount}&seva=${encodedSeva}&txId=${transactionId}&phone=${phone}&date=${timestamp}`;
         const pdfFileName = `ISKCON_Receipt_${transactionId || '1234'}.pdf`;
 
         const doubleTickUrl = "https://public.doubletick.io/whatsapp/message/template";
         
-        // PAYLOAD WITH EXACTLY 3 VARIABLES
+        // PAYLOAD WITH EXACTLY 1 VARIABLE (For Name)
         const payload = {
             "messages": [
                 {
@@ -60,7 +70,7 @@ export default async function handler(req, res) {
                             },
                             "body": {
                                 "placeholders": [
-                                    name || "Devotee",                // {{1}}
+                                    name || "Devotee" // Maps to {{1}} directly matching your image format
                                 ]
                             }
                         }
@@ -83,7 +93,8 @@ export default async function handler(req, res) {
         if (response.status === 201 || response.status === 200) {
             return res.status(200).json({ 
                 status: "success", 
-                message: "WhatsApp PDF Receipt sent successfully! (3 Variables)", 
+                message: "WhatsApp PDF Receipt sent successfully!", 
+                pdf_link: finalPdfUrl,
                 doubletick_response: data 
             });
         } else {
