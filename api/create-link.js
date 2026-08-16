@@ -11,8 +11,8 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') { return res.status(405).json({ error: 'Method not allowed' }); }
 
     try {
-        // PAN aur Address bhi receive kar rahe hain
-        const { name, amount, phone, email, seva, pan, address } = req.body;
+        // NAYA: returnUrl accept kar rahe hain API body se
+        const { name, amount, phone, email, seva, pan, address, returnUrl } = req.body;
 
         if (!name || !amount || !phone) { return res.status(400).json({ error: 'Required fields missing' }); }
 
@@ -22,8 +22,9 @@ export default async function handler(req, res) {
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
 
-        // Redirect URL me pan aur address append kar diya
-        const redirectUrl = `https://${req.headers.host}/index.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&phone=${phone}&transactionId=${transactionId}&pan=${encodeURIComponent(pan || '')}&address=${encodeURIComponent(address || '')}`;
+        // NAYA: Ab user payment ke baad "receipt.html" par aayega, index par nahi.
+        const encodedReturn = returnUrl ? encodeURIComponent(returnUrl) : '';
+        const redirectUrl = `https://${req.headers.host}/receipt.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&phone=${phone}&transactionId=${transactionId}&pan=${encodeURIComponent(pan || '')}&address=${encodeURIComponent(address || '')}&returnUrl=${encodedReturn}`;
 
         const tokenPayload = new URLSearchParams();
         tokenPayload.append("client_id", clientId);
