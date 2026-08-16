@@ -2,5 +2,7 @@
   "name": "bhuvaikuntha-payment-gateway",
   "version": "1.0.0",
   "type": "module",
-  "dependencies": {}
+  "dependencies": {
+    "pdfkit": "^0.15.0"
+  }
 }
