@@ -120,6 +120,18 @@
         .pill-approve { background: var(--badge-green); color: #166534; }
         .pill-block { background: var(--badge-red); color: #991B1B; }
 
+        .leader-item-card {
+            background: #FFFDF9;
+            border: 2.5px solid var(--border-color);
+            box-shadow: var(--neu-shadow-sm);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
         .auth-lock-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -145,14 +157,14 @@
 </head>
 <body>
 
-<!-- AUTH LOCK -->
+<!-- 🔒 IN-PAGE SMART MASTER PASSKEY GUARD (No redirect loop) -->
 <div id="masterAuthModal" class="auth-lock-overlay">
     <div class="auth-lock-card">
         <div style="width:60px; height:60px; background:#FEF08A; border:3px solid #18181b; box-shadow:3px 3px 0 #18181b; border-radius:14px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:1.6rem; color:#18181b;">
             <i class="fas fa-shield-halved"></i>
         </div>
         <h4 style="font-family:'Cinzel', serif; font-weight:900; margin:0 0 6px 0;">MASTER CONTROL ACCESS</h4>
-        <p style="font-size:0.8rem; font-weight:700; color:#52525b; margin-bottom:18px;">Enter Master Passkey to unlock.</p>
+        <p style="font-size:0.8rem; font-weight:700; color:#52525b; margin-bottom:18px;">Enter Master Passkey to unlock this panel.</p>
         
         <div class="text-start">
             <label class="fw-bold small mb-1">Master User ID</label>
@@ -184,9 +196,9 @@
 
 <div class="container-fluid px-3 pt-3">
 
-    <!-- Global Stats -->
+    <!-- 1. Real-time Global Metrics -->
     <div class="neu-card" style="background: var(--badge-yellow);">
-        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:14px;"><i class="fas fa-chart-pie me-2"></i> Global Analytics</h5>
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:14px;"><i class="fas fa-chart-pie me-2"></i> Global Mandir Analytics</h5>
         <div class="row g-2">
             <div class="col-4">
                 <div class="stat-card-box">
@@ -209,26 +221,26 @@
         </div>
     </div>
 
-    <!-- 🚨 LIVE DEVICE SECURITY MONITOR & BAN MANAGER -->
+    <!-- 2. LIVE DEVICE SECURITY & BAN MANAGER -->
     <div class="neu-card" style="border-color:#EF4444; background:#FFF1F2;">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0; color:#991B1B;"><i class="fas fa-shield-virus me-2"></i> Live Device Bans & Hack Logs</h5>
+            <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0; color:#991B1B;"><i class="fas fa-shield-virus me-2"></i> Device Bans & Hack Logs</h5>
             <button onclick="loadSecurityLogs()" class="action-pill" style="background:#FFF;"><i class="fas fa-rotate"></i> Sync Logs</button>
         </div>
-        <p style="font-size:0.78rem; font-weight:700; color:#881337; margin-bottom:12px;">Track failed attempts, lockout escalation stages, and block/unblock hardware devices permanently.</p>
+        <p style="font-size:0.78rem; font-weight:700; color:#881337; margin-bottom:12px;">Track hardware devices, escalating lockout levels (6h ➔ 48h), and unban genuine devotees.</p>
         
         <div id="securityLogsContainer">
             <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-danger"></i></div>
         </div>
     </div>
 
-    <!-- Register Leader Form -->
+    <!-- 3. Register New Leader Form -->
     <div class="neu-card">
         <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:14px;"><i class="fas fa-user-plus text-warning me-2"></i> Register New Leader / Maharaj</h5>
         
         <form onsubmit="handleCreateLeader(event)">
-            <label class="fw-bold small mb-1">Leader Title & Name</label>
-            <input type="text" id="nl-name" class="neu-input" placeholder="e.g. Loknath Mandir" required>
+            <label class="fw-bold small mb-1">Leader Title & Name (e.g. HH Lokanath Swami Maharaj)</label>
+            <input type="text" id="nl-name" class="neu-input" placeholder="HH Lokanath Swami Maharaj" required>
             
             <div class="row g-2">
                 <div class="col-6">
@@ -237,7 +249,7 @@
                 </div>
                 <div class="col-6">
                     <label class="fw-bold small mb-1">Leader Passkey</label>
-                    <input type="text" id="nl-pass" class="neu-input" placeholder="123#guru" required>
+                    <input type="text" id="nl-pass" class="neu-input" placeholder="e.g. Guru#108" required>
                 </div>
             </div>
 
@@ -248,26 +260,26 @@
                 </div>
                 <div class="col-6">
                     <label class="fw-bold small mb-1">Base City</label>
-                    <input type="text" id="nl-city" class="neu-input" placeholder="Pune" required value="Pune">
+                    <input type="text" id="nl-city" class="neu-input" placeholder="Pandharpur" required value="Pandharpur">
                 </div>
             </div>
 
             <label class="fw-bold small mb-1">Photo URL (Optional)</label>
-            <input type="url" id="nl-photo" class="neu-input" placeholder="https://blogger.googleusercontent.com/...">
+            <input type="url" id="nl-photo" class="neu-input" placeholder="https://i.ibb.co/hRvftDPj/images-5.jpg">
 
             <button type="submit" id="btnCreateLdr" class="neu-btn w-100 mt-2"><i class="fas fa-plus-circle me-1"></i> Register Leader & Approve</button>
         </form>
     </div>
 
-    <!-- Push Broadcast -->
+    <!-- 4. Global Broadcast Push -->
     <div class="neu-card">
-        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:12px;"><i class="fas fa-tower-broadcast text-danger me-2"></i> Master Push Broadcast</h5>
-        <input type="text" id="mstBroadcastTitle" class="neu-input" placeholder="Broadcast Title">
-        <textarea id="mstBroadcastBody" class="neu-textarea" rows="2" placeholder="Message content..."></textarea>
-        <button onclick="sendGlobalBroadcast()" id="btnGlobalPush" class="neu-btn w-100" style="background:#FEF08A;"><i class="fas fa-bullhorn me-1"></i> Broadcast Alert</button>
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:12px;"><i class="fas fa-tower-broadcast text-danger me-2"></i> Master Temple Push Broadcast</h5>
+        <input type="text" id="mstBroadcastTitle" class="neu-input" placeholder="Title (e.g. Sri Krishna Janmashtami Special Darshan Live)">
+        <textarea id="mstBroadcastBody" class="neu-textarea" rows="2" placeholder="Write broadcast message for all 100k+ devotees..."></textarea>
+        <button onclick="sendGlobalBroadcast()" id="btnGlobalPush" class="neu-btn w-100" style="background:#FEF08A;"><i class="fas fa-bullhorn me-1"></i> Broadcast Alert to All Devices</button>
     </div>
 
-    <!-- Leader Directory -->
+    <!-- 5. Leader Directory & Permissions -->
     <div class="neu-card">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;"><i class="fas fa-crown text-warning me-2"></i> Leader Directory & Permissions</h5>
@@ -275,6 +287,18 @@
         </div>
 
         <div id="masterLeadersContainer">
+            <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
+        </div>
+    </div>
+
+    <!-- 6. Global Devotees Master Directory -->
+    <div class="neu-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;"><i class="fas fa-users text-primary me-2"></i> Registered Devotees Directory</h5>
+            <button onclick="loadAllDevoteesMaster()" class="action-pill" style="background:#FFF;"><i class="fas fa-rotate"></i> Refresh</button>
+        </div>
+        <input type="text" id="searchDevoteeInput" class="neu-input" placeholder="🔍 Search devotee by name, phone or city..." oninput="filterMasterDevotees()">
+        <div id="masterDevoteesContainer">
             <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
         </div>
     </div>
@@ -297,6 +321,8 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    let allDevoteesCache = [];
+
     window.unlockMasterPanel = function() {
         const u = document.getElementById("mstAuthUser").value.trim();
         const p = document.getElementById("mstAuthPass").value.trim();
@@ -307,6 +333,7 @@
             document.getElementById("masterAuthModal").classList.add("d-none");
             loadAllLeadersMaster();
             loadSecurityLogs();
+            loadAllDevoteesMaster();
         } else {
             err.classList.remove("d-none");
         }
@@ -322,7 +349,7 @@
         document.getElementById("masterAuthModal").classList.add("d-none");
     }
 
-    // 🚨 LOAD & MANAGE DEVICE SECURITY BANS
+    // 1. Device Security Logs
     window.loadSecurityLogs = async function() {
         const container = document.getElementById("securityLogsContainer");
         container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-danger"></i></div>';
@@ -341,9 +368,9 @@
                 html += `
                     <div class="p-3 mb-2 border border-2 border-dark rounded-3 bg-white d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 style="font-weight:900; margin:0; font-size:0.85rem;"><i class="fas fa-mobile-screen me-1 text-danger"></i> Device: ${devId.substring(0, 16)}...</h6>
+                            <h6 style="font-weight:900; margin:0; font-size:0.85rem;"><i class="fas fa-mobile-screen me-1 text-danger"></i> ${devId.substring(0, 18)}...</h6>
                             <p style="font-size:0.75rem; margin:2px 0 0 0; font-weight:700;">
-                                Total Fails: <b class="text-danger">${log.failCount || 0}</b> | Stage: <b class="text-primary">${log.lockStage || '6h'}</b>
+                                Fails: <b class="text-danger">${log.failCount || 0}</b> | Lock: <b class="text-primary">${log.lockStage || '6h'}</b>
                             </p>
                             <span class="badge ${isPermBanned ? 'bg-danger' : (isTempLocked ? 'bg-warning text-dark' : 'bg-secondary')} mt-1">
                                 ${isPermBanned ? 'PERMANENTLY BANNED' : (isTempLocked ? 'TEMP LOCKED' : 'NORMAL')}
@@ -356,9 +383,9 @@
                 `;
             });
 
-            container.innerHTML = html || '<p class="text-center fw-bold p-2 small text-muted">No suspicious devices recorded.</p>';
+            container.innerHTML = html || '<p class="text-center fw-bold p-2 small text-muted">No suspicious devices logged.</p>';
         } catch(e) {
-            container.innerHTML = `<p class="text-danger p-2 small">Log error: ${e.message}</p>`;
+            container.innerHTML = `<p class="text-danger p-2 small">Error loading logs: ${e.message}</p>`;
         }
     };
 
@@ -372,7 +399,7 @@
 
             await setDoc(doc(db, "security_logs", devId), {
                 permanentBanned: shouldBan,
-                lockUntil: shouldBan ? (Date.now() + 315360000000) : 0, // 10 years if banned
+                lockUntil: shouldBan ? (Date.now() + 315360000000) : 0,
                 failCount: shouldBan ? 18 : 0
             }, { merge: true });
 
@@ -383,6 +410,7 @@
         }
     };
 
+    // 2. Leaders List
     window.loadAllLeadersMaster = async function() {
         const container = document.getElementById("masterLeadersContainer");
         container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>';
@@ -413,7 +441,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 style="font-weight:900; margin:0;">${ldr.name}</h6>
-                                <p style="font-size:0.75rem; margin:2px 0 0 0; font-weight:700;">📞 ID: +91 ${id} | 🔑 Pass: ${ldr.passkey || 'N/A'}</p>
+                                <p style="font-size:0.75rem; margin:2px 0 0 0; font-weight:700;">📞 Phone: +91 ${id} | 🔑 Pass: ${ldr.passkey || 'N/A'}</p>
                                 <p style="font-size:0.75rem; margin:0; font-weight:700; opacity:0.8;">📍 ${ldr.city}, ${ldr.country}</p>
                                 <span class="badge ${isApproved ? 'bg-success' : (isBlocked ? 'bg-danger' : 'bg-warning text-dark')} mt-1">Status: ${(ldr.status || 'pending').toUpperCase()}</span>
                             </div>
@@ -481,6 +509,59 @@
         }
     };
 
+    // 3. Devotees List
+    window.loadAllDevoteesMaster = async function() {
+        const container = document.getElementById("masterDevoteesContainer");
+        container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>';
+
+        try {
+            const usersSnap = await getDocs(collection(db, "users"));
+            allDevoteesCache = [];
+            usersSnap.forEach(d => allDevoteesCache.push({ id: d.id, ...d.data() }));
+            renderMasterDevotees(allDevoteesCache);
+        } catch(e) {
+            container.innerHTML = `<p class="text-danger p-3 fw-bold">Error loading devotees: ${e.message}</p>`;
+        }
+    };
+
+    function renderMasterDevotees(list) {
+        const container = document.getElementById("masterDevoteesContainer");
+        if (list.length === 0) {
+            container.innerHTML = '<p class="text-center fw-bold p-3 text-muted">No devotees found.</p>';
+            return;
+        }
+
+        let html = '';
+        list.forEach(dev => {
+            html += `
+                <div class="p-3 mb-2 border border-2 border-dark rounded-3 bg-white">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 style="font-weight:900; margin:0;">${dev.name || 'Devotee'}</h6>
+                            <p style="font-size:0.75rem; margin:2px 0 0 0; font-weight:700;">📞 +91 ${dev.contact || dev.id} | 📍 ${dev.city || 'N/A'}</p>
+                        </div>
+                        <span class="badge bg-warning text-dark border border-dark">PAN: ${dev.pan || 'N/A'}</span>
+                    </div>
+                    <div style="font-size:0.72rem; font-weight:700; color:#52525b; margin-top:4px;">
+                        <span>Leader ID: ${dev.assignedLeaderId || 'None'}</span> | <span>Gotra: ${dev.gotra || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    window.filterMasterDevotees = function() {
+        const q = document.getElementById("searchDevoteeInput").value.toLowerCase();
+        const filtered = allDevoteesCache.filter(d => 
+            (d.name && d.name.toLowerCase().includes(q)) || 
+            (d.contact && d.contact.toLowerCase().includes(q)) ||
+            (d.city && d.city.toLowerCase().includes(q))
+        );
+        renderMasterDevotees(filtered);
+    };
+
+    // 4. Global Broadcast
     window.sendGlobalBroadcast = async function() {
         const title = document.getElementById("mstBroadcastTitle").value.trim();
         const body = document.getElementById("mstBroadcastBody").value.trim();
@@ -511,6 +592,7 @@
     if (localStorage.getItem("isMasterUnlocked") === "true") {
         loadAllLeadersMaster();
         loadSecurityLogs();
+        loadAllDevoteesMaster();
     }
 </script>
 
