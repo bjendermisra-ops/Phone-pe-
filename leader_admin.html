@@ -121,31 +121,88 @@
             transform: translate(2px, 2px);
             box-shadow: 1px 1px 0px #18181b;
         }
+
+        .action-pill {
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        /* In-Page Auth Lock Modal (NO REDIRECT BUG) */
+        .auth-lock-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(24, 24, 27, 0.96);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .auth-lock-card {
+            background: #FFFDF9;
+            border: var(--neu-border);
+            box-shadow: 8px 8px 0px #FF9933;
+            border-radius: 20px;
+            padding: 26px 20px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-<!-- Security Check -->
-<script>
-    if (localStorage.getItem("isLeaderLoggedIn") !== "true") {
-        window.location.replace("login.html");
-    }
-</script>
+<!-- 🔒 IN-PAGE SMART LEADER PASSKEY GUARD (No redirect loop) -->
+<div id="leaderAuthModal" class="auth-lock-overlay">
+    <div class="auth-lock-card">
+        <div style="width:60px; height:60px; background:#FEF08A; border:3px solid #18181b; box-shadow:3px 3px 0 #18181b; border-radius:14px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:1.6rem; color:#18181b;">
+            <i class="fas fa-crown"></i>
+        </div>
+        <h4 style="font-family:'Cinzel', serif; font-weight:900; margin:0 0 6px 0;">LEADER ADMIN ACCESS</h4>
+        <p style="font-size:0.8rem; font-weight:700; color:#52525b; margin-bottom:18px;">Enter Leader Registered Phone and Passkey.</p>
+        
+        <div class="text-start">
+            <label class="fw-bold small mb-1">Leader Registered Phone</label>
+            <input type="tel" id="ldrAuthPhone" class="neu-input" placeholder="10-digit mobile number">
 
+            <label class="fw-bold small mb-1">Leader Secret Passkey</label>
+            <input type="password" id="ldrAuthPass" class="neu-input" placeholder="Enter Leader Passkey" onkeypress="if(event.key==='Enter') unlockLeaderPanel()">
+            
+            <div id="ldrAuthError" class="alert alert-danger p-2 mb-2 d-none fw-bold small border border-2 border-dark">
+                <i class="fas fa-triangle-exclamation me-1"></i> <span id="ldrErrorMsg">Invalid Credentials!</span>
+            </div>
+            
+            <button onclick="unlockLeaderPanel()" id="btnLdrUnlock" class="neu-btn w-100 mt-1"><i class="fas fa-key me-1"></i> Unlock Leader Dashboard</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOP NAV -->
 <div class="leader-nav">
     <div class="d-flex align-items-center gap-2">
         <i class="fas fa-crown fa-lg"></i>
         <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;" id="leaderHeaderName">Leader Admin</h5>
     </div>
-    <button onclick="leaderLogout()" class="neu-btn" style="padding:5px 12px; font-size:0.75rem; background:#FFF;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <div class="d-flex align-items-center gap-2">
+        <a href="master_admin.html" class="action-pill" style="background:#FEF08A; text-decoration:none; color:#18181b;"><i class="fas fa-shield-halved"></i> Master</a>
+        <button onclick="lockLeaderPanel()" class="action-pill" style="background:#FFF;"><i class="fas fa-lock"></i> Lock</button>
+    </div>
 </div>
 
 <div class="container-fluid px-3 pt-3">
+
     <!-- Stat Counter Card -->
     <div class="neu-card" style="background:#FEF08A;">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="stat-badge"><i class="fas fa-users me-1"></i> Connected Devotees</span>
-            <span class="stat-badge" style="background:#BBF7D0;"><i class="fas fa-hand-holding-dollar me-1"></i> Seva Total</span>
+            <span class="stat-badge" style="background:#BBF7D0;"><i class="fas fa-hand-holding-dollar me-1"></i> Total Seva</span>
         </div>
         <div class="row g-2 text-center mt-1">
             <div class="col-6">
@@ -180,11 +237,12 @@
             <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
         </div>
     </div>
+
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", 
@@ -198,16 +256,80 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const leaderId = localStorage.getItem("activeLeaderId");
-    const leaderName = localStorage.getItem("activeLeaderName") || "Maharaj";
-    document.getElementById("leaderHeaderName").innerText = leaderName;
+    let activeLeaderId = localStorage.getItem("activeLeaderPhone") || "";
+    let activeLeaderName = localStorage.getItem("activeLeaderName") || "Leader Admin";
+
+    // Unlock Leader Panel Logic
+    window.unlockLeaderPanel = async function() {
+        const phone = document.getElementById("ldrAuthPhone").value.trim();
+        const pass = document.getElementById("ldrAuthPass").value.trim();
+        const err = document.getElementById("ldrAuthError");
+        const errMsg = document.getElementById("ldrErrorMsg");
+        const btn = document.getElementById("btnLdrUnlock");
+
+        if(!phone || !pass) {
+            errMsg.innerText = "Please enter both phone and passkey.";
+            err.classList.remove("d-none");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Verifying...';
+
+        try {
+            const snap = await getDoc(doc(db, "leaders", phone));
+            if (snap.exists()) {
+                const data = snap.data();
+                if (data.status === "blocked") {
+                    errMsg.innerText = "Your account is blocked by Master Admin.";
+                    err.classList.remove("d-none");
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-key me-1"></i> Unlock Leader Dashboard';
+                    return;
+                }
+                if (data.passkey === pass) {
+                    activeLeaderId = phone;
+                    activeLeaderName = data.name || "Revered Maharaj";
+                    localStorage.setItem("isLeaderUnlocked", "true");
+                    localStorage.setItem("activeLeaderPhone", phone);
+                    localStorage.setItem("activeLeaderName", activeLeaderName);
+
+                    document.getElementById("leaderHeaderName").innerText = activeLeaderName;
+                    document.getElementById("leaderAuthModal").classList.add("d-none");
+                    fetchLeaderDevotees();
+                    return;
+                }
+            }
+            errMsg.innerText = "Invalid Leader Phone or Passkey!";
+            err.classList.remove("d-none");
+        } catch(e) {
+            errMsg.innerText = "Connection error. Check network.";
+            err.classList.remove("d-none");
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-key me-1"></i> Unlock Leader Dashboard';
+    };
+
+    window.lockLeaderPanel = function() {
+        localStorage.removeItem("isLeaderUnlocked");
+        document.getElementById("ldrAuthPass").value = "";
+        document.getElementById("leaderAuthModal").classList.remove("d-none");
+    };
+
+    // Auto unlock if previously active
+    if (localStorage.getItem("isLeaderUnlocked") === "true" && activeLeaderId) {
+        document.getElementById("leaderHeaderName").innerText = activeLeaderName;
+        document.getElementById("leaderAuthModal").classList.add("d-none");
+    }
 
     window.fetchLeaderDevotees = async function() {
+        if(!activeLeaderId) return;
         const container = document.getElementById("devoteeListContainer");
         container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>';
 
         try {
-            const userQ = query(collection(db, "users"), where("assignedLeaderId", "==", leaderId));
+            const userQ = query(collection(db, "users"), where("assignedLeaderId", "==", activeLeaderId));
             const userSnap = await getDocs(userQ);
             
             let devotees = [];
@@ -289,14 +411,14 @@
 
         try {
             await addDoc(collection(db, "targeted_notifications"), {
-                leaderId: leaderId,
-                leaderName: leaderName,
+                leaderId: activeLeaderId,
+                leaderName: activeLeaderName,
                 title: title,
                 body: body,
                 createdAt: Date.now()
             });
 
-            alert(`✅ Push Notification sent to all devotees under ${leaderName}!`);
+            alert(`✅ Push Notification sent to all devotees under ${activeLeaderName}!`);
             document.getElementById("pushTitle").value = '';
             document.getElementById("pushBody").value = '';
         } catch(e) {
@@ -307,14 +429,9 @@
         btn.innerHTML = '<i class="fas fa-bullhorn me-1"></i> Send Targeted Push Alert';
     };
 
-    window.leaderLogout = function() {
-        localStorage.removeItem("isLeaderLoggedIn");
-        localStorage.removeItem("activeLeaderId");
-        localStorage.removeItem("activeLeaderName");
-        window.location.replace("login.html");
-    };
-
-    fetchLeaderDevotees();
+    if (localStorage.getItem("isLeaderUnlocked") === "true" && activeLeaderId) {
+        fetchLeaderDevotees();
+    }
 </script>
 
 </body>
