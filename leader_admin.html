@@ -144,7 +144,7 @@
 </head>
 <body>
 
-<!-- 🛑 PERMANENT DEVICE BAN SCREEN (BIGBASKET STYLE) -->
+<!-- 🛑 PERMANENT DEVICE BAN SCREEN -->
 <div id="deviceBannedOverlay" class="auth-lock-overlay d-none" style="background:#450a0a; z-index:100000;">
     <div class="auth-lock-card" style="border-color:#EF4444; box-shadow:8px 8px 0 #991B1B;">
         <div style="width:65px; height:65px; background:#FEE2E2; border:3px solid #991B1B; border-radius:16px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#991B1B;">
@@ -279,7 +279,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔒 ADVANCED HARDWARE FINGERPRINT GENERATOR (SURVIVES CLEAR DATA / REINSTALL)
     function generateDeviceHardwareId() {
         let storedId = localStorage.getItem("iskcon_dev_hw_id");
         if (!storedId) {
@@ -308,7 +307,6 @@
     let activeLeaderId = localStorage.getItem("activeLeaderPhone") || "";
     let activeLeaderName = localStorage.getItem("activeLeaderName") || "Leader Admin";
 
-    // 🚨 CHECK IF DEVICE IS BANNED IN FIRESTORE
     async function verifyDeviceSecurity() {
         try {
             const banSnap = await getDoc(doc(db, "blocked_devices", currentDeviceId));
@@ -345,7 +343,6 @@
         err.classList.remove("d-none");
     }
 
-    // 📈 PROGRESSIVE ESCALATION PENALTY ENGINE (6h -> 12h -> 16h -> 24h -> 48h -> BAN)
     async function recordFailedAttemptCloud() {
         try {
             const logRef = doc(db, "security_logs", currentDeviceId);
@@ -357,23 +354,23 @@
             let stageName = "Normal";
             let isPermBan = false;
 
-            if (currentFails >= 18) { // 6th Trigger (18 fails) -> PERMANENT BAN
+            if (currentFails >= 18) {
                 isPermBan = true;
-                lockHours = 87600; // 10 years
+                lockHours = 87600;
                 stageName = "PERMANENT_BAN";
-            } else if (currentFails >= 15) { // 5th Trigger -> 48 Hours
+            } else if (currentFails >= 15) {
                 lockHours = 48;
                 stageName = "48h";
-            } else if (currentFails >= 12) { // 4th Trigger -> 24 Hours
+            } else if (currentFails >= 12) {
                 lockHours = 24;
                 stageName = "24h";
-            } else if (currentFails >= 9) {  // 3rd Trigger -> 16 Hours
+            } else if (currentFails >= 9) {
                 lockHours = 16;
                 stageName = "16h";
-            } else if (currentFails >= 6) {  // 2nd Trigger -> 12 Hours
+            } else if (currentFails >= 6) {
                 lockHours = 12;
                 stageName = "12h";
-            } else if (currentFails >= 3) {  // 1st Trigger -> 6 Hours
+            } else if (currentFails >= 3) {
                 lockHours = 6;
                 stageName = "6h";
             }
@@ -433,7 +430,6 @@
                     return;
                 }
                 if (data.passkey === pass) {
-                    // Success! Reset security counters
                     await setDoc(doc(db, "security_logs", currentDeviceId), { failCount: 0, lockUntil: 0 }, { merge: true });
 
                     activeLeaderId = phone;
