@@ -22,7 +22,6 @@
             --neu-shadow: 4px 4px 0px #18181b;
             --neu-shadow-sm: 2.5px 2.5px 0px #18181b;
             --badge-yellow: #FEF08A;
-            --badge-orange: #FFD8A8;
             --badge-green: #BBF7D0;
         }
 
@@ -31,7 +30,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: var(--text-color);
             margin: 0;
-            padding-bottom: 30px;
+            padding-bottom: 40px;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -68,9 +67,9 @@
 
         .devotee-row-card {
             background: #FFFDF9;
-            border: 2px solid var(--border-color);
+            border: 2.5px solid var(--border-color);
             box-shadow: var(--neu-shadow-sm);
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 14px;
             margin-bottom: 12px;
             display: flex;
@@ -97,6 +96,7 @@
         .neu-input, .neu-textarea {
             width: 100%;
             padding: 10px 14px;
+            background: #FFFDF9;
             border: 2.5px solid var(--border-color);
             border-radius: 10px;
             font-size: 0.88rem;
@@ -109,7 +109,7 @@
             background: #FF9933;
             color: #18181b;
             border: var(--neu-border);
-            padding: 10px 16px;
+            padding: 11px 16px;
             border-radius: 10px;
             font-weight: 900;
             font-size: 0.88rem;
@@ -125,6 +125,7 @@
 </head>
 <body>
 
+<!-- Security Check -->
 <script>
     if (localStorage.getItem("isLeaderLoggedIn") !== "true") {
         window.location.replace("login.html");
@@ -136,15 +137,15 @@
         <i class="fas fa-crown fa-lg"></i>
         <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;" id="leaderHeaderName">Leader Admin</h5>
     </div>
-    <button onclick="leaderLogout()" class="neu-btn" style="padding:4px 10px; font-size:0.75rem; background:#FFF;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <button onclick="leaderLogout()" class="neu-btn" style="padding:5px 12px; font-size:0.75rem; background:#FFF;"><i class="fas fa-sign-out-alt"></i> Logout</button>
 </div>
 
 <div class="container-fluid px-3 pt-3">
     <!-- Stat Counter Card -->
     <div class="neu-card" style="background:#FEF08A;">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="stat-badge"><i class="fas fa-users me-1"></i> Devotees Linked</span>
-            <span class="stat-badge" style="background:#BBF7D0;"><i class="fas fa-hand-holding-dollar me-1"></i> Total Seva</span>
+            <span class="stat-badge"><i class="fas fa-users me-1"></i> Connected Devotees</span>
+            <span class="stat-badge" style="background:#BBF7D0;"><i class="fas fa-hand-holding-dollar me-1"></i> Seva Total</span>
         </div>
         <div class="row g-2 text-center mt-1">
             <div class="col-6">
@@ -153,33 +154,30 @@
             </div>
             <div class="col-6">
                 <h2 style="font-weight:900; margin:0; color:#16A34A;" id="statTotalDonations">₹0</h2>
-                <small class="fw-bold">Total Offerings</small>
+                <small class="fw-bold">Total Collection</small>
             </div>
         </div>
     </div>
 
-    <!-- Targeted Push Notification to My Devotees Only -->
+    <!-- Targeted Push Notification -->
     <div class="neu-card">
-        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:12px;"><i class="fas fa-paper-plane text-warning me-2"></i> Broadcast Blessing / Message</h5>
-        <p style="font-size:0.78rem; font-weight:700; opacity:0.8;">Note: This push notification will strictly reach ONLY the devotees connected to your leadership.</p>
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:8px;"><i class="fas fa-paper-plane text-warning me-2"></i> Send Notification to My Devotees</h5>
+        <p style="font-size:0.78rem; font-weight:700; opacity:0.8; margin-bottom:12px;">This alert will reach only the devotees registered under your guidance.</p>
         
-        <input type="text" id="pushTitle" class="neu-input" placeholder="Title (e.g. Special Blessings for Janmashtami)">
-        <textarea id="pushBody" class="neu-textarea" rows="3" placeholder="Enter your sacred message or seva appeal..."></textarea>
+        <input type="text" id="pushTitle" class="neu-input" placeholder="Title (e.g. Special Janmashtami Blessings)">
+        <textarea id="pushBody" class="neu-textarea" rows="3" placeholder="Write your sacred message or seva appeal..."></textarea>
         <button onclick="sendTargetedPush()" id="btnSendPush" class="neu-btn w-100"><i class="fas fa-bullhorn me-1"></i> Send Targeted Push Alert</button>
     </div>
 
     <!-- Devotees List -->
     <div class="neu-card">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;"><i class="fas fa-list me-2"></i> My Devotees & Seva Records</h5>
+            <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;"><i class="fas fa-list me-2"></i> My Devotees Directory</h5>
             <button onclick="fetchLeaderDevotees()" class="btn btn-sm btn-outline-dark fw-bold"><i class="fas fa-rotate"></i> Refresh</button>
         </div>
 
         <div id="devoteeListContainer">
-            <div class="text-center p-3">
-                <i class="fas fa-spinner fa-spin fa-2x text-warning"></i>
-                <p class="mt-2 fw-bold">Fetching devotees...</p>
-            </div>
+            <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
         </div>
     </div>
 </div>
@@ -206,10 +204,9 @@
 
     window.fetchLeaderDevotees = async function() {
         const container = document.getElementById("devoteeListContainer");
-        container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i><p class="mt-2 fw-bold">Loading devotee records...</p></div>';
+        container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>';
 
         try {
-            // 1. Fetch devotees linked to this leader
             const userQ = query(collection(db, "users"), where("assignedLeaderId", "==", leaderId));
             const userSnap = await getDocs(userQ);
             
@@ -223,7 +220,6 @@
 
             document.getElementById("statDevoteeCount").innerText = devotees.length;
 
-            // 2. Fetch all donations for these devotees
             let totalAmount = 0;
             let donationsMap = {};
 
@@ -240,7 +236,7 @@
             document.getElementById("statTotalDonations").innerText = `₹${totalAmount.toLocaleString('en-IN')}`;
 
             if (devotees.length === 0) {
-                container.innerHTML = '<div class="text-center p-4 fw-bold">No devotees have linked to this leadership profile yet.</div>';
+                container.innerHTML = '<div class="text-center p-4 fw-bold">No devotees have connected to your leadership yet.</div>';
                 return;
             }
 
@@ -248,7 +244,7 @@
             devotees.forEach(dev => {
                 const devDons = donationsMap[dev.contact] || [];
                 const devTotal = devDons.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
-                const waMessage = encodeURIComponent(`Hare Krishna ${dev.name}! Dandavat Pranam. Sending blessings from Sri Dham Pandharpur.`);
+                const waMessage = encodeURIComponent(`Hare Krishna ${dev.name}! Dandavat Pranam from ISKCON Bhuvaikuntha Pandharpur.`);
                 const waLink = `https://wa.me/91${dev.contact}?text=${waMessage}`;
 
                 html += `
@@ -256,16 +252,16 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 style="font-weight:900; margin:0;">${dev.name}</h6>
-                                <p style="font-size:0.75rem; margin:0; opacity:0.8; font-weight:700;">📞 +91 ${dev.contact} | 📍 ${dev.city || 'N/A'}</p>
+                                <p style="font-size:0.75rem; margin:2px 0 0 0; opacity:0.8; font-weight:700;">📞 +91 ${dev.contact} | 📍 ${dev.city || 'N/A'}</p>
                             </div>
                             <span class="stat-badge" style="background:#BBF7D0; font-size:0.85rem; color:#166534;">₹${devTotal}</span>
                         </div>
-                        <div style="font-size:0.75rem; font-weight:700; background:#f4f4f5; padding:6px; border-radius:6px;">
-                            <span>PAN: ${dev.pan || 'N/A'}</span> | <span>Gotra: ${dev.gotra || 'N/A'}</span>
+                        <div style="font-size:0.75rem; font-weight:700; background:#f4f4f5; padding:6px; border-radius:6px; border:1px solid #18181b;">
+                            <span>PAN: ${dev.pan || 'N/A'}</span> | <span>Gotra: ${dev.gotra || 'N/A'}</span> | <span>Address: ${dev.address || 'N/A'}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-1">
                             <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
-                            <span style="font-size:0.72rem; font-weight:800; opacity:0.7;">Sevas Done: ${devDons.length}</span>
+                            <span style="font-size:0.74rem; font-weight:800; opacity:0.8;">Total Sevas: ${devDons.length}</span>
                         </div>
                     </div>
                 `;
@@ -274,7 +270,7 @@
             container.innerHTML = html;
 
         } catch(e) {
-            container.innerHTML = '<p class="text-danger p-3 fw-bold">Error fetching data. Check permissions.</p>';
+            container.innerHTML = '<p class="text-danger p-3 fw-bold">Error loading devotees.</p>';
         }
     };
 
@@ -284,7 +280,7 @@
         const btn = document.getElementById("btnSendPush");
 
         if (!title || !body) {
-            alert("Please enter title and message body.");
+            alert("Please enter title and message.");
             return;
         }
 
@@ -300,7 +296,7 @@
                 createdAt: Date.now()
             });
 
-            alert(`✅ Push Notification successfully queued for all devotees under ${leaderName}!`);
+            alert(`✅ Push Notification sent to all devotees under ${leaderName}!`);
             document.getElementById("pushTitle").value = '';
             document.getElementById("pushBody").value = '';
         } catch(e) {
