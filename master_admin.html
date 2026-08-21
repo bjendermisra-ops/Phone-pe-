@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <meta name="theme-color" content="#FF9933">
+    <meta name="theme-color" content="#18181b">
     <title>Master SuperAdmin - ISKCON Bhuvaikuntha</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,9 +19,11 @@
             --text-color: #18181b;
             --border-color: #18181b;
             --neu-border: 3px solid #18181b;
-            --neu-shadow: 4px 4px 0px #18181b;
-            --neu-shadow-sm: 2.5px 2.5px 0px #18181b;
+            --neu-shadow: 5px 5px 0px #18181b;
+            --neu-shadow-sm: 3px 3px 0px #18181b;
+            --neu-shadow-active: 1px 1px 0px #18181b;
             --badge-yellow: #FEF08A;
+            --badge-orange: #FFD8A8;
             --badge-red: #FECDD3;
             --badge-green: #BBF7D0;
         }
@@ -31,9 +33,11 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: var(--text-color);
             margin: 0;
-            padding-bottom: 30px;
+            padding-bottom: 40px;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* Neubrutal Top Nav */
         .master-nav {
             background: #18181b;
             color: #FFD54F;
@@ -52,80 +56,169 @@
             border: var(--neu-border);
             box-shadow: var(--neu-shadow);
             border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 16px;
+            padding: 20px;
+            margin-bottom: 18px;
         }
 
-        .neu-input, .neu-select {
+        .stat-card-box {
+            background: #ffffff;
+            border: 2.5px solid var(--border-color);
+            box-shadow: var(--neu-shadow-sm);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .neu-input, .neu-select, .neu-textarea {
             width: 100%;
-            padding: 10px 14px;
+            padding: 11px 14px;
+            background: #FFFDF9;
             border: 2.5px solid var(--border-color);
             border-radius: 10px;
             font-size: 0.88rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            color: var(--text-color);
+            margin-bottom: 12px;
             outline: none;
+            transition: all 0.15s ease;
+        }
+        .neu-input:focus, .neu-select:focus, .neu-textarea:focus {
+            border-color: #FF9933;
+            box-shadow: 3px 3px 0px #18181b;
         }
 
         .neu-btn {
             background: #FF9933;
             color: #18181b;
             border: var(--neu-border);
-            padding: 10px 16px;
+            padding: 12px 18px;
             border-radius: 10px;
             font-weight: 900;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             box-shadow: var(--neu-shadow-sm);
             cursor: pointer;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
-        .neu-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #18181b; }
-        
-        .action-btn-sm {
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 2px solid #18181b;
-            font-size: 0.72rem;
+        .neu-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: var(--neu-shadow-active);
+        }
+
+        .action-pill {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            font-size: 0.75rem;
             font-weight: 800;
             cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0px var(--border-color);
+            transition: all 0.15s ease;
+        }
+        .action-pill:active { transform: translate(1px, 1px); box-shadow: none; }
+        .pill-approve { background: var(--badge-green); color: #166534; }
+        .pill-block { background: var(--badge-red); color: #991B1B; }
+
+        .leader-item-card {
+            background: #FFFDF9;
+            border: 2.5px solid var(--border-color);
+            box-shadow: var(--neu-shadow-sm);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* In-Page Auth Lock Modal (NO AUTOMATIC REDIRECT BUG) */
+        .auth-lock-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(24, 24, 27, 0.96);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .auth-lock-card {
+            background: #FFFDF9;
+            border: var(--neu-border);
+            box-shadow: 8px 8px 0px #FF9933;
+            border-radius: 20px;
+            padding: 26px 20px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-<script>
-    if (localStorage.getItem("isMasterLoggedIn") !== "true") {
-        window.location.replace("login.html");
-    }
-</script>
+<!-- 🔒 IN-PAGE SMART MASTER PASSKEY GUARD (No redirect loop) -->
+<div id="masterAuthModal" class="auth-lock-overlay">
+    <div class="auth-lock-card">
+        <div style="width:60px; height:60px; background:#FEF08A; border:3px solid #18181b; box-shadow:3px 3px 0 #18181b; border-radius:14px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:1.6rem; color:#18181b;">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+        <h4 style="font-family:'Cinzel', serif; font-weight:900; margin:0 0 6px 0;">MASTER SUPERADMIN ACCESS</h4>
+        <p style="font-size:0.8rem; font-weight:700; color:#52525b; margin-bottom:18px;">Enter Master Passkey to unlock this panel.</p>
+        
+        <div class="text-start">
+            <label class="fw-bold small mb-1">Master User ID</label>
+            <input type="text" id="mstAuthUser" class="neu-input" value="master_iskcon" placeholder="master_iskcon">
 
+            <label class="fw-bold small mb-1">Master Secret Key</label>
+            <input type="password" id="mstAuthPass" class="neu-input" placeholder="Enter Master Key" onkeypress="if(event.key==='Enter') unlockMasterPanel()">
+            
+            <div id="mstAuthError" class="alert alert-danger p-2 mb-2 d-none fw-bold small border border-2 border-dark">
+                <i class="fas fa-triangle-exclamation me-1"></i> Invalid Master Credentials!
+            </div>
+            
+            <button onclick="unlockMasterPanel()" class="neu-btn w-100 mt-1" style="background:#FFD54F;"><i class="fas fa-key me-1"></i> Unlock Master Dashboard</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOP NAV -->
 <div class="master-nav">
     <div class="d-flex align-items-center gap-2">
         <i class="fas fa-shield-halved fa-lg"></i>
-        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;">Master SuperAdmin Control</h5>
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0; font-size:1.1rem;">MASTER SUPERADMIN</h5>
     </div>
-    <button onclick="masterLogout()" class="neu-btn" style="padding:4px 10px; font-size:0.75rem; background:#FFD54F;"><i class="fas fa-power-off"></i> Exit</button>
+    <div class="d-flex align-items-center gap-2">
+        <a href="leader_admin.html" class="action-pill" style="background:#FEF08A; text-decoration:none; color:#18181b;"><i class="fas fa-crown"></i> Leader Panel</a>
+        <button onclick="lockMasterPanel()" class="action-pill" style="background:#FECDD3;"><i class="fas fa-lock"></i> Lock</button>
+    </div>
 </div>
 
 <div class="container-fluid px-3 pt-3">
-    <!-- Master Global Metrics -->
-    <div class="neu-card" style="background:#FEF08A;">
-        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:12px;"><i class="fas fa-chart-line me-2"></i> Global ISKCON Metrics</h5>
-        <div class="row g-2 text-center">
+
+    <!-- 1. Real-time Global Metrics -->
+    <div class="neu-card" style="background: var(--badge-yellow);">
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:14px;"><i class="fas fa-chart-pie me-2"></i> Global Mandir Analytics</h5>
+        <div class="row g-2">
             <div class="col-4">
-                <div class="p-2 border border-dark rounded-3 bg-white">
+                <div class="stat-card-box">
                     <h3 style="font-weight:900; margin:0;" id="mstTotalLeaders">0</h3>
                     <small class="fw-bold">Leaders</small>
                 </div>
             </div>
             <div class="col-4">
-                <div class="p-2 border border-dark rounded-3 bg-white">
+                <div class="stat-card-box">
                     <h3 style="font-weight:900; margin:0;" id="mstTotalDevotees">0</h3>
                     <small class="fw-bold">Devotees</small>
                 </div>
             </div>
             <div class="col-4">
-                <div class="p-2 border border-dark rounded-3 bg-white">
+                <div class="stat-card-box">
                     <h3 style="font-weight:900; margin:0; color:#16A34A;" id="mstTotalSeva">₹0</h3>
                     <small class="fw-bold">Total Seva</small>
                 </div>
@@ -133,48 +226,68 @@
         </div>
     </div>
 
-    <!-- Create New Leader Profile -->
+    <!-- 2. Create / Register New Leader (Maharaj) -->
     <div class="neu-card">
-        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:12px;"><i class="fas fa-user-plus text-warning me-2"></i> Add / Register New Leader Maharaj</h5>
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:14px;"><i class="fas fa-user-plus text-warning me-2"></i> Register New Leader / Maharaj</h5>
         
         <form onsubmit="handleCreateLeader(event)">
-            <input type="text" id="nl-name" class="neu-input" placeholder="Leader Full Title (e.g. HH Lokanath Swami Maharaj)" required>
+            <label class="fw-bold small mb-1">Leader Title & Name (e.g. HH Lokanath Swami Maharaj)</label>
+            <input type="text" id="nl-name" class="neu-input" placeholder="HH Lokanath Swami Maharaj" required>
+            
             <div class="row g-2">
                 <div class="col-6">
-                    <input type="tel" id="nl-phone" class="neu-input" placeholder="10-Digit Mobile" required>
+                    <label class="fw-bold small mb-1">Leader Phone (Login ID)</label>
+                    <input type="tel" id="nl-phone" class="neu-input" placeholder="10-digit mobile" required pattern="[0-9]{10}">
                 </div>
                 <div class="col-6">
-                    <input type="password" id="nl-pass" class="neu-input" placeholder="Leader Passkey" required>
+                    <label class="fw-bold small mb-1">Leader Passkey</label>
+                    <input type="text" id="nl-pass" class="neu-input" placeholder="e.g. Guru#108" required>
                 </div>
             </div>
+
             <div class="row g-2">
                 <div class="col-6">
-                    <input type="text" id="nl-country" class="neu-input" placeholder="Country (e.g. India)" required>
+                    <label class="fw-bold small mb-1">Country</label>
+                    <input type="text" id="nl-country" class="neu-input" placeholder="India" required>
                 </div>
                 <div class="col-6">
-                    <input type="text" id="nl-city" class="neu-input" placeholder="City (e.g. Pandharpur)" required>
+                    <label class="fw-bold small mb-1">Base City</label>
+                    <input type="text" id="nl-city" class="neu-input" placeholder="Pandharpur" required>
                 </div>
             </div>
-            <button type="submit" id="btnCreateLdr" class="neu-btn w-100"><i class="fas fa-plus-circle me-1"></i> Register Leader & Approve</button>
+
+            <label class="fw-bold small mb-1">Photo URL (Optional)</label>
+            <input type="url" id="nl-photo" class="neu-input" placeholder="https://i.ibb.co/hRvftDPj/images-5.jpg">
+
+            <button type="submit" id="btnCreateLdr" class="neu-btn w-100 mt-2"><i class="fas fa-plus-circle me-1"></i> Register Leader & Approve</button>
         </form>
     </div>
 
-    <!-- Leaders List & Management -->
+    <!-- 3. Global Broadcast Notification -->
+    <div class="neu-card">
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:12px;"><i class="fas fa-tower-broadcast text-danger me-2"></i> Master Temple Push Broadcast</h5>
+        <input type="text" id="mstBroadcastTitle" class="neu-input" placeholder="Title (e.g. Mega Darshan Live)">
+        <textarea id="mstBroadcastBody" class="neu-textarea" rows="2" placeholder="Notification message for all devotees..."></textarea>
+        <button onclick="sendGlobalBroadcast()" id="btnGlobalPush" class="neu-btn w-100" style="background:#FEF08A;"><i class="fas fa-bullhorn me-1"></i> Broadcast to All Users & Leaders</button>
+    </div>
+
+    <!-- 4. Leader Directory Management -->
     <div class="neu-card">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;"><i class="fas fa-crown me-2"></i> All Leaders & Permissions</h5>
-            <button onclick="loadAllLeadersMaster()" class="btn btn-sm btn-outline-dark fw-bold"><i class="fas fa-rotate"></i> Sync</button>
+            <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;"><i class="fas fa-crown text-warning me-2"></i> Leader Directory & Permissions</h5>
+            <button onclick="loadAllLeadersMaster()" class="action-pill" style="background:#FFF;"><i class="fas fa-rotate"></i> Refresh</button>
         </div>
 
         <div id="masterLeadersContainer">
             <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
         </div>
     </div>
+
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", 
@@ -187,6 +300,32 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    // Unlock Master Panel Logic
+    window.unlockMasterPanel = function() {
+        const u = document.getElementById("mstAuthUser").value.trim();
+        const p = document.getElementById("mstAuthPass").value.trim();
+        const err = document.getElementById("mstAuthError");
+
+        if ((u === "master_iskcon" || u === "admin") && (p === "Bhuvaikuntha#108" || p === "iskcon108")) {
+            localStorage.setItem("isMasterUnlocked", "true");
+            document.getElementById("masterAuthModal").classList.add("d-none");
+            loadAllLeadersMaster();
+        } else {
+            err.classList.remove("d-none");
+        }
+    };
+
+    window.lockMasterPanel = function() {
+        localStorage.removeItem("isMasterUnlocked");
+        document.getElementById("mstAuthPass").value = "";
+        document.getElementById("masterAuthModal").classList.remove("d-none");
+    };
+
+    // Auto unlock if previously authenticated on device
+    if (localStorage.getItem("isMasterUnlocked") === "true") {
+        document.getElementById("masterAuthModal").classList.add("d-none");
+    }
 
     window.loadAllLeadersMaster = async function() {
         const container = document.getElementById("masterLeadersContainer");
@@ -210,18 +349,23 @@
             leadersSnap.forEach(docSnap => {
                 const ldr = docSnap.data();
                 const id = docSnap.id;
-                const statusColor = ldr.status === "approved" ? "background:#BBF7D0; color:#166534;" : (ldr.status === "blocked" ? "background:#FECDD3; color:#991B1B;" : "background:#FEF08A; color:#854D0E;");
+                const isApproved = ldr.status === "approved";
+                const isBlocked = ldr.status === "blocked";
 
                 html += `
-                    <div class="p-3 mb-2 border border-2 border-dark rounded-3 bg-light d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 style="font-weight:900; margin:0;">${ldr.name}</h6>
-                            <p style="font-size:0.75rem; margin:0; font-weight:700;">📞 ${id} | 📍 ${ldr.city}, ${ldr.country}</p>
-                            <span class="badge" style="${statusColor} border:1.5px solid #18181b; margin-top:4px;">Status: ${ldr.status.toUpperCase()}</span>
+                    <div class="leader-item-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 style="font-weight:900; margin:0;">${ldr.name}</h6>
+                                <p style="font-size:0.75rem; margin:2px 0 0 0; font-weight:700;">📞 Phone / ID: +91 ${id} | 🔑 Pass: ${ldr.passkey || 'N/A'}</p>
+                                <p style="font-size:0.75rem; margin:0; font-weight:700; opacity:0.8;">📍 ${ldr.city}, ${ldr.country}</p>
+                                <span class="badge ${isApproved ? 'bg-success' : (isBlocked ? 'bg-danger' : 'bg-warning text-dark')} mt-1">Status: ${(ldr.status || 'pending').toUpperCase()}</span>
+                            </div>
+                            <img src="${ldr.photoUrl || 'https://i.ibb.co/hRvftDPj/images-5.jpg'}" style="width:52px; height:52px; border-radius:10px; border:2px solid #18181b; object-fit:cover;">
                         </div>
-                        <div class="d-flex flex-column gap-1">
-                            <button onclick="setLeaderStatus('${id}', 'approved')" class="action-btn-sm" style="background:#BBF7D0;"><i class="fas fa-check"></i> Approve</button>
-                            <button onclick="setLeaderStatus('${id}', 'blocked')" class="action-btn-sm" style="background:#FECDD3;"><i class="fas fa-ban"></i> Block</button>
+                        <div class="d-flex gap-2 mt-2">
+                            ${!isApproved ? `<button onclick="setLeaderStatus('${id}', 'approved')" class="action-pill pill-approve flex-grow-1"><i class="fas fa-check"></i> Approve</button>` : ''}
+                            ${!isBlocked ? `<button onclick="setLeaderStatus('${id}', 'blocked')" class="action-pill pill-block flex-grow-1"><i class="fas fa-ban"></i> Block</button>` : `<button onclick="setLeaderStatus('${id}', 'approved')" class="action-pill pill-approve flex-grow-1"><i class="fas fa-unlock"></i> Unblock</button>`}
                         </div>
                     </div>
                 `;
@@ -230,17 +374,22 @@
             container.innerHTML = html || '<p class="text-center fw-bold p-3">No Leaders registered yet.</p>';
 
         } catch(e) {
-            container.innerHTML = '<p class="text-danger p-3 fw-bold">Error loading leaders.</p>';
+            container.innerHTML = '<p class="text-danger p-3 fw-bold">Error loading leaders data.</p>';
         }
     };
 
     window.handleCreateLeader = async function(e) {
         e.preventDefault();
+        const btn = document.getElementById("btnCreateLdr");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Registering...';
+
         const name = document.getElementById("nl-name").value.trim();
         const phone = document.getElementById("nl-phone").value.trim();
         const pass = document.getElementById("nl-pass").value.trim();
         const country = document.getElementById("nl-country").value.trim();
         const city = document.getElementById("nl-city").value.trim();
+        const photo = document.getElementById("nl-photo").value.trim() || 'https://i.ibb.co/hRvftDPj/images-5.jpg';
 
         try {
             await setDoc(doc(db, "leaders", phone), {
@@ -249,22 +398,29 @@
                 passkey: pass,
                 country: country,
                 city: city,
+                photoUrl: photo,
                 status: "approved",
                 createdAt: Date.now()
             });
 
-            alert(`✅ ${name} has been created and approved as Leader!`);
+            alert(`✅ ${name} registered successfully!`);
             document.getElementById("nl-name").value = '';
             document.getElementById("nl-phone").value = '';
             document.getElementById("nl-pass").value = '';
+            document.getElementById("nl-country").value = '';
+            document.getElementById("nl-city").value = '';
+            document.getElementById("nl-photo").value = '';
             loadAllLeadersMaster();
         } catch(err) {
-            alert("Error creating leader.");
+            alert("Error registering leader.");
         }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-plus-circle me-1"></i> Register Leader & Approve';
     };
 
     window.setLeaderStatus = async function(id, status) {
-        if (!confirm(`Are you sure you want to change status to ${status.toUpperCase()}?`)) return;
+        if (!confirm(`Change status to ${status.toUpperCase()}?`)) return;
         try {
             await updateDoc(doc(db, "leaders", id), { status: status });
             loadAllLeadersMaster();
@@ -273,12 +429,36 @@
         }
     };
 
-    window.masterLogout = function() {
-        localStorage.removeItem("isMasterLoggedIn");
-        window.location.replace("login.html");
+    window.sendGlobalBroadcast = async function() {
+        const title = document.getElementById("mstBroadcastTitle").value.trim();
+        const body = document.getElementById("mstBroadcastBody").value.trim();
+        const btn = document.getElementById("btnGlobalPush");
+
+        if(!title || !body) { alert("Enter both title and message."); return; }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Broadcasting...';
+
+        try {
+            await addDoc(collection(db, "global_broadcasts"), {
+                title: title,
+                body: body,
+                sentAt: Date.now(),
+                sender: "Master SuperAdmin"
+            });
+            alert("📢 Global broadcast sent to all devices!");
+            document.getElementById("mstBroadcastTitle").value = '';
+            document.getElementById("mstBroadcastBody").value = '';
+        } catch(e) {
+            alert("Broadcast error.");
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-bullhorn me-1"></i> Broadcast to All Users & Leaders';
     };
 
-    loadAllLeadersMaster();
+    if (localStorage.getItem("isMasterUnlocked") === "true") {
+        loadAllLeadersMaster();
+    }
 </script>
 
 </body>
