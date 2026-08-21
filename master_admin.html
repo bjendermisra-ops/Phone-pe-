@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="theme-color" content="#FF9933">
+    <title>Master SuperAdmin - ISKCON Bhuvaikuntha</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #FFFDF9;
+            --card-bg: #FFFFFF;
+            --text-color: #18181b;
+            --border-color: #18181b;
+            --neu-border: 3px solid #18181b;
+            --neu-shadow: 4px 4px 0px #18181b;
+            --neu-shadow-sm: 2.5px 2.5px 0px #18181b;
+            --badge-yellow: #FEF08A;
+            --badge-red: #FECDD3;
+            --badge-green: #BBF7D0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            padding-bottom: 30px;
+        }
+
+        .master-nav {
+            background: #18181b;
+            color: #FFD54F;
+            border-bottom: var(--neu-border);
+            padding: 14px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .neu-card {
+            background: var(--card-bg);
+            border: var(--neu-border);
+            box-shadow: var(--neu-shadow);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+
+        .neu-input, .neu-select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2.5px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            outline: none;
+        }
+
+        .neu-btn {
+            background: #FF9933;
+            color: #18181b;
+            border: var(--neu-border);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 0.88rem;
+            box-shadow: var(--neu-shadow-sm);
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .neu-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #18181b; }
+        
+        .action-btn-sm {
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 2px solid #18181b;
+            font-size: 0.72rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    if (localStorage.getItem("isMasterLoggedIn") !== "true") {
+        window.location.replace("login.html");
+    }
+</script>
+
+<div class="master-nav">
+    <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-shield-halved fa-lg"></i>
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;">Master SuperAdmin Control</h5>
+    </div>
+    <button onclick="masterLogout()" class="neu-btn" style="padding:4px 10px; font-size:0.75rem; background:#FFD54F;"><i class="fas fa-power-off"></i> Exit</button>
+</div>
+
+<div class="container-fluid px-3 pt-3">
+    <!-- Master Global Metrics -->
+    <div class="neu-card" style="background:#FEF08A;">
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:12px;"><i class="fas fa-chart-line me-2"></i> Global ISKCON Metrics</h5>
+        <div class="row g-2 text-center">
+            <div class="col-4">
+                <div class="p-2 border border-dark rounded-3 bg-white">
+                    <h3 style="font-weight:900; margin:0;" id="mstTotalLeaders">0</h3>
+                    <small class="fw-bold">Leaders</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-2 border border-dark rounded-3 bg-white">
+                    <h3 style="font-weight:900; margin:0;" id="mstTotalDevotees">0</h3>
+                    <small class="fw-bold">Devotees</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-2 border border-dark rounded-3 bg-white">
+                    <h3 style="font-weight:900; margin:0; color:#16A34A;" id="mstTotalSeva">₹0</h3>
+                    <small class="fw-bold">Total Seva</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create New Leader Profile -->
+    <div class="neu-card">
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:12px;"><i class="fas fa-user-plus text-warning me-2"></i> Add / Register New Leader Maharaj</h5>
+        
+        <form onsubmit="handleCreateLeader(event)">
+            <input type="text" id="nl-name" class="neu-input" placeholder="Leader Full Title (e.g. HH Lokanath Swami Maharaj)" required>
+            <div class="row g-2">
+                <div class="col-6">
+                    <input type="tel" id="nl-phone" class="neu-input" placeholder="10-Digit Mobile" required>
+                </div>
+                <div class="col-6">
+                    <input type="password" id="nl-pass" class="neu-input" placeholder="Leader Passkey" required>
+                </div>
+            </div>
+            <div class="row g-2">
+                <div class="col-6">
+                    <input type="text" id="nl-country" class="neu-input" placeholder="Country (e.g. India)" required>
+                </div>
+                <div class="col-6">
+                    <input type="text" id="nl-city" class="neu-input" placeholder="City (e.g. Pandharpur)" required>
+                </div>
+            </div>
+            <button type="submit" id="btnCreateLdr" class="neu-btn w-100"><i class="fas fa-plus-circle me-1"></i> Register Leader & Approve</button>
+        </form>
+    </div>
+
+    <!-- Leaders List & Management -->
+    <div class="neu-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;"><i class="fas fa-crown me-2"></i> All Leaders & Permissions</h5>
+            <button onclick="loadAllLeadersMaster()" class="btn btn-sm btn-outline-dark fw-bold"><i class="fas fa-rotate"></i> Sync</button>
+        </div>
+
+        <div id="masterLeadersContainer">
+            <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", 
+        authDomain: "iskcon-bhuvaikuntha.firebaseapp.com", 
+        projectId: "iskcon-bhuvaikuntha",
+        storageBucket: "iskcon-bhuvaikuntha.firebasestorage.app",
+        messagingSenderId: "87535383708",
+        appId: "1:87535383708:web:7548e3b7d4c807faafe959"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.loadAllLeadersMaster = async function() {
+        const container = document.getElementById("masterLeadersContainer");
+        container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>';
+
+        try {
+            const [leadersSnap, usersSnap, donsSnap] = await Promise.all([
+                getDocs(collection(db, "leaders")),
+                getDocs(collection(db, "users")),
+                getDocs(collection(db, "donations"))
+            ]);
+
+            document.getElementById("mstTotalLeaders").innerText = leadersSnap.size;
+            document.getElementById("mstTotalDevotees").innerText = usersSnap.size;
+
+            let totalGlobalSeva = 0;
+            donsSnap.forEach(d => { totalGlobalSeva += parseFloat(d.data().amount || 0); });
+            document.getElementById("mstTotalSeva").innerText = `₹${totalGlobalSeva.toLocaleString('en-IN')}`;
+
+            let html = '';
+            leadersSnap.forEach(docSnap => {
+                const ldr = docSnap.data();
+                const id = docSnap.id;
+                const statusColor = ldr.status === "approved" ? "background:#BBF7D0; color:#166534;" : (ldr.status === "blocked" ? "background:#FECDD3; color:#991B1B;" : "background:#FEF08A; color:#854D0E;");
+
+                html += `
+                    <div class="p-3 mb-2 border border-2 border-dark rounded-3 bg-light d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 style="font-weight:900; margin:0;">${ldr.name}</h6>
+                            <p style="font-size:0.75rem; margin:0; font-weight:700;">📞 ${id} | 📍 ${ldr.city}, ${ldr.country}</p>
+                            <span class="badge" style="${statusColor} border:1.5px solid #18181b; margin-top:4px;">Status: ${ldr.status.toUpperCase()}</span>
+                        </div>
+                        <div class="d-flex flex-column gap-1">
+                            <button onclick="setLeaderStatus('${id}', 'approved')" class="action-btn-sm" style="background:#BBF7D0;"><i class="fas fa-check"></i> Approve</button>
+                            <button onclick="setLeaderStatus('${id}', 'blocked')" class="action-btn-sm" style="background:#FECDD3;"><i class="fas fa-ban"></i> Block</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<p class="text-center fw-bold p-3">No Leaders registered yet.</p>';
+
+        } catch(e) {
+            container.innerHTML = '<p class="text-danger p-3 fw-bold">Error loading leaders.</p>';
+        }
+    };
+
+    window.handleCreateLeader = async function(e) {
+        e.preventDefault();
+        const name = document.getElementById("nl-name").value.trim();
+        const phone = document.getElementById("nl-phone").value.trim();
+        const pass = document.getElementById("nl-pass").value.trim();
+        const country = document.getElementById("nl-country").value.trim();
+        const city = document.getElementById("nl-city").value.trim();
+
+        try {
+            await setDoc(doc(db, "leaders", phone), {
+                name: name,
+                contact: phone,
+                passkey: pass,
+                country: country,
+                city: city,
+                status: "approved",
+                createdAt: Date.now()
+            });
+
+            alert(`✅ ${name} has been created and approved as Leader!`);
+            document.getElementById("nl-name").value = '';
+            document.getElementById("nl-phone").value = '';
+            document.getElementById("nl-pass").value = '';
+            loadAllLeadersMaster();
+        } catch(err) {
+            alert("Error creating leader.");
+        }
+    };
+
+    window.setLeaderStatus = async function(id, status) {
+        if (!confirm(`Are you sure you want to change status to ${status.toUpperCase()}?`)) return;
+        try {
+            await updateDoc(doc(db, "leaders", id), { status: status });
+            loadAllLeadersMaster();
+        } catch(e) {
+            alert("Status update failed.");
+        }
+    };
+
+    window.masterLogout = function() {
+        localStorage.removeItem("isMasterLoggedIn");
+        window.location.replace("login.html");
+    };
+
+    loadAllLeadersMaster();
+</script>
+
+</body>
+</html>
