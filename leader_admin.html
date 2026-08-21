@@ -117,23 +117,8 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-        .neu-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px #18181b;
-        }
+        .neu-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #18181b; }
 
-        .action-pill {
-            padding: 5px 12px;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            font-size: 0.75rem;
-            font-weight: 800;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 2px 2px 0px var(--border-color);
-        }
-
-        /* In-Page Auth Lock Modal (NO REDIRECT BUG) */
         .auth-lock-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -159,45 +144,84 @@
 </head>
 <body>
 
-<!-- 🔒 IN-PAGE SMART LEADER PASSKEY GUARD (No redirect loop) -->
+<!-- 🛑 PERMANENT DEVICE BAN SCREEN (BIGBASKET STYLE) -->
+<div id="deviceBannedOverlay" class="auth-lock-overlay d-none" style="background:#450a0a; z-index:100000;">
+    <div class="auth-lock-card" style="border-color:#EF4444; box-shadow:8px 8px 0 #991B1B;">
+        <div style="width:65px; height:65px; background:#FEE2E2; border:3px solid #991B1B; border-radius:16px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#991B1B;">
+            <i class="fas fa-ban"></i>
+        </div>
+        <h3 style="font-family:'Cinzel', serif; font-weight:900; color:#991B1B; margin:0 0 8px 0;">DEVICE PERMANENTLY BANNED</h3>
+        <p style="font-size:0.85rem; font-weight:700; color:#18181b; line-height:1.5; margin-bottom:16px;">
+            This device has been permanently blocked by ISKCON Security System due to repeated unauthorized attempts.
+        </p>
+        <div class="p-2 mb-3 bg-light border border-2 border-danger rounded-3 text-start small fw-bold">
+            <div>Hardware Device ID: <span id="banDevId">--</span></div>
+            <div class="text-danger mt-1">Status: HARDWARE LOCK (Reinstall Won't Work)</div>
+        </div>
+        <a href="https://wa.me/919876543210?text=Hare%20Krishna%20Temple%20Admin,%20my%20device%20is%20blocked" target="_blank" class="neu-btn w-100" style="background:#25D366; color:white; text-decoration:none;">
+            <i class="fab fa-whatsapp me-1"></i> Contact Temple Support to Reopen
+        </a>
+    </div>
+</div>
+
+<!-- 🔒 IN-PAGE SMART LEADER AUTH GUARD -->
 <div id="leaderAuthModal" class="auth-lock-overlay">
     <div class="auth-lock-card">
         <div style="width:60px; height:60px; background:#FEF08A; border:3px solid #18181b; box-shadow:3px 3px 0 #18181b; border-radius:14px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:1.6rem; color:#18181b;">
             <i class="fas fa-crown"></i>
         </div>
-        <h4 style="font-family:'Cinzel', serif; font-weight:900; margin:0 0 6px 0;">LEADER ADMIN ACCESS</h4>
-        <p style="font-size:0.8rem; font-weight:700; color:#52525b; margin-bottom:18px;">Enter Leader Registered Phone and Passkey.</p>
+        <h4 style="font-family:'Cinzel', serif; font-weight:900; margin:0 0 6px 0;">LEADER PORTAL ACCESS</h4>
         
-        <div class="text-start">
+        <!-- Toggle Login / Register -->
+        <div class="d-flex gap-2 mb-3">
+            <button onclick="toggleLeaderAuthTab('login')" id="tabLdrLog" class="neu-btn flex-grow-1" style="padding:6px; font-size:0.78rem;">Login</button>
+            <button onclick="toggleLeaderAuthTab('reg')" id="tabLdrReg" class="neu-btn flex-grow-1" style="padding:6px; font-size:0.78rem; background:#FFF;">Create Account</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="ldrLogView" class="text-start">
             <label class="fw-bold small mb-1">Leader Registered Phone</label>
             <input type="tel" id="ldrAuthPhone" class="neu-input" placeholder="10-digit mobile number">
 
             <label class="fw-bold small mb-1">Leader Secret Passkey</label>
-            <input type="password" id="ldrAuthPass" class="neu-input" placeholder="Enter Leader Passkey" onkeypress="if(event.key==='Enter') unlockLeaderPanel()">
+            <input type="password" id="ldrAuthPass" class="neu-input" placeholder="Enter Leader Passkey">
             
             <div id="ldrAuthError" class="alert alert-danger p-2 mb-2 d-none fw-bold small border border-2 border-dark">
-                <i class="fas fa-triangle-exclamation me-1"></i> <span id="ldrErrorMsg">Invalid Credentials!</span>
+                <i class="fas fa-triangle-exclamation me-1"></i> <span id="ldrErrorMsg"></span>
             </div>
             
-            <button onclick="unlockLeaderPanel()" id="btnLdrUnlock" class="neu-btn w-100 mt-1"><i class="fas fa-key me-1"></i> Unlock Leader Dashboard</button>
+            <button onclick="unlockLeaderPanel()" id="btnLdrUnlock" class="neu-btn w-100 mt-1"><i class="fas fa-key me-1"></i> Login to Dashboard</button>
+        </div>
+
+        <!-- Self-Registration Form -->
+        <div id="ldrRegView" class="text-start d-none">
+            <label class="fw-bold small mb-1">Leader Spiritual Title & Name</label>
+            <input type="text" id="regLdrName" class="neu-input" placeholder="e.g. Radheshyam Das (Pune)" required>
+
+            <label class="fw-bold small mb-1">Mobile Number (Login ID)</label>
+            <input type="tel" id="regLdrPhone" class="neu-input" placeholder="10-digit mobile" required>
+
+            <label class="fw-bold small mb-1">Create Secret Passkey</label>
+            <input type="password" id="regLdrPass" class="neu-input" placeholder="••••••••" required>
+
+            <button onclick="registerLeaderAccount()" id="btnLdrReg" class="neu-btn w-100 mt-1" style="background:#FEF08A;"><i class="fas fa-user-plus me-1"></i> Register as Leader</button>
         </div>
     </div>
 </div>
 
-<!-- TOP NAV -->
+<!-- NAV -->
 <div class="leader-nav">
     <div class="d-flex align-items-center gap-2">
         <i class="fas fa-crown fa-lg"></i>
         <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;" id="leaderHeaderName">Leader Admin</h5>
     </div>
     <div class="d-flex align-items-center gap-2">
-        <a href="master_admin.html" class="action-pill" style="background:#FEF08A; text-decoration:none; color:#18181b;"><i class="fas fa-shield-halved"></i> Master</a>
-        <button onclick="lockLeaderPanel()" class="action-pill" style="background:#FFF;"><i class="fas fa-lock"></i> Lock</button>
+        <a href="master_admin.html" class="action-pill" style="background:#FEF08A; text-decoration:none; color:#18181b; padding:5px 10px; font-weight:800; font-size:0.75rem; border:2px solid #18181b; border-radius:8px;"><i class="fas fa-shield-halved"></i> Master</a>
+        <button onclick="lockLeaderPanel()" class="action-pill" style="background:#FFF; padding:5px 10px; font-weight:800; font-size:0.75rem; border:2px solid #18181b; border-radius:8px;"><i class="fas fa-lock"></i> Lock</button>
     </div>
 </div>
 
 <div class="container-fluid px-3 pt-3">
-
     <!-- Stat Counter Card -->
     <div class="neu-card" style="background:#FEF08A;">
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -237,12 +261,11 @@
             <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
         </div>
     </div>
-
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", 
@@ -256,20 +279,143 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // 🔒 ADVANCED HARDWARE FINGERPRINT GENERATOR (SURVIVES CLEAR DATA / REINSTALL)
+    function generateDeviceHardwareId() {
+        let storedId = localStorage.getItem("iskcon_dev_hw_id");
+        if (!storedId) {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            let glStr = '';
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) glStr = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            }
+            const raw = `${navigator.userAgent}_${screen.width}x${screen.height}_${screen.colorDepth}_${navigator.hardwareConcurrency || 4}_${glStr}_${navigator.language}`;
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) {
+                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+                hash |= 0;
+            }
+            storedId = "HW_" + Math.abs(hash).toString(16) + "_" + (navigator.platform || 'AND').replace(/[^a-zA-Z0-9]/g, '');
+            localStorage.setItem("iskcon_dev_hw_id", storedId);
+        }
+        return storedId;
+    }
+
+    const currentDeviceId = generateDeviceHardwareId();
+    document.getElementById("banDevId").innerText = currentDeviceId;
+
     let activeLeaderId = localStorage.getItem("activeLeaderPhone") || "";
     let activeLeaderName = localStorage.getItem("activeLeaderName") || "Leader Admin";
 
-    // Unlock Leader Panel Logic
-    window.unlockLeaderPanel = async function() {
-        const phone = document.getElementById("ldrAuthPhone").value.trim();
-        const pass = document.getElementById("ldrAuthPass").value.trim();
+    // 🚨 CHECK IF DEVICE IS BANNED IN FIRESTORE
+    async function verifyDeviceSecurity() {
+        try {
+            const banSnap = await getDoc(doc(db, "blocked_devices", currentDeviceId));
+            if (banSnap.exists() && banSnap.data().isBanned === true) {
+                showPermanentBanScreen();
+                return true;
+            }
+            const logSnap = await getDoc(doc(db, "security_logs", currentDeviceId));
+            if (logSnap.exists()) {
+                const log = logSnap.data();
+                if (log.permanentBanned === true) {
+                    showPermanentBanScreen();
+                    return true;
+                }
+                if (log.lockUntil && Date.now() < log.lockUntil) {
+                    const hours = Math.ceil((log.lockUntil - Date.now()) / (1000 * 60 * 60));
+                    showLockError(`🚨 Device is locked for ${hours} more hours due to repeated failed attempts.`);
+                    return true;
+                }
+            }
+        } catch(e) {}
+        return false;
+    }
+
+    function showPermanentBanScreen() {
+        document.getElementById("deviceBannedOverlay").classList.remove("d-none");
+        document.getElementById("leaderAuthModal").classList.add("d-none");
+    }
+
+    function showLockError(msg) {
         const err = document.getElementById("ldrAuthError");
         const errMsg = document.getElementById("ldrErrorMsg");
+        errMsg.innerText = msg;
+        err.classList.remove("d-none");
+    }
+
+    // 📈 PROGRESSIVE ESCALATION PENALTY ENGINE (6h -> 12h -> 16h -> 24h -> 48h -> BAN)
+    async function recordFailedAttemptCloud() {
+        try {
+            const logRef = doc(db, "security_logs", currentDeviceId);
+            const logSnap = await getDoc(logRef);
+            let currentFails = 1;
+            if (logSnap.exists()) currentFails = (logSnap.data().failCount || 0) + 1;
+
+            let lockHours = 0;
+            let stageName = "Normal";
+            let isPermBan = false;
+
+            if (currentFails >= 18) { // 6th Trigger (18 fails) -> PERMANENT BAN
+                isPermBan = true;
+                lockHours = 87600; // 10 years
+                stageName = "PERMANENT_BAN";
+            } else if (currentFails >= 15) { // 5th Trigger -> 48 Hours
+                lockHours = 48;
+                stageName = "48h";
+            } else if (currentFails >= 12) { // 4th Trigger -> 24 Hours
+                lockHours = 24;
+                stageName = "24h";
+            } else if (currentFails >= 9) {  // 3rd Trigger -> 16 Hours
+                lockHours = 16;
+                stageName = "16h";
+            } else if (currentFails >= 6) {  // 2nd Trigger -> 12 Hours
+                lockHours = 12;
+                stageName = "12h";
+            } else if (currentFails >= 3) {  // 1st Trigger -> 6 Hours
+                lockHours = 6;
+                stageName = "6h";
+            }
+
+            const lockTimestamp = lockHours > 0 ? (Date.now() + (lockHours * 60 * 60 * 1000)) : 0;
+
+            await setDoc(logRef, {
+                deviceId: currentDeviceId,
+                failCount: currentFails,
+                lockUntil: lockTimestamp,
+                lockStage: stageName,
+                permanentBanned: isPermBan,
+                lastAttemptAt: Date.now()
+            }, { merge: true });
+
+            if (isPermBan) {
+                await setDoc(doc(db, "blocked_devices", currentDeviceId), { isBanned: true, reason: "Excessive failed attempts", updatedAt: Date.now() });
+                showPermanentBanScreen();
+            } else if (lockHours > 0) {
+                showLockError(`🚨 3 Failed attempts! Device locked for ${lockHours} Hours (Stage: ${stageName}). Next lock will be higher.`);
+            } else {
+                showLockError(`⚠️ Invalid credentials! Attempt ${currentFails % 3 || 3} of 3 before lockout.`);
+            }
+        } catch(e) {}
+    }
+
+    window.toggleLeaderAuthTab = function(tab) {
+        document.getElementById("ldrLogView").classList.toggle("d-none", tab !== 'login');
+        document.getElementById("ldrRegView").classList.toggle("d-none", tab !== 'reg');
+        document.getElementById("tabLdrLog").style.background = tab === 'login' ? '#FF9933' : '#FFF';
+        document.getElementById("tabLdrReg").style.background = tab === 'reg' ? '#FF9933' : '#FFF';
+    };
+
+    window.unlockLeaderPanel = async function() {
+        if (await verifyDeviceSecurity()) return;
+
+        const phone = document.getElementById("ldrAuthPhone").value.trim();
+        const pass = document.getElementById("ldrAuthPass").value.trim();
         const btn = document.getElementById("btnLdrUnlock");
 
         if(!phone || !pass) {
-            errMsg.innerText = "Please enter both phone and passkey.";
-            err.classList.remove("d-none");
+            showLockError("Please enter phone and passkey.");
             return;
         }
 
@@ -281,13 +427,15 @@
             if (snap.exists()) {
                 const data = snap.data();
                 if (data.status === "blocked") {
-                    errMsg.innerText = "Your account is blocked by Master Admin.";
-                    err.classList.remove("d-none");
+                    showLockError("Your leader account is blocked by Master Admin.");
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-key me-1"></i> Unlock Leader Dashboard';
+                    btn.innerHTML = '<i class="fas fa-key me-1"></i> Login to Dashboard';
                     return;
                 }
                 if (data.passkey === pass) {
+                    // Success! Reset security counters
+                    await setDoc(doc(db, "security_logs", currentDeviceId), { failCount: 0, lockUntil: 0 }, { merge: true });
+
                     activeLeaderId = phone;
                     activeLeaderName = data.name || "Revered Maharaj";
                     localStorage.setItem("isLeaderUnlocked", "true");
@@ -300,15 +448,52 @@
                     return;
                 }
             }
-            errMsg.innerText = "Invalid Leader Phone or Passkey!";
-            err.classList.remove("d-none");
+            await recordFailedAttemptCloud();
         } catch(e) {
-            errMsg.innerText = "Connection error. Check network.";
-            err.classList.remove("d-none");
+            showLockError(`Error: ${e.message}`);
         }
 
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-key me-1"></i> Unlock Leader Dashboard';
+        btn.innerHTML = '<i class="fas fa-key me-1"></i> Login to Dashboard';
+    };
+
+    window.registerLeaderAccount = async function() {
+        if (await verifyDeviceSecurity()) return;
+
+        const name = document.getElementById("regLdrName").value.trim();
+        const phone = document.getElementById("regLdrPhone").value.trim();
+        const pass = document.getElementById("regLdrPass").value.trim();
+        const btn = document.getElementById("btnLdrReg");
+
+        if (!name || !phone || !pass) {
+            alert("Please fill all details.");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Registering...';
+
+        try {
+            await setDoc(doc(db, "leaders", phone), {
+                name: name,
+                contact: phone,
+                passkey: pass,
+                country: "India",
+                city: "Global",
+                status: "approved",
+                createdAt: Date.now()
+            });
+
+            alert(`✅ Account created successfully! Please login now.`);
+            window.toggleLeaderAuthTab('login');
+            document.getElementById("ldrAuthPhone").value = phone;
+            document.getElementById("ldrAuthPass").value = pass;
+        } catch(e) {
+            alert(`Registration error: ${e.message}`);
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus me-1"></i> Register as Leader';
     };
 
     window.lockLeaderPanel = function() {
@@ -317,7 +502,6 @@
         document.getElementById("leaderAuthModal").classList.remove("d-none");
     };
 
-    // Auto unlock if previously active
     if (localStorage.getItem("isLeaderUnlocked") === "true" && activeLeaderId) {
         document.getElementById("leaderHeaderName").innerText = activeLeaderName;
         document.getElementById("leaderAuthModal").classList.add("d-none");
@@ -358,7 +542,7 @@
             document.getElementById("statTotalDonations").innerText = `₹${totalAmount.toLocaleString('en-IN')}`;
 
             if (devotees.length === 0) {
-                container.innerHTML = '<div class="text-center p-4 fw-bold">No devotees have connected to your leadership yet.</div>';
+                container.innerHTML = '<div class="text-center p-4 fw-bold">No devotees linked to this leadership profile yet.</div>';
                 return;
             }
 
@@ -379,10 +563,10 @@
                             <span class="stat-badge" style="background:#BBF7D0; font-size:0.85rem; color:#166534;">₹${devTotal}</span>
                         </div>
                         <div style="font-size:0.75rem; font-weight:700; background:#f4f4f5; padding:6px; border-radius:6px; border:1px solid #18181b;">
-                            <span>PAN: ${dev.pan || 'N/A'}</span> | <span>Gotra: ${dev.gotra || 'N/A'}</span> | <span>Address: ${dev.address || 'N/A'}</span>
+                            <span>PAN: ${dev.pan || 'N/A'}</span> | <span>Gotra: ${dev.gotra || 'N/A'}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-1">
-                            <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
+                            <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> WhatsApp Chat</a>
                             <span style="font-size:0.74rem; font-weight:800; opacity:0.8;">Total Sevas: ${devDons.length}</span>
                         </div>
                     </div>
@@ -390,9 +574,8 @@
             });
 
             container.innerHTML = html;
-
         } catch(e) {
-            container.innerHTML = '<p class="text-danger p-3 fw-bold">Error loading devotees.</p>';
+            container.innerHTML = `<p class="text-danger p-3 fw-bold">Error: ${e.message}</p>`;
         }
     };
 
@@ -401,10 +584,7 @@
         const body = document.getElementById("pushBody").value.trim();
         const btn = document.getElementById("btnSendPush");
 
-        if (!title || !body) {
-            alert("Please enter title and message.");
-            return;
-        }
+        if (!title || !body) { alert("Enter title and message."); return; }
 
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Broadcasting...';
@@ -422,13 +602,14 @@
             document.getElementById("pushTitle").value = '';
             document.getElementById("pushBody").value = '';
         } catch(e) {
-            alert("Failed to send push.");
+            alert(`Failed: ${e.message}`);
         }
 
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-bullhorn me-1"></i> Send Targeted Push Alert';
     };
 
+    verifyDeviceSecurity();
     if (localStorage.getItem("isLeaderUnlocked") === "true" && activeLeaderId) {
         fetchLeaderDevotees();
     }
