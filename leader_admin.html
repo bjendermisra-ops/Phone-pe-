@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="theme-color" content="#FF9933">
+    <title>Leader Admin - ISKCON Bhuvaikuntha</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #FFFDF9;
+            --card-bg: #FFFFFF;
+            --text-color: #18181b;
+            --border-color: #18181b;
+            --neu-border: 3px solid #18181b;
+            --neu-shadow: 4px 4px 0px #18181b;
+            --neu-shadow-sm: 2.5px 2.5px 0px #18181b;
+            --badge-yellow: #FEF08A;
+            --badge-orange: #FFD8A8;
+            --badge-green: #BBF7D0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            padding-bottom: 30px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .leader-nav {
+            background: #FF9933;
+            border-bottom: var(--neu-border);
+            padding: 14px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .neu-card {
+            background: var(--card-bg);
+            border: var(--neu-border);
+            box-shadow: var(--neu-shadow);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+
+        .stat-badge {
+            background: var(--badge-yellow);
+            border: 2px solid var(--border-color);
+            box-shadow: 2px 2px 0px var(--border-color);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-weight: 800;
+            font-size: 0.78rem;
+        }
+
+        .devotee-row-card {
+            background: #FFFDF9;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--neu-shadow-sm);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: #ffffff !important;
+            border: 2px solid #18181b;
+            box-shadow: 2px 2px 0px #18181b;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            width: fit-content;
+        }
+
+        .neu-input, .neu-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2.5px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            outline: none;
+        }
+
+        .neu-btn {
+            background: #FF9933;
+            color: #18181b;
+            border: var(--neu-border);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 0.88rem;
+            box-shadow: var(--neu-shadow-sm);
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .neu-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #18181b;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    if (localStorage.getItem("isLeaderLoggedIn") !== "true") {
+        window.location.replace("login.html");
+    }
+</script>
+
+<div class="leader-nav">
+    <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-crown fa-lg"></i>
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;" id="leaderHeaderName">Leader Admin</h5>
+    </div>
+    <button onclick="leaderLogout()" class="neu-btn" style="padding:4px 10px; font-size:0.75rem; background:#FFF;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</div>
+
+<div class="container-fluid px-3 pt-3">
+    <!-- Stat Counter Card -->
+    <div class="neu-card" style="background:#FEF08A;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="stat-badge"><i class="fas fa-users me-1"></i> Devotees Linked</span>
+            <span class="stat-badge" style="background:#BBF7D0;"><i class="fas fa-hand-holding-dollar me-1"></i> Total Seva</span>
+        </div>
+        <div class="row g-2 text-center mt-1">
+            <div class="col-6">
+                <h2 style="font-weight:900; margin:0;" id="statDevoteeCount">0</h2>
+                <small class="fw-bold">My Devotees</small>
+            </div>
+            <div class="col-6">
+                <h2 style="font-weight:900; margin:0; color:#16A34A;" id="statTotalDonations">₹0</h2>
+                <small class="fw-bold">Total Offerings</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Targeted Push Notification to My Devotees Only -->
+    <div class="neu-card">
+        <h5 style="font-family:'Cinzel', serif; font-weight:900; margin-bottom:12px;"><i class="fas fa-paper-plane text-warning me-2"></i> Broadcast Blessing / Message</h5>
+        <p style="font-size:0.78rem; font-weight:700; opacity:0.8;">Note: This push notification will strictly reach ONLY the devotees connected to your leadership.</p>
+        
+        <input type="text" id="pushTitle" class="neu-input" placeholder="Title (e.g. Special Blessings for Janmashtami)">
+        <textarea id="pushBody" class="neu-textarea" rows="3" placeholder="Enter your sacred message or seva appeal..."></textarea>
+        <button onclick="sendTargetedPush()" id="btnSendPush" class="neu-btn w-100"><i class="fas fa-bullhorn me-1"></i> Send Targeted Push Alert</button>
+    </div>
+
+    <!-- Devotees List -->
+    <div class="neu-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 style="font-family:'Cinzel', serif; font-weight:900; margin:0;"><i class="fas fa-list me-2"></i> My Devotees & Seva Records</h5>
+            <button onclick="fetchLeaderDevotees()" class="btn btn-sm btn-outline-dark fw-bold"><i class="fas fa-rotate"></i> Refresh</button>
+        </div>
+
+        <div id="devoteeListContainer">
+            <div class="text-center p-3">
+                <i class="fas fa-spinner fa-spin fa-2x text-warning"></i>
+                <p class="mt-2 fw-bold">Fetching devotees...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", 
+        authDomain: "iskcon-bhuvaikuntha.firebaseapp.com", 
+        projectId: "iskcon-bhuvaikuntha",
+        storageBucket: "iskcon-bhuvaikuntha.firebasestorage.app",
+        messagingSenderId: "87535383708",
+        appId: "1:87535383708:web:7548e3b7d4c807faafe959"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const leaderId = localStorage.getItem("activeLeaderId");
+    const leaderName = localStorage.getItem("activeLeaderName") || "Maharaj";
+    document.getElementById("leaderHeaderName").innerText = leaderName;
+
+    window.fetchLeaderDevotees = async function() {
+        const container = document.getElementById("devoteeListContainer");
+        container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i><p class="mt-2 fw-bold">Loading devotee records...</p></div>';
+
+        try {
+            // 1. Fetch devotees linked to this leader
+            const userQ = query(collection(db, "users"), where("assignedLeaderId", "==", leaderId));
+            const userSnap = await getDocs(userQ);
+            
+            let devotees = [];
+            let phoneList = [];
+            userSnap.forEach(d => {
+                const u = d.data();
+                devotees.push(u);
+                if (u.contact) phoneList.push(u.contact);
+            });
+
+            document.getElementById("statDevoteeCount").innerText = devotees.length;
+
+            // 2. Fetch all donations for these devotees
+            let totalAmount = 0;
+            let donationsMap = {};
+
+            const donSnap = await getDocs(collection(db, "donations"));
+            donSnap.forEach(d => {
+                const don = d.data();
+                if (phoneList.includes(don.contact)) {
+                    totalAmount += parseFloat(don.amount || 0);
+                    if (!donationsMap[don.contact]) donationsMap[don.contact] = [];
+                    donationsMap[don.contact].push(don);
+                }
+            });
+
+            document.getElementById("statTotalDonations").innerText = `₹${totalAmount.toLocaleString('en-IN')}`;
+
+            if (devotees.length === 0) {
+                container.innerHTML = '<div class="text-center p-4 fw-bold">No devotees have linked to this leadership profile yet.</div>';
+                return;
+            }
+
+            let html = '';
+            devotees.forEach(dev => {
+                const devDons = donationsMap[dev.contact] || [];
+                const devTotal = devDons.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+                const waMessage = encodeURIComponent(`Hare Krishna ${dev.name}! Dandavat Pranam. Sending blessings from Sri Dham Pandharpur.`);
+                const waLink = `https://wa.me/91${dev.contact}?text=${waMessage}`;
+
+                html += `
+                    <div class="devotee-row-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 style="font-weight:900; margin:0;">${dev.name}</h6>
+                                <p style="font-size:0.75rem; margin:0; opacity:0.8; font-weight:700;">📞 +91 ${dev.contact} | 📍 ${dev.city || 'N/A'}</p>
+                            </div>
+                            <span class="stat-badge" style="background:#BBF7D0; font-size:0.85rem; color:#166534;">₹${devTotal}</span>
+                        </div>
+                        <div style="font-size:0.75rem; font-weight:700; background:#f4f4f5; padding:6px; border-radius:6px;">
+                            <span>PAN: ${dev.pan || 'N/A'}</span> | <span>Gotra: ${dev.gotra || 'N/A'}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-1">
+                            <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
+                            <span style="font-size:0.72rem; font-weight:800; opacity:0.7;">Sevas Done: ${devDons.length}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+        } catch(e) {
+            container.innerHTML = '<p class="text-danger p-3 fw-bold">Error fetching data. Check permissions.</p>';
+        }
+    };
+
+    window.sendTargetedPush = async function() {
+        const title = document.getElementById("pushTitle").value.trim();
+        const body = document.getElementById("pushBody").value.trim();
+        const btn = document.getElementById("btnSendPush");
+
+        if (!title || !body) {
+            alert("Please enter title and message body.");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Broadcasting...';
+
+        try {
+            await addDoc(collection(db, "targeted_notifications"), {
+                leaderId: leaderId,
+                leaderName: leaderName,
+                title: title,
+                body: body,
+                createdAt: Date.now()
+            });
+
+            alert(`✅ Push Notification successfully queued for all devotees under ${leaderName}!`);
+            document.getElementById("pushTitle").value = '';
+            document.getElementById("pushBody").value = '';
+        } catch(e) {
+            alert("Failed to send push.");
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-bullhorn me-1"></i> Send Targeted Push Alert';
+    };
+
+    window.leaderLogout = function() {
+        localStorage.removeItem("isLeaderLoggedIn");
+        localStorage.removeItem("activeLeaderId");
+        localStorage.removeItem("activeLeaderName");
+        window.location.replace("login.html");
+    };
+
+    fetchLeaderDevotees();
+</script>
+
+</body>
+</html>
