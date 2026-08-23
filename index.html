@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="theme-color" content="#F7931E">
+    <title>ISKCON Bhuvaikuntha</title>
+
+    <!-- Fast Preconnects -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://unpkg.com">
+    
+    <!-- Stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Cinzel:wght@700;800;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
+    
+    <style>
+        :root { 
+            /* 🎨 Official Figma Color Tokens (Jagannath Gangul Design System) */
+            --primary: #F7931E; 
+            --primary-dark: #E07E0D;
+            --primary-90: #F89E34;
+            --primary-75: #FAB45B;
+            --primary-50: #FDC98E;
+            --primary-25: #FEE4C6;
+            --primary-15: #FFF0DE;
+            --primary-5: #FFF9F3;
+            
+            --text-500: #1A202C;
+            --text-90: #2D3748;
+            --text-75: #4A5568;
+            --text-50: #718096;
+            --text-25: #A0AEC0;
+            --text-15: #CBD5E0;
+            --text-5: #E2E8F0;
+
+            --bg-color: #FBF9F5; 
+            --card-bg: #FFFFFF; 
+            --border-color: #EAE6DF;
+            --nav-dock-bg: #1E242B;
+            
+            --success-color: #22C55E;
+            --warning-color: #F59E0B;
+            --error-color: #EF4444;
+
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            --orange-shadow: 0 6px 18px rgba(247, 147, 30, 0.22);
+            --slider-height: clamp(340px, 52vw, 450px); 
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            --bs-gutter-x: 1rem; 
+        }
+
+        [data-theme="dark"] { 
+            --bg-color: #0E1217; 
+            --card-bg: #181D24; 
+            --text-500: #F7FAFC;
+            --text-90: #EDF2F7;
+            --text-75: #E2E8F0;
+            --text-50: #CBD5E0;
+            --border-color: #2D3748;
+            --nav-dock-bg: #12161A;
+            --primary-5: #2A1D0F;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --orange-shadow: 0 6px 20px rgba(247, 147, 30, 0.3);
+        }
+        
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; 
+            color: var(--text-500); 
+            transition: background-color 0.25s ease, color 0.25s ease; 
+            margin: 0; 
+            padding-bottom: 95px !important; /* Space for Figma Bottom Floating Dock */
+            -webkit-tap-highlight-color: transparent; 
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        
+        .qa-card, .campaign-scroll-card-premium, .progress-card-premium, .live-donation-banner, .guru-card { 
+            will-change: transform; 
+            transform: translate3d(0, 0, 0); 
+            backface-visibility: hidden; 
+        }
+        .h-scroll { content-visibility: auto; contain-intrinsic-size: 160px; }
+
+        /* Figma Splash Screen */
+        #app-splash { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: var(--bg-color); z-index: 99999; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            transition: opacity 0.3s ease; 
+        }
+        body.is-loaded #app-splash { opacity: 0; pointer-events: none; }
+        .splash-logo { 
+            width: 95px; height: 95px; border-radius: 24px; 
+            box-shadow: var(--orange-shadow);
+            animation: splashPulse 1.2s infinite alternate ease-in-out; 
+            margin-bottom: 18px;
+            background: #ffffff;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+        .splash-text { 
+            font-family: 'Cinzel', serif; 
+            font-weight: 800; 
+            font-size: 1.35rem; 
+            color: var(--primary); 
+            letter-spacing: 2px;
+        }
+        .splash-spinner { 
+            margin-top: 18px; width: 2.2rem; height: 2.2rem; 
+            border-width: 0.25em; 
+            color: var(--primary); 
+        }
+        @keyframes splashPulse { 
+            0% { transform: scale(0.96); } 100% { transform: scale(1.04); } 
+        }
+
+        /* 🛑 HARDWARE DEVICE BAN SCREEN (BIGBASKET STYLE) */
+        .ban-freeze-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #2D1515; z-index: 100000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .ban-card {
+            background: #FFFFFF; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 28px 22px; width: 100%; max-width: 400px; text-align: center;
+        }
+
+        /* 🔔 Live In-App Push Notification Alert Banner (Figma Style) */
+        .inapp-push-banner {
+            position: fixed; top: -150px; left: 14px; right: 14px;
+            background: #FFFFFF; border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-left: 5px solid var(--primary);
+            padding: 14px 16px; z-index: 10050; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .inapp-push-banner.show { top: 18px; }
+
+        /* 📱 Top Header Bar (Figma Exact Style: Screenshot 1 & 8) */
+        .figma-navbar {
+            background: var(--primary);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            box-shadow: 0 2px 10px rgba(247, 147, 30, 0.2);
+        }
+        .header-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid #FFFFFF;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin: 0;
+            letter-spacing: 0.3px;
+        }
+        .header-bell-btn {
+            background: transparent;
+            border: none;
+            color: #FFFFFF;
+            font-size: 1.25rem;
+            position: relative;
+            cursor: pointer;
+        }
+        .bell-dot {
+            position: absolute;
+            top: -2px; right: -2px;
+            width: 8px; height: 8px;
+            background: #EF4444;
+            border-radius: 50%;
+            border: 1.5px solid var(--primary);
+        }
+
+        /* Maha-Mantra Ticker (Figma Warm Accent) */
+        .mantra-ticker { 
+            background-color: var(--primary-15); 
+            color: var(--primary-dark); 
+            padding: 7px 0; 
+            overflow: hidden; 
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center; 
+            border-bottom: 1px solid var(--primary-25); 
+            font-weight: 700; 
+            font-size: 0.82rem; 
+            letter-spacing: 0.5px; 
+        }
+        [data-theme="dark"] .mantra-ticker { 
+            background-color: #1F170E; 
+            color: var(--primary-75); 
+            border-bottom-color: #2D2214;
+        }
+        .mantra-ticker-content { display: inline-block; animation: textScroll 22s linear infinite; } 
+        .ticker-span { padding-right: 40px; } 
+        .ticker-span i { font-size: 0.65rem; vertical-align: middle; color: var(--primary); margin: 0 6px; } 
+        @keyframes textScroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } } 
+
+        /* 👑 My Spiritual Guide (Maharaj) Card */
+        .guru-card {
+            margin: 14px 14px 4px 14px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        .guru-avatar {
+            width: 48px; height: 48px; border-radius: 14px;
+            object-fit: cover; border: 1.5px solid var(--primary);
+        }
+
+        /* Dynamic Hero Slider (Clean Rounded Style) */
+        .hero-slider {
+            margin: 14px;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            background: #110c08;
+            position: relative;
+        }
+        .hero-slider .carousel-item { 
+            height: var(--slider-height); 
+            background: #110c08; 
+            position: relative; 
+        }
+        .slide-bg-blur {
+            position: absolute; top: -15px; left: -15px;
+            width: calc(100% + 30px); height: calc(100% + 30px);
+            background-size: cover; background-position: center;
+            filter: blur(20px) brightness(0.35); z-index: 1;
+        }
+        .hero-slider .carousel-item img { 
+            position: relative; z-index: 2;
+            object-fit: contain; width: 100%; height: 100%;
+            max-height: var(--slider-height);
+        }
+        .slide-overlay-content {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.85) 100%);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 24px 20px 32px 20px; z-index: 3;
+        }
+        .slide-title-large {
+            font-family: 'Cinzel', serif; font-size: 1.35rem; font-weight: 800;
+            color: #ffffff; line-height: 1.25; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .slide-title-large.yellow { color: #FFE082; }
+        .slide-desc-small {
+            font-size: 0.8rem; color: rgba(255, 255, 255, 0.92);
+            margin-top: 4px; font-weight: 500; line-height: 1.35;
+        }
+        .figma-pill-btn {
+            background: var(--primary);
+            color: #FFFFFF !important;
+            padding: 9px 24px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border-radius: 25px;
+            margin-top: 12px;
+            display: inline-block;
+            box-shadow: var(--orange-shadow);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            width: fit-content;
+        }
+        .figma-pill-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Live Date Slide Layout */
+        .date-slide { 
+            height: 100%; width: 100%; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; padding: 16px; 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important; 
+            color: #ffffff !important; 
+        } 
+        .date-slide h1 { 
+            font-family: 'Cinzel', serif; font-size: clamp(3.2rem, 12vw, 4.5rem) !important; 
+            margin: 0; font-weight: 900; color: #ffffff !important; line-height: 1;
+        } 
+        .date-slide p { 
+            font-size: 0.95rem !important; margin: 6px 0 12px 0; text-transform: uppercase; 
+            letter-spacing: 2px; font-weight: 700; color: #ffffff !important; 
+        } 
+        .live-clock { 
+            font-family: monospace, monospace; background: rgba(0,0,0,0.3); 
+            padding: 6px 18px; border-radius: 25px; font-weight: 700; 
+            font-size: 1.1rem; letter-spacing: 1px; color: #ffffff !important; 
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        /* Section Header Layouts (Figma Style: Screenshot 1) */
+        .section-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin: 22px 14px 12px 14px; 
+        } 
+        .section-title { 
+            color: var(--text-500); 
+            font-size: 1.05rem; 
+            font-weight: 800; 
+            margin: 0; 
+            letter-spacing: -0.2px;
+        } 
+        .see-all { 
+            font-size: 0.78rem; font-weight: 700; color: var(--primary) !important; 
+            display: flex; align-items: center; gap: 4px; 
+        } 
+
+        /* 🖼️ Quick Access 2-Column Grid (Figma Screenshot 1 Exact Style) */
+        .quick-access-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin: 0 14px 20px 14px;
+        }
+        .qa-card-figma {
+            background: var(--card-bg);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+        .qa-card-figma:active { transform: scale(0.97); }
+        .qa-figma-img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 14px 14px 0 0;
+        }
+        .qa-figma-label {
+            padding: 10px 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-500);
+            text-align: center;
+            margin: 0;
+        }
+
+        /* Featured Seva Campaigns (Figma Screenshot 1 & 2) */
+        .campaign-scroll-card-premium {
+            flex-shrink: 0; width: 260px; background: var(--card-bg);
+            border-radius: 16px; box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            overflow: hidden; display: flex; flex-direction: column; transition: var(--transition);
+        }
+        .csc-img {
+            width: 100%; height: 135px; background-size: cover;
+            background-position: center;
+        }
+        .csc-body { padding: 14px; display: flex; flex-direction: column; flex-grow: 1; }
+        .csc-title { font-size: 0.95rem; font-weight: 800; color: var(--text-500); margin-bottom: 4px; }
+        .csc-desc { font-size: 0.76rem; color: var(--text-75); line-height: 1.4; margin-bottom: 12px; flex-grow: 1; font-weight: 500; }
+        .csc-btn {
+            background: var(--primary); color: #ffffff !important; font-size: 0.78rem;
+            font-weight: 700; text-align: center; padding: 8px 0; border-radius: 25px;
+            box-shadow: var(--orange-shadow);
+        }
+
+        /* Progress Cards (Figma Screenshot 1 & 11) */
+        .progress-card-premium {
+            flex-shrink: 0; width: 195px; height: 230px; border-radius: 16px;
+            overflow: hidden; position: relative; box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+        .pc-img { width: 100%; height: 100%; object-fit: cover; }
+        .pc-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px 10px;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 100%);
+            text-align: center;
+        }
+        .pc-title { font-size: 0.8rem; font-weight: 700; color: #ffffff; margin: 0; }
+
+        /* Bhuvaikuntha Pandharpur CTA Banner */
+        .padyatra-card { 
+            margin: 14px; background: #FFFFFF; 
+            border-radius: 16px; padding: 14px 16px; 
+            display: flex; align-items: center; justify-content: space-between; 
+            box-shadow: var(--card-shadow); border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        [data-theme="dark"] .padyatra-card { background: var(--card-bg); }
+        .py-content { display: flex; align-items: center; gap: 14px; width: 100%; }
+        .py-icon { 
+            width: 44px; height: 44px; background: var(--primary-15); 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; 
+            font-size: 1.25rem; color: var(--primary); flex-shrink: 0; 
+        }
+        .py-text { flex-grow: 1; }
+        .py-text h4 { margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-500); }
+        .py-text p { margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-50); font-weight: 600; }
+        .py-btn { 
+            background: var(--primary); color: #ffffff; font-size: 0.74rem; font-weight: 700; 
+            padding: 6px 14px; border-radius: 25px; display: flex; align-items: center; gap: 4px; 
+            white-space: nowrap; box-shadow: var(--orange-shadow);
+        }
+
+        /* Live Donation Board Action Banner */
+        .live-donation-banner {
+            background: var(--card-bg); border-radius: 16px; margin: 14px; padding: 14px 16px; 
+            display: flex; align-items: center; justify-content: space-between; 
+            box-shadow: var(--card-shadow); border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        .ld-left { display: flex; align-items: center; gap: 14px; }
+        .ld-icon-box {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: var(--primary-15); display: flex; align-items: center; justify-content: center;
+            color: var(--primary); font-size: 1.25rem; position: relative;
+        }
+        .ld-live-dot {
+            position: absolute; top: -2px; right: -2px;
+            width: 9px; height: 9px; background-color: var(--success-color);
+            border-radius: 50%; border: 1.5px solid #FFFFFF;
+            animation: liveBlink 1.2s infinite alternate;
+        }
+        @keyframes liveBlink { 0% { transform: scale(0.9); } 100% { transform: scale(1.2); } }
+        .ld-title { font-size: 0.95rem; font-weight: 800; color: var(--text-500); margin: 0; }
+        .ld-subtitle { font-size: 0.74rem; color: var(--text-50); margin: 2px 0 0 0; font-weight: 600; }
+        .ld-btn {
+            background: var(--nav-dock-bg); color: #ffffff !important;
+            font-size: 0.74rem; font-weight: 700; padding: 7px 14px; border-radius: 25px;
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        /* Importance of Donation (Figma Screenshot 1 & 2: Vamana Purana Scroll Card) */
+        .scroll-purana-card {
+            background: #FFFDF8; border-radius: 16px; margin: 14px;
+            padding: 22px; text-align: center; border: 1px solid #F3E8D0;
+            box-shadow: var(--card-shadow); min-height: 210px; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            background-image: radial-gradient(#F8EBD4 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+        [data-theme="dark"] .scroll-purana-card { background: var(--card-bg); border-color: var(--border-color); }
+        .ap-author {
+            font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--primary-dark);
+            font-weight: 800; margin-bottom: 6px;
+        }
+        .ap-text { font-size: 0.82rem; color: var(--text-75); line-height: 1.6; font-weight: 600; font-style: italic; }
+
+        /* Senior Leaders Blessings Card (Figma Screenshot 2) */
+        .leaders-slider-container {
+            box-shadow: var(--card-shadow); background: var(--card-bg);
+            border-radius: 16px; padding: 18px; margin: 14px; display: flex;
+            gap: 14px; align-items: center; min-height: 170px;
+            border: 1px solid var(--border-color);
+        }
+        .lsc-img {
+            width: 72px; height: 72px; border-radius: 50%; background-size: cover;
+            background-position: center; flex-shrink: 0; border: 2px solid var(--primary);
+        }
+        .lsc-body { flex: 1; }
+        .lsc-quote { font-size: 0.78rem; color: var(--text-75); line-height: 1.5; font-weight: 500; font-style: italic; }
+        .lsc-author { font-size: 0.88rem; font-weight: 800; color: var(--text-500); margin-top: 6px; margin-bottom: 2px; }
+        .lsc-role { font-size: 0.7rem; color: var(--text-50); font-weight: 600; }
+
+        /* ⚓ FLOATING BOTTOM DOCK (Figma Exact Style: Screenshot 1, 6, 7, 8) */
+        .figma-bottom-nav {
+            position: fixed;
+            bottom: 14px;
+            left: 16px;
+            right: 16px;
+            background: var(--nav-dock-bg);
+            border-radius: 20px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 1040;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+        .dock-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #A0AEC0;
+            padding: 6px 12px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .dock-item i {
+            font-size: 1.15rem;
+            margin-bottom: 3px;
+        }
+        .dock-item span {
+            font-size: 0.68rem;
+            font-weight: 600;
+        }
+        .dock-item.active {
+            color: var(--primary);
+        }
+
+        /* Modals & Forms (Figma Clean Style) */
+        .support-modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: rgba(0, 0, 0, 0.6); z-index: 2000; 
+            display: flex; align-items: center; justify-content: center; 
+            opacity: 0; visibility: hidden; transition: all 0.25s ease; padding: 16px; 
+        }
+        .support-modal-overlay.show { opacity: 1; visibility: visible; }
+        .support-modal-card { 
+            background: var(--card-bg); width: 100%; max-width: 440px; 
+            border-radius: 20px; padding: 22px; box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+            transform: scale(0.95); transition: all 0.25s ease; 
+        }
+        .support-modal-overlay.show .support-modal-card { transform: scale(1); }
+        .neu-input-group { margin-bottom: 12px; text-align: left; }
+        .neu-label { font-size: 0.74rem; font-weight: 700; color: var(--text-75); margin-bottom: 4px; display: block; text-transform: uppercase; }
+        .neu-input {
+            width: 100%; padding: 10px 14px; background: var(--bg-color);
+            border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.86rem;
+            font-weight: 600; color: var(--text-500); outline: none; transition: var(--transition);
+        }
+        .neu-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-15); }
+
+        /* Donation History Card */
+        .donation-history-card { 
+            background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border-color);
+            padding: 14px; margin-bottom: 12px; display: flex; 
+            justify-content: space-between; align-items: center; text-align: left; 
+            box-shadow: var(--card-shadow);
+        }
+        .dh-seva { font-weight: 800; font-size: 0.92rem; color: var(--text-500); }
+        .dh-date { font-size: 0.72rem; color: var(--text-50); margin-top: 2px; font-weight: 600; }
+        .dh-amt { font-weight: 900; font-size: 1.1rem; color: var(--success-color); }
+        .dh-btn { 
+            background: var(--primary); color: #ffffff !important; font-size: 0.72rem; 
+            padding: 6px 14px; border-radius: 20px; display: inline-block; 
+            margin-top: 6px; font-weight: 700; box-shadow: var(--orange-shadow);
+        }
+
+        /* Premium Footer */
+        .premium-footer { 
+            background: #181D24; color: #E2E8F0; padding: 40px 16px 20px 16px; 
+            margin-top: 40px; text-align: center; border-radius: 24px 24px 0 0;
+        } 
+        .footer-logo-img { 
+            width: 85px; height: 85px; border-radius: 20px; 
+            border: 2px solid var(--primary); margin-bottom: 16px; background: #FFF; 
+        } 
+        .footer-mantra { 
+            font-family: 'Cinzel', serif; font-size: 0.95rem; color: #FFF; 
+            margin-bottom: 20px; line-height: 1.6; font-weight: 700;
+        } 
+        .footer-links { margin-bottom: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; } 
+        .footer-links a { 
+            color: var(--primary-75); padding: 4px 10px; font-size: 0.76rem; font-weight: 600; 
+        } 
+        .footer-social { display: flex; justify-content: center; gap: 14px; margin-bottom: 20px; } 
+        .f-icon { 
+            width: 40px; height: 40px; border-radius: 50%; 
+            background: rgba(255,255,255,0.08); color: #FFFFFF; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 1.15rem; transition: var(--transition);
+        } 
+    </style>
+</head>
+<body>
+
+<!-- Dynamic Splash Screen -->
+<div id="app-splash">
+    <img src="https://i.ibb.co/FjZhHNn/compressed-image.jpg" alt="Loading" class="splash-logo">
+    <div class="splash-text">HARE KRISHNA</div>
+    <div class="spinner-border splash-spinner" role="status"></div>
+</div>
+
+<!-- 🛑 BIGBASKET STYLE PERMANENT HARDWARE BAN OVERLAY -->
+<div id="deviceBannedOverlay" class="ban-freeze-overlay d-none">
+    <div class="ban-card">
+        <div style="width:60px; height:60px; background:#FEE2E2; border-radius:16px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#EF4444;">
+            <i class="fas fa-ban"></i>
+        </div>
+        <h4 style="font-weight:900; color:#1A202C; margin:0 0 8px 0;">DEVICE BANNED</h4>
+        <p style="font-size:0.82rem; font-weight:600; color:#718096; line-height:1.5; margin-bottom:16px;">
+            This device has been permanently blocked by ISKCON Security due to suspicious activities.
+        </p>
+        <div class="p-2 mb-3 bg-light rounded-3 text-start small fw-bold" style="font-size:0.72rem;">
+            <div>Hardware ID: <span id="banDevId">--</span></div>
+            <div class="text-danger mt-1">Status: HARDWARE LOCKED</div>
+        </div>
+        <a href="https://wa.me/919876543210?text=Hare%20Krishna%20Temple%20Admin,%20my%20device%20is%20blocked" target="_blank" class="figma-pill-btn w-100" style="background:#25D366; text-decoration:none; display:inline-block;">
+            <i class="fab fa-whatsapp me-1"></i> Contact Temple Support
+        </a>
+    </div>
+</div>
+
+<!-- 🔔 Live In-App Push Notification Alert Banner -->
+<div id="inAppPushBanner" class="inapp-push-banner">
+    <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex gap-2">
+            <i class="fas fa-bell text-warning fa-lg mt-1"></i>
+            <div>
+                <h6 id="pushAlertTitle" style="font-weight:800; margin:0; font-size:0.92rem; color:var(--text-500);">Divine Message</h6>
+                <p id="pushAlertBody" style="font-size:0.76rem; font-weight:600; margin:2px 0 0 0; color:var(--text-75);"></p>
+            </div>
+        </div>
+        <button onclick="closePushAlert()" style="background:none; border:none; color:var(--text-50); font-size:0.9rem;"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+<!-- 📱 Top Header Bar (Figma Exact Style: Screenshot 1 & 8) -->
+<header class="figma-navbar">
+    <img id="topHeaderUserPic" src="https://i.ibb.co/hRvftDPj/images-5.jpg" class="header-avatar" onclick="openProfileModal();" alt="User">
+    <h1 class="header-title">Home</h1>
+    <button class="header-bell-btn" onclick="window.location.href='notifications.html';">
+        <i class="far fa-bell"></i>
+        <div class="bell-dot"></div>
+    </button>
+</header>
+
+<!-- Maha-mantra Ticker -->
+<div class="mantra-ticker" id="mahamantra-banner">
+    <div class="mantra-ticker-content">
+        <span class="ticker-span"><i class="fas fa-sun"></i> Hare Krishna Hare Krishna Krishna Krishna Hare Hare <span style="opacity:0.5;margin:0 6px;">|</span> Hare Rama Hare Rama Rama Rama Hare Hare <i class="fas fa-sun"></i></span>
+        <span class="ticker-span"><i class="fas fa-sun"></i> Hare Krishna Hare Krishna Krishna Krishna Hare Hare <span style="opacity:0.5;margin:0 6px;">|</span> Hare Rama Hare Rama Rama Rama Hare Hare <i class="fas fa-sun"></i></span>
+    </div>
+</div>
+
+<!-- 👑 My Revered Maharaj / Guide Leader Card on Home -->
+<div id="userGuruCard" class="guru-card d-none">
+    <div class="d-flex align-items-center gap-3">
+        <img id="guruCardImg" src="https://i.ibb.co/hRvftDPj/images-5.jpg" class="guru-avatar" alt="Guru">
+        <div>
+            <span style="font-size:0.65rem; font-weight:800; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px;">My Spiritual Guide</span>
+            <h6 id="guruCardName" style="font-weight:800; margin:2px 0 0 0; font-size:0.92rem; color:var(--text-500);">Revered Maharaj</h6>
+            <p id="guruCardCity" style="font-size:0.72rem; margin:0; font-weight:600; color:var(--text-50);">📍 Pandharpur</p>
+        </div>
+    </div>
+    <a id="guruCardWaBtn" href="#" target="_blank" style="background:#25D366; color:white; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 4px 10px rgba(37,211,102,0.3);"><i class="fab fa-whatsapp"></i></a>
+</div>
+
+<!-- Dynamic Hero Slider (Clean Rounded Style) -->
+<div id="heroCarousel" class="carousel slide carousel-fade hero-slider" data-bs-ride="carousel" data-bs-touch="true" data-bs-interval="4000">
+    <div class="carousel-inner" id="slider-inner" style="height: 100%;">
+        <div class="carousel-item active" data-bs-interval="4000">
+            <div class="date-slide">
+                <h1 id="dateDisplayDay">23</h1>
+                <p class="month-year" id="dateDisplayMonthYear">August 2026</p>
+                <div id="clock" class="live-clock">--:--:--</div>
+            </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="4000">
+            <div class="slide-bg-blur" style="background-image: url('https://i.ibb.co/8LLYzh2h/compressed-image-5.jpg');"></div>
+            <img src="https://i.ibb.co/8LLYzh2h/compressed-image-5.jpg" loading="lazy" decoding="async" alt="Temple Seva">
+            <div class="slide-overlay-content">
+                <h2 class="slide-title-large">Temple Construction Cement Seva</h2>
+                <p class="slide-desc-small">Every donation brings us one step closer to completing Krishna's temple.</p>
+                <a href="seva.html" class="figma-pill-btn">DONATE NOW</a>
+            </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="4000">
+            <div class="slide-bg-blur" style="background-image: url('https://i.ibb.co/nqMxmNRX/compressed-image-6.jpg');"></div>
+            <img src="https://i.ibb.co/nqMxmNRX/compressed-image-6.jpg" loading="lazy" decoding="async" alt="Square Feet Seva">
+            <div class="slide-overlay-content">
+                <h2 class="slide-title-large yellow">Square Feet Seva</h2>
+                <p class="slide-desc-small">Donate ₹5,000 per Sq.Ft and help build Sri Radha Pandharinath Temple - ISKCON Bhuvaikuntha</p>
+                <a href="seva.html" class="figma-pill-btn">DONATE NOW</a>
+            </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="4000">
+            <div class="slide-bg-blur" style="background-image: url('https://i.ibb.co/KzRQVB7h/compressed-image-7.jpg');"></div>
+            <img src="https://i.ibb.co/KzRQVB7h/compressed-image-7.jpg" loading="lazy" decoding="async" alt="Nitya Annadana Seva">
+            <div class="slide-overlay-content">
+                <h2 class="slide-title-large">Nitya Annadana Seva</h2>
+                <p class="slide-desc-small">Every plate of prasadam is an offering of love to Sri Krishna and compassion to humanity.</p>
+                <a href="seva.html" class="figma-pill-btn">SPONSOR NOW</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Glow Live Button -->
+<div id="big-live-alert" class="container-fluid px-3 mt-2 mb-1" style="display:none;">
+    <a href="darshan.html" style="display:flex; align-items:center; gap:12px; background:#EF4444; color:white; padding:14px 16px; border-radius:16px; box-shadow:0 4px 15px rgba(239,68,68,0.3);">
+        <i class="fas fa-video fa-2x"></i>
+        <div style="display:flex; flex-direction:column;">
+            <span style="font-weight:800; font-size:0.95rem;">LIVE DARSHAN NOW</span>
+            <span style="font-size:0.74rem; font-weight:600; opacity:0.95;">Tap to join live stream</span>
+        </div>
+        <i class="fas fa-chevron-right ms-auto"></i>
+    </a>
+</div>
+
+<!-- Bhuvaikuntha Pandharpur CTA Banner -->
+<a href="progress.html" class="padyatra-card" data-aos="zoom-in" data-aos-duration="400">
+    <div class="py-content">
+        <div class="py-icon"><i class="fas fa-route"></i></div>
+        <div class="py-text">
+            <h4>Bhuvaikuntha Pandharpur</h4>
+            <p>Track temple construction progress live</p>
+        </div>
+        <div class="py-btn"><span>Explore</span> <i class="fas fa-chevron-right ms-1"></i></div>
+    </div>
+</a>
+
+<!-- Live Donation Board Action Banner -->
+<a href="livedon.html" class="live-donation-banner" data-aos="fade-in" data-aos-duration="400">
+    <div class="ld-left">
+        <div class="ld-icon-box">
+            <div class="ld-live-dot"></div>
+            <i class="fas fa-heart-circle-check"></i>
+        </div>
+        <div class="ld-text-col">
+            <h4 class="ld-title">Live Donation Board</h4>
+            <p class="ld-subtitle">See who is contributing in real-time</p>
+        </div>
+    </div>
+    <div class="ld-btn">
+        <span>View Live</span> <i class="fas fa-chevron-right ms-1"></i>
+    </div>
+</a>
+
+<!-- 🖼️ Quick Access 2-Column Grid (Figma Screenshot 1 Exact Style) -->
+<div class="container-fluid px-3 my-1">
+    <div class="section-header" data-aos="fade-right">
+        <h5 class="section-title">Quick Access</h5>
+    </div>
+    
+    <div class="quick-access-container" data-aos="fade-up" data-aos-duration="500">
+        <!-- Box 1: Temple Seva -->
+        <a href="temple_seva.html" class="qa-card-figma">
+            <img src="https://i.ibb.co/67XWtzjN/images-6.jpg" class="qa-figma-img" alt="Temple Seva">
+            <p class="qa-figma-label">Temple Seva</p>
+        </a>
+
+        <!-- Box 2: Deity Seva -->
+        <a href="deity_seva.html" class="qa-card-figma">
+            <img src="https://i.ibb.co/5h4bJP9j/images-1.jpg" class="qa-figma-img" alt="Deity Seva">
+            <p class="qa-figma-label">Deity Seva</p>
+        </a>
+
+        <!-- Box 3: Anna Dān Seva -->
+        <a href="annadan_seva.html" class="qa-card-figma">
+            <img src="https://i.ibb.co/sdJpq2Tk/annadan-sewa.jpg" class="qa-figma-img" alt="Anna Dān Seva">
+            <p class="qa-figma-label">Anna Dān Seva</p>
+        </a>
+
+        <!-- Box 4: Go Seva -->
+        <a href="go_seva.html" class="qa-card-figma">
+            <img src="https://i.ibb.co/tTLPtY1H/images-8.jpg" class="qa-figma-img" alt="Go Seva">
+            <p class="qa-figma-label">Go Seva</p>
+        </a>
+
+        <!-- Box 5: Take Pledge -->
+        <a href="take_pledge.html" class="qa-card-figma">
+            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=400" class="qa-figma-img" alt="Take Pledge">
+            <p class="qa-figma-label">Take Pledge</p>
+        </a>
+
+        <!-- Box 6: Special Puja / Yagnya -->
+        <a href="special_puja.html" class="qa-card-figma">
+            <img src="https://images.unsplash.com/photo-1561361513-2d000a50f0db?q=80&w=400" class="qa-figma-img" alt="Special Puja/Yagnya">
+            <p class="qa-figma-label">Special Puja/Yagnya</p>
+        </a>
+    </div>
+
+    <!-- Featured Seva Campaigns (Figma Screenshot 1 & 2) -->
+    <div class="section-header" data-aos="fade-right">
+        <h5 class="section-title">Featured Seva Campaigns</h5>
+        <a href="seva.html" class="see-all"><span>See all</span> <i class="fas fa-chevron-right" style="font-size:0.65rem;"></i></a>
+    </div>
+    <div class="h-scroll" id="campaigns-scroll">
+        <div class="campaign-scroll-card-premium">
+            <div class="csc-img" style="background-image: url('https://i.ibb.co/GQHH4bxn/compressed-image-9.jpg');"></div>
+            <div class="csc-body">
+                <h4 class="csc-title">Square Feet Seva</h4>
+                <p class="csc-desc">Every square foot you sponsor creates a holy space where devotees will pray, sing, & connect with Krishna.</p>
+                <a href="seva.html" class="csc-btn">DONATE ❤️</a>
+            </div>
+        </div>
+        <div class="campaign-scroll-card-premium">
+            <div class="csc-img" style="background-image: url('https://i.ibb.co/HLZv0nc6/compressed-image-8.jpg');"></div>
+            <div class="csc-body">
+                <h4 class="csc-title">Bricks Seva</h4>
+                <p class="csc-desc">Every brick you donate strengthens the walls of Lord Krishna's home. Your offering becomes eternal sacred merit.</p>
+                <a href="seva.html" class="csc-btn">DONATE ❤️</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- See Progress of Seva (Figma Screenshot 1 & 11) -->
+    <div class="section-header" data-aos="fade-right">
+        <h5 class="section-title">See the Progress of Your Seva</h5>
+        <a href="progress.html" class="see-all"><span>See all</span> <i class="fas fa-chevron-right" style="font-size:0.65rem;"></i></a>
+    </div>
+    <div class="h-scroll" id="progress-scroll-custom">
+        <div class="progress-card-premium">
+            <img class="pc-img" src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=600" alt="Progress 1">
+            <div class="pc-overlay">
+                <h4 class="pc-title">Sanctum Foundation Completed</h4>
+            </div>
+        </div>
+        <div class="progress-card-premium">
+            <img class="pc-img" src="https://images.unsplash.com/photo-1590069261209-f8e9b8642343?q=80&w=600" alt="Progress 2">
+            <div class="pc-overlay">
+                <h4 class="pc-title">Main Hall Pillars Installed</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Importance of Donation (Figma Screenshot 1 & 2: Scroll Format) -->
+    <div class="section-header" data-aos="fade-right">
+        <h5 class="section-title">Importance of Donation</h5>
+    </div>
+    <div id="importanceCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000" data-aos="fade-up">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="scroll-purana-card">
+                    <h4 class="ap-author">Vamana Purana</h4>
+                    <p class="ap-text">"Whoever constructs or helps to construct a temple will protect eight generations of father, grandfathers and forefathers from falling into hell."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="scroll-purana-card">
+                    <h4 class="ap-author">Bhagavad Gita 9.26</h4>
+                    <p class="ap-text">"If one offers Me with love and devotion a leaf, a flower, a fruit or water, I will accept it."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="scroll-purana-card">
+                    <h4 class="ap-author">Srimad Bhagavatam 11.27.49</h4>
+                    <p class="ap-text">"By building a temple for the Lord, one becomes ruler of the three worlds and gains eternal spiritual elevation."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blessings from Senior Leaders (Figma Screenshot 2) -->
+    <div class="section-header" data-aos="fade-right">
+        <h5 class="section-title">Blessings from Senior Leaders</h5>
+    </div>
+    <div id="blessingsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000" data-aos="fade-up">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="leaders-slider-container">
+                    <div class="lsc-img" style="background-image: url('https://i.ibb.co/99F1gsRp/images-7.jpg');"></div>
+                    <div class="lsc-body">
+                        <p class="lsc-quote">"Maharashtra's biggest gift to the world is Panduranga. This Bhuvaikuntha Pandharpur will spread the glories of Sri Sri Radha Pandharinath throughout the world 🙌"</p>
+                        <h4 class="lsc-author">His Holiness Lokanath Swami Maharaja</h4>
+                        <p class="lsc-role">ISKCON Senior Sannyasi, Head of Padayatra Ministry</p>
+                    </div>
+                </div>
+            </div>  
+            <div class="carousel-item">
+                <div class="leaders-slider-container">
+                    <div class="lsc-img" style="background-image: url('https://i.ibb.co/hRvftDPj/images-5.jpg');"></div>
+                    <div class="lsc-body">
+                        <p class="lsc-quote">"Each temple is not just a structure, but a living center of spiritual growth where souls reconnect with Krishna."</p>
+                        <h4 class="lsc-author">HH Radhanath Swami Maharaj</h4>
+                        <p class="lsc-role">Senior ISKCON Sannyasi & Author</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= 👤 FULL DEVOTEE PROFILE & 80G TAX DATA MODAL ================= -->
+<div class="support-modal-overlay" id="profileModalOverlay" onclick="closeProfileModal(event)">
+    <div class="support-modal-card" style="max-height: 90vh; overflow-y: auto;" id="profileModalCard" onclick="event.stopPropagation()">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid var(--border-color);">
+            <h5 style="font-weight:800; margin:0; color:var(--text-500);"><i class="fas fa-user-circle text-warning me-2"></i> Devotee Profile</h5>
+            <button onclick="closeProfileModal(null)" style="background:none; border:none; font-size:1.1rem; color:var(--text-50);"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div id="rateLimitAlert" class="alert alert-warning p-2 mb-3 d-none" style="font-size:0.76rem; font-weight:700; border-radius:8px;">
+            <i class="fas fa-shield-halved me-1"></i> <span id="rateLimitMsg">Rate limit: Max 2 updates per 24 hours.</span>
+        </div>
+
+        <form id="profileEditForm" onsubmit="saveDevoteeProfile(event)">
+            <div class="neu-input-group">
+                <label class="neu-label">Full Name (Devotee / Legal Name)</label>
+                <input type="text" id="prof-name" class="neu-input" required placeholder="e.g. Radheshyam Das">
+            </div>
+
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="neu-input-group">
+                        <label class="neu-label">Mobile Number</label>
+                        <input type="tel" id="prof-phone" class="neu-input" readonly>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="neu-input-group">
+                        <label class="neu-label">Email Address</label>
+                        <input type="email" id="prof-email" class="neu-input" placeholder="devotee@iskcon.com">
+                    </div>
+                </div>
+            </div>
+
+            <div class="neu-input-group">
+                <label class="neu-label">PAN Card No. (80G Tax Exemption)</label>
+                <input type="text" id="prof-pan" class="neu-input" style="text-transform:uppercase;" placeholder="ABCDE1234F">
+            </div>
+
+            <div class="neu-input-group">
+                <label class="neu-label">Full Postal Address</label>
+                <input type="text" id="prof-address" class="neu-input" placeholder="Flat No, Society, Street">
+            </div>
+
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="neu-input-group">
+                        <label class="neu-label">City</label>
+                        <input type="text" id="prof-city" class="neu-input" placeholder="Pandharpur">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="neu-input-group">
+                        <label class="neu-label">Pincode</label>
+                        <input type="text" id="prof-pincode" class="neu-input" placeholder="413304">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="neu-input-group">
+                        <label class="neu-label">State</label>
+                        <input type="text" id="prof-state" class="neu-input" placeholder="Maharashtra">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="neu-input-group">
+                        <label class="neu-label">Gotra (For Sankalpa)</label>
+                        <input type="text" id="prof-gotra" class="neu-input" placeholder="e.g. Kashyap">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="prof-save-btn" class="figma-pill-btn w-100 mt-2" style="border-radius:12px;"><i class="fas fa-save me-1"></i> Save & Auto-Sync</button>
+        </form>
+    </div>
+</div>
+
+<!-- ================= MY DONATIONS HISTORY MODAL ================= -->
+<div class="support-modal-overlay" id="donationsModalOverlay" onclick="closeMyDonations(event)">
+    <div class="support-modal-card" style="max-width: 440px; padding: 0; overflow: hidden;" id="donationsModalCard" onclick="event.stopPropagation()">
+        <div style="background: var(--primary); padding: 16px; color: #FFFFFF; display:flex; justify-content:space-between; align-items:center;">
+            <h5 style="margin:0; font-weight:800; font-size:1.1rem;"><i class="fas fa-receipt me-2"></i> My Seva History</h5>
+            <button onclick="closeMyDonations(null)" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="donations-list" style="padding: 16px; max-height: 65vh; overflow-y: auto; background: var(--card-bg);">
+            <!-- Dynamic Donations List -->
+        </div>
+    </div>
+</div>
+
+<!-- ⚓ FLOATING BOTTOM DOCK (Figma Exact Style: Screenshot 1, 6, 7, 8) -->
+<nav class="figma-bottom-nav">
+    <a href="index.html" class="dock-item active">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+    <a href="darshan.html" class="dock-item">
+        <i class="fas fa-image"></i>
+        <span>Darshan</span>
+    </a>
+    <a href="seva.html" class="dock-item">
+        <i class="fas fa-gift"></i>
+        <span>Donate</span>
+    </a>
+    <a href="take_pledge.html" class="dock-item">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Seva</span>
+    </a>
+    <a href="progress.html" class="dock-item">
+        <i class="fas fa-book"></i>
+        <span>Temple</span>
+    </a>
+</nav>
+
+<!-- Footer -->
+<footer class="premium-footer">
+    <img src="https://i.ibb.co/FjZhHNn/compressed-image.jpg" class="footer-logo-img" alt="Footer Logo">
+    <p class="footer-mantra">
+        Hare Krishna Hare Krishna<br>Krishna Krishna Hare Hare<br>
+        <span style="color:var(--primary-75);">Hare Rama Hare Rama<br>Rama Rama Hare Hare</span>
+    </p>
+    
+    <div class="footer-social">
+        <a href="https://youtube.com/@bhuvaikunthatv?si=Y3hiTVYIlkuVX4P-" target="_blank" rel="noopener noreferrer" class="f-icon" aria-label="YouTube"><i class="fab fa-youtube text-danger"></i></a>
+        <a href="https://www.facebook.com/Iskconbhuvaikuntha/" target="_blank" rel="noopener noreferrer" class="f-icon" aria-label="Facebook"><i class="fab fa-facebook-f text-primary"></i></a>
+        <a href="https://www.instagram.com/iskconbhuvaikuntha?igsh=eG5mNWt1cmRuamlo" target="_blank" rel="noopener noreferrer" class="f-icon" aria-label="Instagram"><i class="fab fa-instagram text-danger"></i></a>
+    </div>
+
+    <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="about.html">About ISKCON</a>
+        <a href="contact.html">Contact Us</a>
+    </div>
+    
+    <p style="font-size:0.76rem; opacity:0.6; margin-top:12px;">© 2026 ISKCON Bhuvaikuntha. All Rights Reserved.</p>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+
+<script>
+    function updateClock() {
+        const clockEl = document.getElementById('clock');
+        if (clockEl) {
+            clockEl.innerText = new Date().toLocaleTimeString('en-US', {timeZone: "Asia/Kolkata"});
+        }
+    }
+    
+    function initLocalDate() {
+        const today = new Date();
+        const dayEl = document.getElementById('dateDisplayDay');
+        const monthYearEl = document.getElementById('dateDisplayMonthYear');
+        
+        if (dayEl && monthYearEl) {
+            dayEl.innerText = today.getDate();
+            const m = today.toLocaleString('en-US', { month: 'long' });
+            monthYearEl.innerText = `${m} ${today.getFullYear()}`;
+        }
+        updateClock();
+    }
+    
+    setInterval(updateClock, 1000);
+
+    // Fast IndexedDB Image Cache Engine
+    const IMAGE_CACHE_DB = 'iskcon-image-cache';
+    const IMAGE_CACHE_STORE = 'images';
+
+    async function getLocalDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(IMAGE_CACHE_DB, 1);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(IMAGE_CACHE_STORE)) {
+                    db.createObjectStore(IMAGE_CACHE_STORE);
+                }
+            };
+            request.onsuccess = (e) => resolve(e.target.result);
+            request.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    async function getCachedImage(url) {
+        try {
+            const db = await getLocalDB();
+            return new Promise((resolve) => {
+                const transaction = db.transaction(IMAGE_CACHE_STORE, 'readonly');
+                const store = transaction.objectStore(IMAGE_CACHE_STORE);
+                const request = store.get(url);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => resolve(null);
+            });
+        } catch (e) { return null; }
+    }
+
+    async function cacheImage(url, blob) {
+        try {
+            const db = await getLocalDB();
+            const transaction = db.transaction(IMAGE_CACHE_STORE, 'readwrite');
+            const store = transaction.objectStore(IMAGE_CACHE_STORE);
+            store.put(blob, url);
+        } catch (e) {}
+    }
+
+    async function optimizeAndCacheAllImages() {
+        const images = document.querySelectorAll('img[src], .csc-img[style], .progress-card-premium img, .pc-img, .qa-figma-img, .lsc-img[style], .guru-avatar[src]');
+        images.forEach(async (el) => {
+            let url = '';
+            let isStyle = false;
+            
+            if (el.tagName === 'IMG') {
+                url = el.getAttribute('src');
+            } else {
+                const bgImg = el.style.backgroundImage;
+                if (bgImg && bgImg.startsWith('url(')) {
+                    url = bgImg.slice(4, -1).replace(/"/g, "").replace(/'/g, "");
+                    isStyle = true;
+                }
+            }
+            
+            if (!url || url.startsWith('data:') || url.startsWith('blob:')) return;
+            
+            const cachedBlob = await getCachedImage(url);
+            if (cachedBlob) {
+                const blobURL = URL.createObjectURL(cachedBlob);
+                if (isStyle) el.style.backgroundImage = `url('${blobURL}')`;
+                else el.setAttribute('src', blobURL);
+            } else {
+                try {
+                    const res = await fetch(url, { mode: 'cors' });
+                    if (res.ok) {
+                        const blob = await res.blob();
+                        await cacheImage(url, blob);
+                        const blobURL = URL.createObjectURL(blob);
+                        if (isStyle) el.style.backgroundImage = `url('${blobURL}')`;
+                        else el.setAttribute('src', blobURL);
+                    }
+                } catch (e) {}
+            }
+        });
+    }
+
+    window.renderMasterSlider = function() {
+        const sliderInner = document.getElementById('slider-inner');
+        if (!sliderInner) return;
+        
+        const defaultSlides = `
+            <div class="carousel-item active" data-bs-interval="4000">
+                <div class="date-slide">
+                    <h1 id="dateDisplayDay">23</h1>
+                    <p class="month-year" id="dateDisplayMonthYear">August 2026</p>
+                    <div id="clock" class="live-clock">--:--:--</div>
+                </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="4000">
+                <div class="slide-bg-blur" style="background-image: url('https://i.ibb.co/8LLYzh2h/compressed-image-5.jpg');"></div>
+                <img src="https://i.ibb.co/8LLYzh2h/compressed-image-5.jpg" loading="lazy" decoding="async" alt="Temple Seva">
+                <div class="slide-overlay-content">
+                    <h2 class="slide-title-large">Temple Construction Cement Seva</h2>
+                    <p class="slide-desc-small">Every donation brings us one step closer to completing Krishna's temple.</p>
+                    <a href="seva.html" class="figma-pill-btn">DONATE NOW</a>
+                </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="4000">
+                <div class="slide-bg-blur" style="background-image: url('https://i.ibb.co/nqMxmNRX/compressed-image-6.jpg');"></div>
+                <img src="https://i.ibb.co/nqMxmNRX/compressed-image-6.jpg" loading="lazy" decoding="async" alt="Square Feet Seva">
+                <div class="slide-overlay-content">
+                    <h2 class="slide-title-large yellow">Square Feet Seva</h2>
+                    <p class="slide-desc-small">Donate ₹5,000 per Sq.Ft and help build Sri Radha Pandharinath Temple - ISKCON Bhuvaikuntha</p>
+                    <a href="seva.html" class="figma-pill-btn">DONATE NOW</a>
+                </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="4000">
+                <div class="slide-bg-blur" style="background-image: url('https://i.ibb.co/KzRQVB7h/compressed-image-7.jpg');"></div>
+                <img src="https://i.ibb.co/KzRQVB7h/compressed-image-7.jpg" loading="lazy" decoding="async" alt="Nitya Annadana Seva">
+                <div class="slide-overlay-content">
+                    <h2 class="slide-title-large">Nitya Annadana Seva</h2>
+                    <p class="slide-desc-small">Every plate of prasadam is an offering of love to Sri Krishna and compassion to humanity.</p>
+                    <a href="seva.html" class="figma-pill-btn">SPONSOR NOW</a>
+                </div>
+            </div>
+        `;
+
+        if (window.sliderDataList && window.sliderDataList.length > 0) {
+            let htmlContent = '';
+            const dateSlideHtml = `
+                <div class="carousel-item" id="date-slide-item" data-bs-interval="4000">
+                    <div class="date-slide">
+                        <h1 id="dateDisplayDay">23</h1>
+                        <p class="month-year" id="dateDisplayMonthYear">August 2026</p>
+                        <div id="clock" class="live-clock">--:--:--</div>
+                    </div>
+                </div>
+            `;
+            
+            let insertedDate = false;
+            let listToRender = [...window.sliderDataList];
+            listToRender.sort((a, b) => (a.order || 0) - (b.order || 0));
+            
+            listToRender.forEach((item, index) => {
+                if (index + 1 === parseInt(window.dateWidgetOrder) && !insertedDate) {
+                    htmlContent += dateSlideHtml;
+                    insertedDate = true;
+                }
+                
+                const title = item.title_en || item.title || '';
+                const desc = item.desc_en || item.desc || '';
+                const btnText = item.btn_text_en || item.btn_text || 'DONATE NOW';
+                const btnLink = item.btn_link || 'seva.html';
+                const imgUrl = item.img_url || 'https://images.unsplash.com/photo-1602615576820-ea14cf3e476a?q=80&w=1200';
+                
+                htmlContent += `
+                    <div class="carousel-item" data-bs-interval="4000">
+                        <div class="slide-bg-blur" style="background-image: url('${imgUrl}');"></div>
+                        <img src="${imgUrl}" loading="lazy" decoding="async" alt="Dynamic Slide">
+                        <div class="slide-overlay-content">
+                            <h2 class="slide-title-large">${title}</h2>
+                            <p class="slide-desc-small">${desc}</p>
+                            <a href="${btnLink}" class="figma-pill-btn">${btnText}</a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (!insertedDate) {
+                htmlContent = dateSlideHtml + htmlContent;
+            }
+            sliderInner.innerHTML = htmlContent;
+            const firstItem = sliderInner.querySelector('.carousel-item');
+            if (firstItem) firstItem.classList.add('active');
+            initLocalDate();
+        } else {
+            sliderInner.innerHTML = defaultSlides;
+            initLocalDate();
+        }
+        setTimeout(optimizeAndCacheAllImages, 500);
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+        initLocalDate();
+        setTimeout(optimizeAndCacheAllImages, 1200);
+        setTimeout(() => { try { if(typeof AOS !== 'undefined') AOS.init({ once: true, offset: 10 }); } catch(e){} }, 300);
+    });
+
+    function closePushAlert() { document.getElementById('inAppPushBanner').classList.remove('show'); }
+</script>
+
+<!-- Firebase Modules & Firestore Realtime Integration -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const sliderDbConfig = { apiKey: "AIzaSyDaiyXkiQgyJWAC7QsOcneHl0KU0O4kwgI", authDomain: "iskcon-slider.firebaseapp.com", databaseURL: "https://iskcon-slider-default-rtdb.firebaseio.com", projectId: "iskcon-slider", storageBucket: "iskcon-slider.firebasestorage.app", messagingSenderId: "887649015723", appId: "1:887649015723:web:f64104897972e65ea564ee" };
+    const mainDbConfig = { apiKey: "AIzaSyBfbNzASqzPt4kMP-LlpJasIras7ifTch4", authDomain: "iskcon-hadapsar.firebaseapp.com", databaseURL: "https://iskcon-hadapsar-default-rtdb.firebaseio.com", projectId: "iskcon-hadapsar", appId: "1:231589086724:web:64d8a5d7a136b39db39751" };
+    const bhuvaikunthaConfig = { 
+        apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", 
+        authDomain: "iskcon-bhuvaikuntha.firebaseapp.com", 
+        projectId: "iskcon-bhuvaikuntha",
+        storageBucket: "iskcon-bhuvaikuntha.firebasestorage.app",
+        messagingSenderId: "87535383708",
+        appId: "1:87535383708:web:7548e3b7d4c807faafe959"
+    };
+
+    function getHardwareDeviceId() {
+        if (window.NATIVE_ANDROID_ID && window.NATIVE_ANDROID_ID !== "") {
+            return "AND_" + window.NATIVE_ANDROID_ID;
+        }
+        let storedId = localStorage.getItem("iskcon_dev_hw_id");
+        if (!storedId) {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            let glStr = '';
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) glStr = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            }
+            const raw = `${navigator.userAgent}_${screen.width}x${screen.height}_${screen.colorDepth}_${navigator.hardwareConcurrency || 4}_${glStr}_${navigator.language}`;
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) {
+                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+                hash |= 0;
+            }
+            storedId = "HW_" + Math.abs(hash).toString(16) + "_" + (navigator.platform || 'AND').replace(/[^a-zA-Z0-9]/g, '');
+            localStorage.setItem("iskcon_dev_hw_id", storedId);
+        }
+        return storedId;
+    }
+
+    const currentDeviceId = getHardwareDeviceId();
+    document.getElementById("banDevId").innerText = currentDeviceId;
+
+    try {
+        const app = initializeApp(sliderDbConfig); 
+        const db = getDatabase(app);
+        const appMain = initializeApp(mainDbConfig, "mainDB");
+        const dbMain = getDatabase(appMain);
+        
+        const appFirestore = initializeApp(bhuvaikunthaConfig, "firestoreDB");
+        const dbFirestore = getFirestore(appFirestore);
+        
+        const userPhone = localStorage.getItem("userPhone") || "Guest";
+        
+        // 🚨 1. Verify Device Ban
+        getDoc(doc(dbFirestore, "blocked_devices", currentDeviceId)).then(snap => {
+            if (snap.exists() && snap.data().isBanned === true) {
+                document.getElementById("deviceBannedOverlay").classList.remove("d-none");
+            }
+        }).catch(e => {});
+
+        // 2. Load User Profile from Firestore & Maharaj Live Card
+        if (userPhone && userPhone !== "Guest") {
+            document.getElementById("prof-phone").value = userPhone;
+            
+            const cachedName = localStorage.getItem("userName");
+            const cachedPic = localStorage.getItem("userPic");
+            if (cachedPic) document.getElementById("topHeaderUserPic").src = cachedPic;
+
+            getDoc(doc(dbFirestore, "users", userPhone)).then(snapshot => {
+                if(snapshot.exists()) {
+                    const data = snapshot.data();
+                    localStorage.setItem("devoteeProfile", JSON.stringify(data));
+                    
+                    if(data.name) {
+                        document.getElementById("prof-name").value = data.name;
+                        localStorage.setItem("userName", data.name);
+                    }
+                    if(data.email) document.getElementById("prof-email").value = data.email;
+                    if(data.pan) document.getElementById("prof-pan").value = data.pan;
+                    if(data.address) document.getElementById("prof-address").value = data.address;
+                    if(data.city) document.getElementById("prof-city").value = data.city;
+                    if(data.pincode) document.getElementById("prof-pincode").value = data.pincode;
+                    if(data.state) document.getElementById("prof-state").value = data.state;
+                    if(data.gotra) document.getElementById("prof-gotra").value = data.gotra;
+                    
+                    // 👑 Render Connected Maharaj / Guide Leader Card on Home
+                    const assignedLeader = data.assignedLeaderId;
+                    if (assignedLeader) {
+                        getDoc(doc(dbFirestore, "leaders", assignedLeader)).then(lSnap => {
+                            if (lSnap.exists()) {
+                                const lData = lSnap.data();
+                                document.getElementById("guruCardName").innerText = lData.name || "Revered Maharaj";
+                                document.getElementById("guruCardCity").innerText = `📍 ${lData.city || 'Pandharpur'}, ${lData.country || 'India'}`;
+                                if (lData.photoUrl) document.getElementById("guruCardImg").src = lData.photoUrl;
+                                
+                                const waMsg = encodeURIComponent(`Hare Krishna Maharaj! Dandavat Pranam from ${data.name || 'Devotee'}. Seeking your divine blessings.`);
+                                document.getElementById("guruCardWaBtn").href = `https://wa.me/91${assignedLeader}?text=${waMsg}`;
+                                document.getElementById("userGuruCard").classList.remove("d-none");
+                            }
+                        }).catch(err => {});
+                    }
+
+                    if(data.profilePic || data.photoURL) {
+                        const picUrl = data.profilePic || data.photoURL;
+                        document.getElementById("topHeaderUserPic").src = picUrl;
+                        localStorage.setItem("userPic", picUrl);
+                    }
+                }
+            }).catch(e => console.error("Profile fetch error: ", e));
+        }
+
+        // 3. Live Push Notification Listeners
+        const storedProfileRaw = localStorage.getItem("devoteeProfile");
+        let activeLeaderId = "";
+        if (storedProfileRaw) {
+            try { activeLeaderId = JSON.parse(storedProfileRaw).assignedLeaderId || ""; } catch(e){}
+        }
+
+        if (activeLeaderId) {
+            const targetedQ = query(collection(dbFirestore, "targeted_notifications"), where("leaderId", "==", activeLeaderId));
+            onSnapshot(targetedQ, (snap) => {
+                snap.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const notif = change.doc.data();
+                        if (Date.now() - (notif.createdAt || 0) < 60000) {
+                            showInAppPush(notif.title, notif.body);
+                        }
+                    }
+                });
+            });
+        }
+
+        onSnapshot(collection(dbFirestore, "global_broadcasts"), (snap) => {
+            snap.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    const notif = change.doc.data();
+                    if (Date.now() - (notif.sentAt || 0) < 60000) {
+                        showInAppPush("📢 " + notif.title, notif.body);
+                    }
+                }
+            });
+        });
+
+        function showInAppPush(title, body) {
+            document.getElementById("pushAlertTitle").innerText = title;
+            document.getElementById("pushAlertBody").innerText = body;
+            const banner = document.getElementById("inAppPushBanner");
+            banner.classList.add("show");
+            setTimeout(() => { banner.classList.remove("show"); }, 8000);
+        }
+
+        // 4. Save Profile with 24-hr Rate Limit
+        window.saveDevoteeProfile = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById("prof-save-btn");
+            const alertBox = document.getElementById("rateLimitAlert");
+            const alertMsg = document.getElementById("rateLimitMsg");
+            
+            const activePhone = localStorage.getItem("userPhone");
+            if(!activePhone || activePhone === "Guest") {
+                alert("Please login first to update profile.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Verifying Rate Limit...';
+            alertBox.classList.add("d-none");
+
+            try {
+                const userRef = doc(dbFirestore, "users", activePhone);
+                const userSnap = await getDoc(userRef);
+                const now = Date.now();
+                const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+                let updateCount = 0;
+                let windowStart = now;
+
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    const lastWindowStart = userData.updateWindowStart || 0;
+                    const currentCount = userData.updateCount || 0;
+
+                    if (now - lastWindowStart < TWENTY_FOUR_HOURS) {
+                        if (currentCount >= 2) {
+                            const hoursLeft = Math.ceil((TWENTY_FOUR_HOURS - (now - lastWindowStart)) / (1000 * 60 * 60));
+                            alertMsg.innerText = `🔒 Rate Limit: You can only update details 2 times per 24 hours. Try again in ${hoursLeft} hours.`;
+                            alertBox.classList.remove("d-none");
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fas fa-save me-1"></i> Save & Auto-Sync';
+                            return;
+                        }
+                        updateCount = currentCount + 1;
+                        windowStart = lastWindowStart;
+                    } else {
+                        updateCount = 1;
+                        windowStart = now;
+                    }
+                } else {
+                    updateCount = 1;
+                    windowStart = now;
+                }
+
+                const updatedProfile = {
+                    name: document.getElementById("prof-name").value.trim(),
+                    email: document.getElementById("prof-email").value.trim(),
+                    pan: document.getElementById("prof-pan").value.trim().toUpperCase(),
+                    address: document.getElementById("prof-address").value.trim(),
+                    city: document.getElementById("prof-city").value.trim(),
+                    pincode: document.getElementById("prof-pincode").value.trim(),
+                    state: document.getElementById("prof-state").value.trim(),
+                    gotra: document.getElementById("prof-gotra").value.trim(),
+                    contact: activePhone,
+                    role: "devotee",
+                    updatedAt: now,
+                    updateCount: updateCount,
+                    updateWindowStart: windowStart
+                };
+
+                await setDoc(userRef, updatedProfile, { merge: true });
+
+                localStorage.setItem("userName", updatedProfile.name);
+                localStorage.setItem("devoteeProfile", JSON.stringify(updatedProfile));
+
+                btn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Saved Successfully!';
+                setTimeout(() => {
+                    closeProfileModal(null);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-save me-1"></i> Save & Auto-Sync';
+                }, 1000);
+
+            } catch (error) {
+                console.error("Update Error:", error);
+                alertMsg.innerText = "Error saving profile. Please check network connection.";
+                alertBox.classList.remove("d-none");
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save me-1"></i> Save & Auto-Sync';
+            }
+        };
+
+        // 5. My Donations History Logic
+        window.openMyDonations = async function() {
+            document.getElementById('donationsModalOverlay').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            const listContainer = document.getElementById("donations-list");
+            listContainer.innerHTML = '<div style="padding:30px; text-align:center;"><i class="fas fa-spinner fa-spin text-warning" style="font-size:2rem;"></i><p class="mt-3" style="color:var(--text-500); font-weight:700;">Fetching your sacred Sevas...</p></div>';
+
+            const activePhone = localStorage.getItem("userPhone");
+            if (!activePhone || activePhone === "Guest") {
+                listContainer.innerHTML = '<div style="padding:24px; text-align:center;"><i class="fas fa-user-pen mb-3" style="font-size:2.5rem; color:var(--primary);"></i><p style="color:var(--text-500); font-weight:800;">Please login to track your donations! 🌸</p></div>';
+                return;
+            }
+
+            try {
+                const q = query(collection(dbFirestore, "donations"), where("contact", "==", activePhone));
+                const querySnapshot = await getDocs(q);
+                let donations = [];
+                querySnapshot.forEach((doc) => { donations.push(doc.data()); });
+
+                donations.sort((a,b) => {
+                    const dateA = a.date ? (a.date.seconds ? a.date.seconds * 1000 : new Date(a.date).getTime()) : 0;
+                    const dateB = b.date ? (b.date.seconds ? b.date.seconds * 1000 : new Date(b.date).getTime()) : 0;
+                    return dateB - dateA;
+                });
+
+                if(donations.length === 0) {
+                    listContainer.innerHTML = '<div style="padding:24px; text-align:center;"><i class="fas fa-box-open mb-3" style="font-size:2.5rem; color:var(--primary);"></i><p style="color:var(--text-500); font-weight:800;">No donation history found.<br>Offer your first Seva today! 🌸</p></div>';
+                } else {
+                    let html = '';
+                    donations.forEach(d => {
+                        const dateMs = d.date ? (d.date.seconds ? d.date.seconds * 1000 : new Date(d.date).getTime()) : Date.now();
+                        const dateStr = new Date(dateMs).toLocaleDateString('en-IN');
+                        
+                        const receiptUrl = `https://phone-pe-pi.vercel.app/api/generate-pdf?name=${encodeURIComponent(d.name || 'Devotee')}&amount=${d.amount}&seva=${encodeURIComponent(d.seva || 'Seva')}&txId=${d.paymentId}&phone=${d.contact}&date=${dateMs}&pan=${encodeURIComponent(d.pan || '')}&address=${encodeURIComponent(d.address || '')}`;
+                        
+                        html += `
+                            <div class="donation-history-card">
+                                <div class="dh-left">
+                                    <div class="dh-seva">${d.seva || 'General Temple Seva'}</div>
+                                    <div class="dh-date">${dateStr} | Txn: ${d.paymentId}</div>
+                                </div>
+                                <div class="dh-right text-end">
+                                    <div class="dh-amt">₹${d.amount}</div>
+                                    <a href="${receiptUrl}" target="_blank" class="dh-btn"><i class="fas fa-download me-1"></i> Receipt</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    listContainer.innerHTML = html;
+                }
+            } catch(e) {
+                listContainer.innerHTML = '<p style="color:red; padding:20px; text-align:center; font-weight:700;">Error loading donations. Check network connection.</p>';
+            }
+        };
+
+        // 6. Live Status Alert Listener
+        const liveStatusRef = ref(dbMain, 'live_status/isLive');
+        onValue(liveStatusRef, (snapshot) => {
+            const isLive = snapshot.val();
+            const bigBtn = document.getElementById('big-live-alert');
+            if(bigBtn) bigBtn.style.display = isLive ? 'block' : 'none';
+        });
+
+        // 7. Dynamic Slider Live Sync
+        window.sliderDataList = []; window.dateWidgetOrder = 1;
+        onValue(ref(db, 'slider_settings/date_order'), (snapshot) => { window.dateWidgetOrder = snapshot.val() || 1; if (typeof window.renderMasterSlider === 'function') window.renderMasterSlider(); });
+        onValue(ref(db, 'slider_items'), (snapshot) => { const data = snapshot.val(); window.sliderDataList = []; if (data) { Object.values(data).forEach(item => { window.sliderDataList.push(item); }); } if (typeof window.renderMasterSlider === 'function') window.renderMasterSlider(); });
+    } catch (e) { 
+        console.log("Firebase initialized."); 
+    }
+    
+    if (typeof window.renderMasterSlider === 'function') window.renderMasterSlider();
+</script>
+
+<script>
+    // Profile Modal Helpers
+    window.openProfileModal = function() {
+        const modal = document.getElementById('profileModalOverlay');
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        
+        const raw = localStorage.getItem("devoteeProfile");
+        if(raw) {
+            try {
+                const data = JSON.parse(raw);
+                if(data.name) document.getElementById("prof-name").value = data.name;
+                if(data.contact) document.getElementById("prof-phone").value = data.contact;
+                if(data.email) document.getElementById("prof-email").value = data.email;
+                if(data.pan) document.getElementById("prof-pan").value = data.pan;
+                if(data.address) document.getElementById("prof-address").value = data.address;
+                if(data.city) document.getElementById("prof-city").value = data.city;
+                if(data.pincode) document.getElementById("prof-pincode").value = data.pincode;
+                if(data.state) document.getElementById("prof-state").value = data.state;
+                if(data.gotra) document.getElementById("prof-gotra").value = data.gotra;
+            } catch(e){}
+        } else {
+            const savedPhone = localStorage.getItem("userPhone");
+            if(savedPhone && savedPhone !== "Guest") {
+                document.getElementById("prof-phone").value = savedPhone;
+            }
+        }
+    }
+
+    window.closeProfileModal = function(e) {
+        if(e && e.target !== document.getElementById('profileModalOverlay') && e !== null) return;
+        document.getElementById('profileModalOverlay').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    window.closeMyDonations = function(e) {
+        if(e && e.target !== document.getElementById('donationsModalOverlay') && e !== null) return;
+        document.getElementById('donationsModalOverlay').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+</script>
+</body>
+</html>
