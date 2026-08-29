@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
         const targetTopic = topic || "temple_all";
 
-        // 🚀 100% UNIVERSAL BACKGROUND OS WAKEUP PAYLOAD
+        // 🚀 100% ZERO-ERROR DUAL ANDROID + APPLE iOS COMPATIBLE PAYLOAD
         const message = {
             topic: targetTopic,
             notification: {
@@ -48,22 +48,27 @@ export default async function handler(req, res) {
             data: {
                 title: String(title),
                 body: String(body),
+                image: imageUrl ? String(imageUrl) : "",
+                page: actionUrl || "index.html",
                 url: actionUrl || "index.html"
             },
             android: {
                 priority: "high",
+                directBootOk: true,
                 notification: {
                     sound: "default",
+                    channelId: "iskcon_channel",
+                    priority: "max",
                     defaultSound: true,
                     defaultVibrateTimings: true,
-                    priority: "max",
                     visibility: "public",
                     ...(imageUrl ? { imageUrl: String(imageUrl) } : {})
                 }
             },
             apns: {
                 headers: {
-                    "apns-priority": "10"
+                    "apns-priority": "10",
+                    "apns-push-type": "alert"
                 },
                 payload: {
                     aps: {
@@ -73,7 +78,8 @@ export default async function handler(req, res) {
                         },
                         sound: "default",
                         badge: 1,
-                        "content-available": 1
+                        "content-available": 1,
+                        "mutable-content": 1
                     }
                 },
                 fcm_options: {
@@ -83,7 +89,7 @@ export default async function handler(req, res) {
         };
 
         const response = await admin.messaging().send(message);
-        return res.status(200).json({ success: true, messageId: response });
+        return res.status(200).json({ success: true, messageId: response, topic: targetTopic });
 
     } catch (error) {
         console.error("Push Error:", error);
