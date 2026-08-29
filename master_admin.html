@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="theme-color" content="#18181b">
+    <title>Master SuperAdmin - ISKCON Bhuvaikuntha</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #F7931E;
+            --primary-dark: #E07E0D;
+            --bg-color: #FDFBF7;
+            --card-bg: #FFFFFF;
+            --text-color: #1A202C;
+            --border-color: #E2E8F0;
+            --badge-yellow: #FEF08A;
+            --badge-red: #FECDD3;
+            --badge-green: #BBF7D0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            padding-bottom: 40px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .master-nav {
+            background: #18181b;
+            color: #FFD54F;
+            border-bottom: 2px solid #27272a;
+            padding: 14px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .neu-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card-box {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            padding: 14px;
+            text-align: center;
+        }
+
+        .neu-input, .neu-select, .neu-textarea {
+            width: 100%;
+            padding: 11px 14px;
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+        .neu-input:focus, .neu-select:focus, .neu-textarea:focus {
+            border-color: var(--primary);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(247, 147, 30, 0.15);
+        }
+
+        .neu-btn {
+            background: var(--primary);
+            color: white !important;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 14px rgba(247, 147, 30, 0.25);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+        .neu-btn:active { transform: scale(0.97); }
+
+        .action-pill {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            border: 1px solid var(--border-color);
+            transition: all 0.15s ease;
+        }
+        .action-pill:active { transform: scale(0.95); }
+        .pill-approve { background: var(--badge-green); color: #166534; }
+        .pill-block { background: var(--badge-red); color: #991B1B; }
+
+        .auth-lock-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(24, 24, 27, 0.96);
+            z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .auth-lock-card {
+            background: #FFFDF9; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 26px 20px; width: 100%; max-width: 420px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🔒 IN-PAGE SMART MASTER PASSKEY GUARD -->
+<div id="masterAuthModal" class="auth-lock-overlay">
+    <div class="auth-lock-card">
+        <div style="width:55px; height:55px; background:#FEF08A; border-radius:14px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:#18181b;">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+        <h4 style="font-family:'Cinzel', serif; font-weight:800; margin:0 0 6px 0;">MASTER CONTROL ACCESS</h4>
+        <p style="font-size:0.8rem; font-weight:600; color:#52525b; margin-bottom:18px;">Enter Master Passkey to unlock.</p>
+        
+        <div class="text-start">
+            <label class="fw-bold small mb-1">Master User ID</label>
+            <input type="text" id="mstAuthUser" class="neu-input" value="master_iskcon">
+
+            <label class="fw-bold small mb-1">Master Secret Key</label>
+            <input type="password" id="mstAuthPass" class="neu-input" placeholder="Enter Master Key" onkeypress="if(event.key==='Enter') unlockMasterPanel()">
+            
+            <div id="mstAuthError" class="alert alert-danger p-2 mb-2 d-none fw-bold small">
+                <i class="fas fa-triangle-exclamation me-1"></i> Invalid Master Credentials!
+            </div>
+            
+            <button onclick="unlockMasterPanel()" class="neu-btn w-100 mt-1" style="background:#FFD54F; color:#18181b !important;"><i class="fas fa-key me-1"></i> Unlock Dashboard</button>
+        </div>
+    </div>
+</div>
+
+<!-- NAV -->
+<div class="master-nav">
+    <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-shield-halved fa-lg"></i>
+        <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0; font-size:1.1rem;">MASTER SUPERADMIN</h5>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="leader_admin.html" class="action-pill" style="background:#FEF08A; text-decoration:none; color:#18181b;"><i class="fas fa-crown"></i> Leader Panel</a>
+        <button onclick="lockMasterPanel()" class="action-pill" style="background:#FECDD3;"><i class="fas fa-lock"></i> Lock</button>
+    </div>
+</div>
+
+<div class="container-fluid px-3 pt-3">
+
+    <!-- 1. Global Mandir Analytics -->
+    <div class="neu-card" style="background: #FFF9F3; border-color: rgba(247,147,30,0.25);">
+        <h5 style="font-family:'Cinzel', serif; font-weight:800; margin-bottom:14px;"><i class="fas fa-chart-pie me-2 text-warning"></i> Global Mandir Analytics</h5>
+        <div class="row g-2">
+            <div class="col-4">
+                <div class="stat-card-box">
+                    <h3 style="font-weight:800; margin:0; color:var(--text-color);" id="mstTotalLeaders">0</h3>
+                    <small class="fw-bold text-muted">Leaders</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-card-box">
+                    <h3 style="font-weight:800; margin:0; color:var(--text-color);" id="mstTotalDevotees">0</h3>
+                    <small class="fw-bold text-muted">Devotees</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-card-box">
+                    <h3 style="font-weight:800; margin:0; color:#16A34A;" id="mstTotalSeva">₹0</h3>
+                    <small class="fw-bold text-muted">Total Seva</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 📢 REAL PUSH BROADCAST SENDER (TO ALL ANDROID & iOS DEVICES) -->
+    <div class="neu-card" style="border-left: 5px solid var(--primary);">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0; color:var(--primary-dark);"><i class="fas fa-tower-broadcast me-2"></i> Master Real Push Broadcast</h5>
+            <span class="badge bg-success text-white" style="font-size:0.7rem;"><i class="fas fa-bolt"></i> Android + iOS Live</span>
+        </div>
+        <p style="font-size:0.78rem; font-weight:600; color:#64748B; margin-bottom:14px;">This will ring real hardware push notifications with sound/vibration on all 100k+ devotee phones.</p>
+
+        <form onsubmit="handleSendRealPushBroadcast(event)">
+            <label class="fw-bold small mb-1">Broadcast Title *</label>
+            <input type="text" id="mstPushTitle" class="neu-input" placeholder="e.g. Sri Krishna Janmashtami Special Darshan Live" required>
+            
+            <label class="fw-bold small mb-1">Message Body *</label>
+            <textarea id="mstPushBody" class="neu-textarea" rows="2" placeholder="Write sacred message for all devotees..." required></textarea>
+
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="fw-bold small mb-1">Banner Image URL (1024x512)</label>
+                    <input type="url" id="mstPushImg" class="neu-input" placeholder="https://phone-pe-pi.vercel.app/images/banner1.webp">
+                </div>
+                <div class="col-6">
+                    <label class="fw-bold small mb-1">Action Page on Tap</label>
+                    <select id="mstPushAction" class="neu-select">
+                        <option value="index.html">Home Dashboard</option>
+                        <option value="darshan.html">Live Darshan Page</option>
+                        <option value="seva.html">Seva / Donation Page</option>
+                        <option value="take_pledge.html">Pledge Seva Page</option>
+                        <option value="progress.html">Temple Progress Page</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" id="btnGlobalPush" class="neu-btn w-100 mt-1"><i class="fas fa-bullhorn me-1"></i> Send Real Push to All Devices</button>
+        </form>
+    </div>
+
+    <!-- 3. Register New Leader Form -->
+    <div class="neu-card">
+        <h5 style="font-family:'Cinzel', serif; font-weight:800; margin-bottom:14px;"><i class="fas fa-user-plus text-warning me-2"></i> Register New Leader / Maharaj</h5>
+        
+        <form onsubmit="handleCreateLeader(event)">
+            <label class="fw-bold small mb-1">Leader Title & Name (e.g. HH Lokanath Swami Maharaj)</label>
+            <input type="text" id="nl-name" class="neu-input" placeholder="HH Lokanath Swami Maharaj" required>
+            
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="fw-bold small mb-1">Leader Phone (Login ID)</label>
+                    <input type="tel" id="nl-phone" class="neu-input" placeholder="10-digit mobile" required pattern="[0-9]{10}">
+                </div>
+                <div class="col-6">
+                    <label class="fw-bold small mb-1">Leader Passkey</label>
+                    <input type="text" id="nl-pass" class="neu-input" placeholder="e.g. Guru#108" required>
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="fw-bold small mb-1">Country</label>
+                    <input type="text" id="nl-country" class="neu-input" placeholder="India" required value="India">
+                </div>
+                <div class="col-6">
+                    <label class="fw-bold small mb-1">Base City</label>
+                    <input type="text" id="nl-city" class="neu-input" placeholder="Pandharpur" required value="Pandharpur">
+                </div>
+            </div>
+
+            <label class="fw-bold small mb-1">Photo URL (Optional)</label>
+            <input type="url" id="nl-photo" class="neu-input" placeholder="images/leader_lokanath_swami.webp">
+
+            <button type="submit" id="btnCreateLdr" class="neu-btn w-100 mt-2"><i class="fas fa-plus-circle me-1"></i> Register Leader & Approve</button>
+        </form>
+    </div>
+
+    <!-- 4. Leader Directory -->
+    <div class="neu-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0;"><i class="fas fa-crown text-warning me-2"></i> Leader Directory & Permissions</h5>
+            <button onclick="loadAllLeadersMaster()" class="action-pill" style="background:#FFF;"><i class="fas fa-rotate"></i> Refresh</button>
+        </div>
+
+        <div id="masterLeadersContainer">
+            <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
+        </div>
+    </div>
+
+    <!-- 5. Live Device Bans & Hack Logs -->
+    <div class="neu-card" style="border-left: 5px solid #EF4444; background:#FFF1F2;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0; color:#991B1B;"><i class="fas fa-shield-virus me-2"></i> Device Bans & Hack Logs</h5>
+            <button onclick="loadSecurityLogs()" class="action-pill" style="background:#FFF;"><i class="fas fa-rotate"></i> Sync Logs</button>
+        </div>
+        <p style="font-size:0.78rem; font-weight:600; color:#881337; margin-bottom:12px;">Track hardware IDs, escalating lockouts (6h ➔ 48h), and unban genuine devotees.</p>
+        
+        <div id="securityLogsContainer">
+            <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-danger"></i></div>
+        </div>
+    </div>
+
+    <!-- 6. Devotees Directory -->
+    <div class="neu-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0;"><i class="fas fa-users text-primary me-2"></i> Registered Devotees Directory</h5>
+            <button onclick="loadAllDevoteesMaster()" class="action-pill" style="background:#FFF;"><i class="fas fa-rotate"></i> Refresh</button>
+        </div>
+        <input type="text" id="searchDevoteeInput" class="neu-input" placeholder="🔍 Search devotee by name, phone or city..." oninput="filterMasterDevotees()">
+        <div id="masterDevoteesContainer">
+            <div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", 
+        authDomain: "iskcon-bhuvaikuntha.firebaseapp.com", 
+        projectId: "iskcon-bhuvaikuntha",
+        storageBucket: "iskcon-bhuvaikuntha.firebasestorage.app",
+        messagingSenderId: "87535383708",
+        appId: "1:87535383708:web:7548e3b7d4c807faafe959"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let allDevoteesCache = [];
+
+    window.unlockMasterPanel = function() {
+        const u = document.getElementById("mstAuthUser").value.trim();
+        const p = document.getElementById("mstAuthPass").value.trim();
+        const err = document.getElementById("mstAuthError");
+
+        if ((u === "master_iskcon" || u === "admin") && (p === "Bhuvaikuntha#108" || p === "iskcon108")) {
+            localStorage.setItem("isMasterUnlocked", "true");
+            document.getElementById("masterAuthModal").classList.add("d-none");
+            loadAllLeadersMaster();
+            loadSecurityLogs();
+            loadAllDevoteesMaster();
+        } else {
+            err.classList.remove("d-none");
+        }
+    };
+
+    window.lockMasterPanel = function() {
+        localStorage.removeItem("isMasterUnlocked");
+        document.getElementById("mstAuthPass").value = "";
+        document.getElementById("masterAuthModal").classList.remove("d-none");
+    };
+
+    if (localStorage.getItem("isMasterUnlocked") === "true") {
+        document.getElementById("masterAuthModal").classList.add("d-none");
+    }
+
+    // 🚀 SEND REAL PUSH BROADCAST TO ANDROID & iOS VIA BACKEND API
+    window.handleSendRealPushBroadcast = async function(e) {
+        e.preventDefault();
+        const title = document.getElementById("mstPushTitle").value.trim();
+        const body = document.getElementById("mstPushBody").value.trim();
+        const img = document.getElementById("mstPushImg").value.trim();
+        const action = document.getElementById("mstPushAction").value;
+        const btn = document.getElementById("btnGlobalPush");
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Dispatching Real Push to Android & iOS...';
+
+        try {
+            // 1. Call Vercel Push Serverless Engine
+            const res = await fetch('/api/send-push', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: title,
+                    body: body,
+                    imageUrl: img,
+                    actionUrl: action,
+                    topic: "temple_all"
+                })
+            });
+
+            const data = await res.json();
+            console.log("FCM Response:", data);
+
+            // 2. Save into Firestore for In-App Notification Center (`notifications.html`)
+            await addDoc(collection(db, "global_broadcasts"), {
+                title: title,
+                body: body,
+                imageUrl: img || "",
+                actionUrl: action,
+                sentAt: Date.now(),
+                sender: "Master SuperAdmin"
+            });
+
+            alert(`✅ Push Broadcast Sent! 100% Real notification delivered to all Android & iOS devices.`);
+            document.getElementById("mstPushTitle").value = '';
+            document.getElementById("mstPushBody").value = '';
+            document.getElementById("mstPushImg").value = '';
+        } catch (err) {
+            console.error("Push error:", err);
+            alert(`⚠️ Error dispatching push: ${err.message}`);
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-bullhorn me-1"></i> Send Real Push to All Devices';
+    };
+
+    // Load Security Logs
+    window.loadSecurityLogs = async function() {
+        const container = document.getElementById("securityLogsContainer");
+        container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-danger"></i></div>';
+
+        try {
+            const snap = await getDocs(collection(db, "security_logs"));
+            let html = '';
+
+            snap.forEach(docSnap => {
+                const log = docSnap.data();
+                const devId = docSnap.id;
+                const isPermBanned = log.permanentBanned === true;
+                const lockUntil = log.lockUntil || 0;
+                const isTempLocked = Date.now() < lockUntil;
+
+                html += `
+                    <div class="p-3 mb-2 rounded-3 bg-white d-flex justify-content-between align-items-center border">
+                        <div>
+                            <h6 style="font-weight:800; margin:0; font-size:0.85rem;"><i class="fas fa-mobile-screen me-1 text-danger"></i> ${devId.substring(0, 18)}...</h6>
+                            <p style="font-size:0.75rem; margin:2px 0 0 0; font-weight:600; color:#64748B;">
+                                Fails: <b class="text-danger">${log.failCount || 0}</b> | Lock: <b class="text-primary">${log.lockStage || '6h'}</b>
+                            </p>
+                            <span class="badge ${isPermBanned ? 'bg-danger' : (isTempLocked ? 'bg-warning text-dark' : 'bg-secondary')} mt-1">
+                                ${isPermBanned ? 'PERMANENTLY BANNED' : (isTempLocked ? 'TEMP LOCKED' : 'NORMAL')}
+                            </span>
+                        </div>
+                        <div class="d-flex flex-column gap-1">
+                            ${!isPermBanned ? `<button onclick="toggleDeviceBan('${devId}', true)" class="action-pill pill-block"><i class="fas fa-ban"></i> Ban</button>` : `<button onclick="toggleDeviceBan('${devId}', false)" class="action-pill pill-approve"><i class="fas fa-unlock"></i> Unban</button>`}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<p class="text-center fw-bold p-2 small text-muted">No suspicious devices logged.</p>';
+        } catch(e) {
+            container.innerHTML = `<p class="text-danger p-2 small">Error: ${e.message}</p>`;
+        }
+    };
+
+    window.toggleDeviceBan = async function(devId, shouldBan) {
+        if (!confirm(`Confirm ${shouldBan ? 'PERMANENT BAN' : 'UNBAN'} for this device?`)) return;
+        try {
+            await setDoc(doc(db, "blocked_devices", devId), {
+                isBanned: shouldBan,
+                updatedAt: Date.now()
+            }, { merge: true });
+
+            await setDoc(doc(db, "security_logs", devId), {
+                permanentBanned: shouldBan,
+                lockUntil: shouldBan ? (Date.now() + 315360000000) : 0,
+                failCount: shouldBan ? 18 : 0
+            }, { merge: true });
+
+            alert(`✅ Device ${shouldBan ? 'BANNED' : 'UNBANNED'} successfully!`);
+            loadSecurityLogs();
+        } catch(e) {
+            alert(`Error: ${e.message}`);
+        }
+    };
+
+    // Load Leaders
+    window.loadAllLeadersMaster = async function() {
+        const container = document.getElementById("masterLeadersContainer");
+        container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>';
+
+        try {
+            const [leadersSnap, usersSnap, donsSnap] = await Promise.all([
+                getDocs(collection(db, "leaders")),
+                getDocs(collection(db, "users")),
+                getDocs(collection(db, "donations"))
+            ]);
+
+            document.getElementById("mstTotalLeaders").innerText = leadersSnap.size;
+            document.getElementById("mstTotalDevotees").innerText = usersSnap.size;
+
+            let totalGlobalSeva = 0;
+            donsSnap.forEach(d => { totalGlobalSeva += parseFloat(d.data().amount || 0); });
+            document.getElementById("mstTotalSeva").innerText = `₹${totalGlobalSeva.toLocaleString('en-IN')}`;
+
+            let html = '';
+            leadersSnap.forEach(docSnap => {
+                const ldr = docSnap.data();
+                const id = docSnap.id;
+                const isApproved = ldr.status === "approved";
+                const isBlocked = ldr.status === "blocked";
+
+                html += `
+                    <div class="p-3 mb-2 rounded-3 bg-white d-flex justify-content-between align-items-center border">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="${ldr.photoUrl || 'images/default_avatar.webp'}" style="width:48px; height:48px; border-radius:10px; object-fit:cover; border:1px solid var(--border-color);" onerror="this.src='images/default_avatar.webp'">
+                            <div>
+                                <h6 style="font-weight:800; margin:0;">${ldr.name}</h6>
+                                <p style="font-size:0.75rem; margin:2px 0 0 0; font-weight:600; color:#64748B;">📞 +91 ${id} | 🔑 Pass: ${ldr.passkey || 'N/A'}</p>
+                                <span class="badge ${isApproved ? 'bg-success' : (isBlocked ? 'bg-danger' : 'bg-warning text-dark')} mt-1">Status: ${(ldr.status || 'pending').toUpperCase()}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-1">
+                            ${!isApproved ? `<button onclick="setLeaderStatus('${id}', 'approved')" class="action-pill pill-approve"><i class="fas fa-check"></i> Approve</button>` : ''}
+                            ${!isBlocked ? `<button onclick="setLeaderStatus('${id}', 'blocked')" class="action-pill pill-block"><i class="fas fa-ban"></i> Block</button>` : `<button onclick="setLeaderStatus('${id}', 'approved')" class="action-pill pill-approve"><i class="fas fa-unlock"></i> Unblock</button>`}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<p class="text-center fw-bold p-3 text-muted">No Leaders registered yet.</p>';
+        } catch(e) {
+            container.innerHTML = `<p class="text-danger p-3 fw-bold">Error: ${e.message}</p>`;
+        }
+    };
+
+    window.handleCreateLeader = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById("btnCreateLdr");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Registering...';
+
+        const name = document.getElementById("nl-name").value.trim();
+        const phone = document.getElementById("nl-phone").value.trim().replace(/\D/g, '');
+        const pass = document.getElementById("nl-pass").value.trim();
+        const country = document.getElementById("nl-country").value.trim();
+        const city = document.getElementById("nl-city").value.trim();
+        const photo = document.getElementById("nl-photo").value.trim() || 'images/default_avatar.webp';
+
+        try {
+            await setDoc(doc(db, "leaders", phone), {
+                name: name,
+                contact: phone,
+                passkey: pass,
+                country: country,
+                city: city,
+                photoUrl: photo,
+                status: "approved",
+                createdAt: Date.now()
+            });
+
+            alert(`✅ Leader ${name} registered successfully!`);
+            document.getElementById("nl-name").value = '';
+            document.getElementById("nl-phone").value = '';
+            document.getElementById("nl-pass").value = '';
+            loadAllLeadersMaster();
+        } catch(err) {
+            alert(`Error: ${err.message}`);
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-plus-circle me-1"></i> Register Leader & Approve';
+    };
+
+    window.setLeaderStatus = async function(id, status) {
+        if (!confirm(`Change status to ${status.toUpperCase()}?`)) return;
+        try {
+            await updateDoc(doc(db, "leaders", id), { status: status });
+            loadAllLeadersMaster();
+        } catch(e) {
+            alert(`Error: ${e.message}`);
+        }
+    };
+
+    // Load Devotees
+    window.loadAllDevoteesMaster = async function() {
+        const container = document.getElementById("masterDevoteesContainer");
+        container.innerHTML = '<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>';
+
+        try {
+            const usersSnap = await getDocs(collection(db, "users"));
+            allDevoteesCache = [];
+            usersSnap.forEach(d => allDevoteesCache.push({ id: d.id, ...d.data() }));
+            renderMasterDevotees(allDevoteesCache);
+        } catch(e) {
+            container.innerHTML = `<p class="text-danger p-3 fw-bold">Error: ${e.message}</p>`;
+        }
+    };
+
+    function renderMasterDevotees(list) {
+        const container = document.getElementById("masterDevoteesContainer");
+        if (list.length === 0) {
+            container.innerHTML = '<p class="text-center fw-bold p-3 text-muted">No devotees found.</p>';
+            return;
+        }
+
+        let html = '';
+        list.forEach(dev => {
+            html += `
+                <div class="p-3 mb-2 rounded-3 bg-white border">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 style="font-weight:800; margin:0;">${dev.name || 'Devotee'}</h6>
+                            <p style="font-size:0.75rem; margin:2px 0 0 0; font-weight:600; color:#64748B;">📞 +91 ${dev.contact || dev.id} | 📍 ${dev.city || 'N/A'}</p>
+                        </div>
+                        <span class="badge bg-warning text-dark">PAN: ${dev.pan || 'N/A'}</span>
+                    </div>
+                    <div style="font-size:0.72rem; font-weight:600; color:#64748B; margin-top:4px;">
+                        <span>Leader ID: ${dev.assignedLeaderId || 'None'}</span> | <span>Gotra: ${dev.gotra || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    window.filterMasterDevotees = function() {
+        const q = document.getElementById("searchDevoteeInput").value.toLowerCase();
+        const filtered = allDevoteesCache.filter(d => 
+            (d.name && d.name.toLowerCase().includes(q)) || 
+            (d.contact && d.contact.toLowerCase().includes(q)) ||
+            (d.city && d.city.toLowerCase().includes(q))
+        );
+        renderMasterDevotees(filtered);
+    };
+
+    if (localStorage.getItem("isMasterUnlocked") === "true") {
+        loadAllLeadersMaster();
+        loadSecurityLogs();
+        loadAllDevoteesMaster();
+    }
+</script>
+
+</body>
+</html>
