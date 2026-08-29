@@ -1,5 +1,6 @@
 import admin from 'firebase-admin';
 
+// Initialize Firebase Admin SDK safely
 if (!admin.apps.length) {
     try {
         const serviceAccount = {
@@ -36,7 +37,7 @@ export default async function handler(req, res) {
 
         const targetTopic = topic || "temple_all";
 
-        // 🚀 HIGH PRIORITY OS-WAKEUP PAYLOAD (FOR APP CLOSED/KILLED STATE)
+        // 🚀 100% UNIVERSAL BACKGROUND OS WAKEUP PAYLOAD
         const message = {
             topic: targetTopic,
             notification: {
@@ -51,13 +52,11 @@ export default async function handler(req, res) {
             },
             android: {
                 priority: "high",
-                directBootOk: true,
                 notification: {
                     sound: "default",
-                    channelId: "iskcon_channel",
-                    priority: "max",
                     defaultSound: true,
                     defaultVibrateTimings: true,
+                    priority: "max",
                     visibility: "public",
                     ...(imageUrl ? { imageUrl: String(imageUrl) } : {})
                 }
