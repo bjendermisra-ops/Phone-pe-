@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#F7931E">
+    <title>Notification Center - ISKCON Bhuvaikuntha</title>
+
+    <!-- Fast Preconnects -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Cinzel:wght@700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* 🎨 Official Figma Color Tokens */
+            --primary: #F7931E; 
+            --primary-dark: #E07E0D;
+            --primary-90: #F89E34;
+            --primary-75: #FAB45B;
+            --primary-50: #FDC98E;
+            --primary-25: #FEE4C6;
+            --primary-15: #FFF0DE;
+            --primary-5: #FFF9F3;
+            
+            --text-500: #1A202C;
+            --text-90: #2D3748;
+            --text-75: #4A5568;
+            --text-50: #718096;
+            --text-25: #A0AEC0;
+            --text-15: #CBD5E0;
+            --text-5: #E2E8F0;
+
+            --bg-color: #FFFFFF; 
+            --card-bg: #FFFFFF; 
+            --border-color: #EAE6DF;
+            --card-border: 1px solid #EAE6DF;
+            
+            --success-color: #22C55E;
+            --warning-color: #F59E0B;
+            --error-color: #EF4444;
+
+            --orange-shadow: 0 4px 12px rgba(247, 147, 30, 0.25);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] { 
+            --bg-color: #0E1217; 
+            --card-bg: #181D24; 
+            --text-500: #F7FAFC;
+            --text-90: #EDF2F7;
+            --text-75: #E2E8F0;
+            --text-50: #CBD5E0;
+            --border-color: #2D3748;
+            --card-border: 1px solid #2D3748;
+            --primary-15: #2A1D0F;
+            --primary-5: #1F150A;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; 
+            color: var(--text-500); 
+            margin: 0; 
+            padding: 0; 
+            padding-bottom: 40px; 
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        /* 📱 Top Header Bar (Figma Exact Style: Screenshot 3) */
+        .figma-header { 
+            background-color: var(--primary); 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 14px 16px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 2px 10px rgba(247, 147, 30, 0.2); 
+        }
+        .back-btn { 
+            color: white; 
+            font-size: 1.15rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            transition: var(--transition); 
+        }
+        .back-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.15); }
+        .header-title { 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            margin: 0; 
+            flex-grow: 1; 
+            text-align: center;
+            margin-right: 36px; /* Balance back button */
+        }
+
+        /* 🔔 Notification Feed Container (Figma Screenshot 3) */
+        .notification-feed {
+            max-width: 540px;
+            margin: 0 auto;
+            background: var(--card-bg);
+        }
+
+        .notif-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+        }
+        .notif-card:active {
+            background-color: var(--primary-5);
+        }
+
+        .notif-avatar-box {
+            flex-shrink: 0;
+            position: relative;
+        }
+        .notif-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            background: var(--primary-15);
+        }
+        .notif-avatar-placeholder {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary-15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .notif-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .notif-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 0 0 3px 0;
+            line-height: 1.3;
+        }
+        [data-theme="dark"] .notif-title { color: var(--primary-75); }
+
+        .notif-desc {
+            font-size: 0.78rem;
+            color: var(--text-75);
+            margin: 0 0 10px 0;
+            line-height: 1.45;
+            font-weight: 500;
+        }
+
+        .notif-action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        /* Figma Action Button (Screenshot 3) */
+        .notif-btn {
+            background: var(--primary);
+            color: #FFFFFF !important;
+            padding: 6px 18px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--orange-shadow);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: capitalize;
+        }
+        .notif-btn:active { transform: scale(0.95); }
+
+        .notif-time {
+            font-size: 0.7rem;
+            color: var(--text-25);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-icon {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: var(--primary-15);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 16px auto;
+        }
+
+        .loader-box {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 📱 Top Header Bar (Figma Exact Style: Screenshot 3) -->
+    <header class="figma-header">
+        <a href="index.html" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <h1 class="header-title">Notification</h1>
+    </header>
+
+    <!-- Notification Feed Container -->
+    <div class="notification-feed" id="notification-list">
+        <div class="loader-box">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="font-size: 0.8rem; font-weight: 700; margin-top: 10px; color: var(--text-50);">Loading sacred updates...</p>
+        </div>
+    </div>
+
+    <script>
+        // 1. FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908",
+            authDomain: "iskcon-bhuvaikuntha.firebaseapp.com",
+            projectId: "iskcon-bhuvaikuntha"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // 2. DEFAULT SEED ANNOUNCEMENTS (Figma Screenshot 3 Reference)
+        const defaultNotifications = [
+            {
+                id: "def_1",
+                title: "Today’s Sringar Darshan",
+                body: "View the divine darshan of Sri Sri Pandharinath.",
+                actionText: "View Darshan",
+                actionUrl: "darshan.html",
+                imageUrl: "images/qa_deity_seva.webp",
+                timestamp: Date.now() - (2 * 60 * 1000) // 2 mins ago
+            },
+            {
+                id: "def_2",
+                title: "Annadan Today",
+                body: "Serve prasadam to 500 devotees with your seva",
+                actionText: "Contribute",
+                actionUrl: "seva.html?cat=Annadan",
+                imageUrl: "images/qa_annadan_seva.webp",
+                timestamp: Date.now() - (5 * 60 * 60 * 1000) // 5 hours ago
+            },
+            {
+                id: "def_3",
+                title: "Sanctum Completed",
+                body: "Watch the foundation milestone video.",
+                actionText: "Watch",
+                actionUrl: "progress.html",
+                imageUrl: "",
+                timestamp: Date.now() - (24 * 60 * 60 * 1000) // 24 hours ago
+            },
+            {
+                id: "def_4",
+                title: "New Scheme Brochure",
+                body: "View Brochure of Garbhagriha seva details.",
+                actionText: "View Scheme",
+                actionUrl: "media.html",
+                imageUrl: "",
+                timestamp: Date.now() - (24 * 60 * 60 * 1000) // 24 hours ago
+            },
+            {
+                id: "def_5",
+                title: "Kartik Maas Begins",
+                body: "Join the month of Damodar — the most auspicious month for seva and devotion.",
+                actionText: "Offer Seva",
+                actionUrl: "seva.html",
+                imageUrl: "",
+                timestamp: Date.now() - (48 * 60 * 60 * 1000) // 2 days ago
+            }
+        ];
+
+        // 3. TIME AGO FORMATTER
+        function formatTimeAgo(timestamp) {
+            if (!timestamp) return "Just now";
+            const now = Date.now();
+            const diffMs = now - timestamp;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHrs = Math.floor(diffMin / 60);
+            const diffDays = Math.floor(diffHrs / 24);
+
+            if (diffMin < 1) return "Just now";
+            if (diffMin === 1) return "1 min ago";
+            if (diffMin < 60) return `${diffMin} mins ago`;
+            if (diffHrs === 1) return "1 hour ago";
+            if (diffHrs < 24) return `${diffHrs} hours ago`;
+            if (diffDays === 1) return "24 hours ago";
+            if (diffDays < 7) return `${diffDays} days ago`;
+            return new Date(timestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+        }
+
+        // 4. RESOLVE ACTION BUTTON TEXT & URL
+        function resolveButtonDetails(title, actionUrl) {
+            let text = "View Now";
+            let url = actionUrl || "index.html";
+            const tLower = (title || "").toLowerCase();
+
+            if (tLower.includes("darshan")) {
+                text = "View Darshan";
+                url = "darshan.html";
+            } else if (tLower.includes("annadan") || tLower.includes("prasadam") || tLower.includes("contribute")) {
+                text = "Contribute";
+                url = "seva.html?cat=Annadan";
+            } else if (tLower.includes("sanctum") || tLower.includes("progress") || tLower.includes("watch") || tLower.includes("video")) {
+                text = "Watch";
+                url = "progress.html";
+            } else if (tLower.includes("brochure") || tLower.includes("scheme")) {
+                text = "View Scheme";
+                url = "media.html";
+            } else if (tLower.includes("seva") || tLower.includes("puja") || tLower.includes("kartik") || tLower.includes("damodar")) {
+                text = "Offer Seva";
+                url = "seva.html";
+            }
+
+            return { text, url };
+        }
+
+        // 5. RENDER NOTIFICATIONS FEED
+        function renderNotificationsList(items) {
+            const container = document.getElementById("notification-list");
+            if (!items || items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-bell-slash"></i></div>
+                        <h4 style="font-weight: 800; font-size: 1rem; color: var(--text-500); margin: 0 0 6px 0;">No Notifications Yet</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-50); margin: 0;">Stay tuned for divine temple updates and sacred darshan broadcasts.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = "";
+            items.forEach(item => {
+                const timeText = formatTimeAgo(item.timestamp);
+                const btnInfo = resolveButtonDetails(item.title, item.actionUrl);
+                const hasImg = item.imageUrl && item.imageUrl.trim() !== "";
+
+                html += `
+                    <div class="notif-card" onclick="window.location.href='${btnInfo.url}'">
+                        <div class="notif-avatar-box">
+                            ${hasImg 
+                                ? `<img src="${item.imageUrl}" class="notif-avatar" onerror="this.outerHTML='<div class=\\'notif-avatar-placeholder\\'><i class=\\'fas fa-om\\'></i></div>'" alt="Icon">`
+                                : `<div class="notif-avatar-placeholder"><i class="fas fa-om"></i></div>`
+                            }
+                        </div>
+                        <div class="notif-content">
+                            <h3 class="notif-title">${item.title}</h3>
+                            <p class="notif-desc">${item.body}</p>
+                            <div class="notif-action-row">
+                                <a href="${btnInfo.url}" class="notif-btn" onclick="event.stopPropagation();">${btnInfo.text}</a>
+                                <span class="notif-time"><i class="far fa-clock"></i> ${timeText}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 6. REALTIME FIRESTORE LISTENER & SYNC
+        async function initRealtimeNotifications() {
+            let combinedNotifications = [...defaultNotifications];
+
+            // Resolve connected leader if any
+            let userLeaderId = "";
+            const rawProfile = localStorage.getItem("devoteeProfile");
+            if (rawProfile) {
+                try { userLeaderId = JSON.parse(rawProfile).assignedLeaderId || ""; } catch(e){}
+            }
+
+            try {
+                // A. Listen to Global Broadcasts
+                db.collection("global_broadcasts").orderBy("sentAt", "desc").limit(15).onSnapshot(snapshot => {
+                    let liveBroadcasts = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        liveBroadcasts.push({
+                            id: doc.id,
+                            title: data.title || "Temple Broadcast",
+                            body: data.body || "",
+                            actionUrl: data.actionUrl || "index.html",
+                            imageUrl: data.imageUrl || "",
+                            timestamp: data.sentAt || Date.now()
+                        });
+                    });
+
+                    // Merge and sort
+                    let all = [...liveBroadcasts, ...defaultNotifications];
+                    all.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    renderNotificationsList(all);
+                }, err => {
+                    renderNotificationsList(defaultNotifications);
+                });
+
+                // B. Listen to Targeted Maharaj Notifications if connected
+                if (userLeaderId) {
+                    db.collection("targeted_notifications")
+                      .where("leaderId", "==", userLeaderId)
+                      .orderBy("createdAt", "desc")
+                      .limit(10)
+                      .onSnapshot(snap => {
+                          let leaderNotifs = [];
+                          snap.forEach(doc => {
+                              const d = doc.data();
+                              leaderNotifs.push({
+                                  id: doc.id,
+                                  title: `🙏 ${d.leaderName || 'Maharaj'}: ${d.title}`,
+                                  body: d.body || "",
+                                  actionUrl: d.actionUrl || "seva.html",
+                                  imageUrl: d.imageUrl || "images/guru_lokanath_swami.webp",
+                                  timestamp: d.createdAt || Date.now()
+                              });
+                          });
+
+                          let all = [...leaderNotifs, ...defaultNotifications];
+                          all.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                          renderNotificationsList(all);
+                      }, () => {});
+                }
+
+            } catch (e) {
+                renderNotificationsList(defaultNotifications);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initRealtimeNotifications();
+        });
+    </script>
+</body>
+</html>
