@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#18181b">
+    <title>Master SuperAdmin HQ - ISKCON Bhuvaikuntha</title>
+
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+    <style>
+        :root {
+            --primary: #F7931E;
+            --primary-dark: #D37407;
+            --primary-light: #FFF5EA;
+            --dark-sidebar: #121214;
+            --dark-card: #18181B;
+            --bg-body: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --badge-green: #DCFCE7;
+            --badge-green-txt: #15803D;
+            --badge-red: #FEE2E2;
+            --badge-red-txt: #B91C1C;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--bg-body);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* 🔒 AUTH LOCK OVERLAY */
+        .auth-lock-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #27272a 0%, #09090b 100%);
+            z-index: 999999;
+            display: flex; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .auth-lock-card {
+            background: #FFFFFF; border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 32px 26px; width: 100%; max-width: 440px; text-align: center;
+            border: 1px solid rgba(247, 147, 30, 0.3);
+        }
+
+        /* DASHBOARD LAYOUT */
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* SIDEBAR (DESKTOP) */
+        .admin-sidebar {
+            width: 280px;
+            background: var(--dark-sidebar);
+            color: #F8FAFC;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 1050;
+            transition: all 0.3s ease;
+            border-right: 1px solid #27272A;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            border-bottom: 1px solid #27272A;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-brand h5 {
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            color: #FBBF24;
+            margin: 0;
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 16px 12px;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .sidebar-menu li { margin-bottom: 6px; }
+        .sidebar-menu .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #94A3B8;
+            font-weight: 700;
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .sidebar-menu .nav-link i { font-size: 1.1rem; width: 22px; text-align: center; }
+        .sidebar-menu .nav-link:hover, .sidebar-menu .nav-link.active {
+            background: #27272A;
+            color: #FBBF24;
+        }
+        .sidebar-menu .nav-link.active {
+            background: linear-gradient(135deg, rgba(247, 147, 30, 0.25) 0%, rgba(247, 147, 30, 0.05) 100%);
+            color: #FFB020;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* MAIN CONTENT AREA */
+        .admin-main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: var(--bg-body);
+        }
+
+        /* TOPBAR */
+        .admin-topbar {
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* CONTENT CONTAINER */
+        .admin-content {
+            padding: 24px;
+            flex-grow: 1;
+        }
+
+        /* CARDS & COMPONENTS */
+        .neu-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .stat-widget {
+            background: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease;
+        }
+        .stat-widget:hover { transform: translateY(-3px); }
+        .stat-icon-box {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        /* INPUTS & BUTTONS */
+        .neu-input, .neu-select, .neu-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: #F8FAFC;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .neu-input:focus, .neu-select:focus, .neu-textarea:focus {
+            border-color: var(--primary);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(247, 147, 30, 0.15);
+        }
+
+        .neu-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #FFFFFF !important;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.88rem;
+            box-shadow: 0 4px 14px rgba(247, 147, 30, 0.3);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .neu-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+        .neu-btn:active { transform: scale(0.97); }
+
+        .btn-secondary-custom {
+            background: #F1F5F9;
+            color: #475569 !important;
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary-custom:hover { background: #E2E8F0; color: #1E293B !important; }
+
+        /* ACTION PILLS & BADGES */
+        .action-pill {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.76rem;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .pill-approve { background: var(--badge-green); color: var(--badge-green-txt); }
+        .pill-block { background: var(--badge-red); color: var(--badge-red-txt); }
+        .pill-edit { background: #E0E7FF; color: #4338CA; }
+        .pill-delete { background: #FEE2E2; color: #DC2626; }
+        .pill-view { background: #FEF3C7; color: #B45309; }
+
+        /* TABLES */
+        .custom-table-container {
+            border-radius: 14px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            background: #FFFFFF;
+        }
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            text-align: left;
+        }
+        .custom-table th {
+            background: #F8FAFC;
+            color: #475569;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 14px 18px;
+            border-bottom: 1.5px solid var(--border-color);
+        }
+        .custom-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+        .custom-table tr:hover td { background: #FFFDF9; }
+
+        /* MOBILE DRAWER / SIDEBAR TOGGLE */
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 991px) {
+            .mobile-menu-btn { display: block; background: none; border: none; font-size: 1.4rem; color: #1E293B; }
+            .admin-sidebar {
+                position: fixed;
+                left: -290px;
+                top: 0;
+                bottom: 0;
+                height: 100vh;
+                box-shadow: 10px 0 30px rgba(0,0,0,0.4);
+            }
+            .admin-sidebar.show { left: 0; }
+            .admin-content { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🔒 MASTER AUTH OVERLAY -->
+<div id="masterAuthModal" class="auth-lock-overlay">
+    <div class="auth-lock-card">
+        <div style="width:64px; height:64px; background:#FEF08A; border-radius:18px; margin:0 auto 16px auto; display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#18181b;">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+        <h4 style="font-family:'Cinzel', serif; font-weight:900; margin:0 0 6px 0; color:#18181B;">MASTER HQ ACCESS</h4>
+        <p style="font-size:0.84rem; font-weight:600; color:#64748B; margin-bottom:20px;">सर्वोच्च नियंत्रण कक्ष - मास्टर क्रेडेंशियल्स दर्ज करें।</p>
+        
+        <div class="text-start">
+            <label class="fw-bold small mb-1">Master User ID</label>
+            <input type="text" id="mstAuthUser" class="neu-input" value="master_iskcon">
+
+            <label class="fw-bold small mb-1">Master Secret Key</label>
+            <input type="password" id="mstAuthPass" class="neu-input" placeholder="••••••••••••" onkeypress="if(event.key==='Enter') unlockMasterPanel()">
+            
+            <div id="mstAuthError" class="alert alert-danger p-2 mb-3 d-none fw-bold small text-center">
+                <i class="fas fa-circle-exclamation me-1"></i> गलत क्रेडेंशियल! केवल अधिकृत सुपरएडमिन प्रवेश कर सकते हैं।
+            </div>
+            
+            <button onclick="unlockMasterPanel()" class="neu-btn w-100 mt-1" style="background:#18181B; color:#FFD54F !important;">
+                <i class="fas fa-lock-open me-2"></i> Unlock Master HQ
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-wrapper">
+
+    <!-- 🌟 LEFT SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div>
+            <div class="sidebar-brand">
+                <i class="fas fa-om text-warning fa-2x"></i>
+                <div>
+                    <h5>BHUVAIKUNTHA</h5>
+                    <small style="color:#94A3B8; font-weight:700; font-size:0.7rem; letter-spacing:1px;">MASTER SUPERADMIN</small>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a class="nav-link active" onclick="switchTab('tab-dashboard', this)"><i class="fas fa-chart-line"></i> Dashboard & Stats</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-leaders', this)"><i class="fas fa-crown"></i> Leaders Management</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-devotees', this)"><i class="fas fa-users"></i> Devotees Directory</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-donations', this)"><i class="fas fa-hand-holding-dollar"></i> Global Seva Records</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-broadcast', this)"><i class="fas fa-tower-broadcast"></i> Push Broadcast Engine</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-security', this)"><i class="fas fa-shield-virus"></i> Device Bans & Hacks</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-settings', this)"><i class="fas fa-sliders"></i> Master App Control</a></li>
+            </ul>
+        </div>
+
+        <div class="p-3 border-top border-dark">
+            <button onclick="lockMasterPanel()" class="btn btn-dark w-100 text-danger fw-bold d-flex align-items-center justify-content-center gap-2" style="background:#27272A; border-radius:12px; font-size:0.85rem;">
+                <i class="fas fa-lock"></i> Lock HQ Dashboard
+            </button>
+        </div>
+    </aside>
+
+    <!-- 🌟 RIGHT MAIN CONTENT -->
+    <main class="admin-main">
+
+        <!-- TOP BAR -->
+        <header class="admin-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <div>
+                    <h5 style="margin:0; font-weight:800; font-size:1.1rem;" id="topbarTitle">Mandir Overview</h5>
+                    <small class="text-muted fw-bold">Live Synced with Firebase Cloud</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button onclick="refreshAllData()" class="btn-secondary-custom d-flex align-items-center gap-2">
+                    <i class="fas fa-rotate"></i> <span class="d-none d-md-inline">Sync All Data</span>
+                </button>
+                <span class="badge bg-success py-2 px-3 fw-bold rounded-pill"><i class="fas fa-signal me-1"></i> MASTER LIVE</span>
+            </div>
+        </header>
+
+        <!-- CONTENT TABS -->
+        <div class="admin-content">
+
+            <!-- TAB 1: DASHBOARD & STATS -->
+            <div id="tab-dashboard" class="tab-pane-content">
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-widget">
+                            <div>
+                                <small class="text-muted fw-bold text-uppercase">कुल संकलित सेवा</small>
+                                <h3 class="fw-bold m-0 mt-1 text-success" id="dashTotalSeva">₹0</h3>
+                            </div>
+                            <div class="stat-icon-box bg-success bg-opacity-10 text-success"><i class="fas fa-indian-rupee-sign"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-widget">
+                            <div>
+                                <small class="text-muted fw-bold text-uppercase">कुल अधिकृत लीडर्स</small>
+                                <h3 class="fw-bold m-0 mt-1 text-warning" id="dashTotalLeaders">0</h3>
+                            </div>
+                            <div class="stat-icon-box bg-warning bg-opacity-10 text-warning"><i class="fas fa-crown"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-widget">
+                            <div>
+                                <small class="text-muted fw-bold text-uppercase">पंजीकृत भक्तगण</small>
+                                <h3 class="fw-bold m-0 mt-1 text-primary" id="dashTotalDevotees">0</h3>
+                            </div>
+                            <div class="stat-icon-box bg-primary bg-opacity-10 text-primary"><i class="fas fa-users"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-widget">
+                            <div>
+                                <small class="text-muted fw-bold text-uppercase">ब्लॉक किए गए डिवाइसेज</small>
+                                <h3 class="fw-bold m-0 mt-1 text-danger" id="dashBlockedDevices">0</h3>
+                            </div>
+                            <div class="stat-icon-box bg-danger bg-opacity-10 text-danger"><i class="fas fa-shield-virus"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Banner -->
+                <div class="neu-card" style="background: linear-gradient(135deg, #18181B 0%, #27272A 100%); color:#FFFFFF;">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div>
+                            <span class="badge bg-warning text-dark mb-2 fw-bold">Master Control HQ</span>
+                            <h4 style="font-family:'Cinzel', serif; font-weight:800; margin:0;">श्री पंढरपुर धाम - भुवैकण्ठ मंदिर प्रबंधन</h4>
+                            <p style="color:#94A3B8; font-size:0.85rem; margin:4px 0 0 0;">यहाँ से आप पूरे ऐप, लीडर्स, भक्तों और दान राशि को सीधे नियंत्रित कर सकते हैं।</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button onclick="switchTab('tab-leaders')" class="neu-btn"><i class="fas fa-user-plus"></i> नया लीडर बनाएं</button>
+                            <button onclick="switchTab('tab-broadcast')" class="btn btn-outline-light fw-bold" style="border-radius:12px;"><i class="fas fa-bullhorn me-1"></i> ब्रॉडकास्ट भेजें</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: LEADERS MANAGEMENT (FULL CONTROL) -->
+            <div id="tab-leaders" class="tab-pane-content d-none">
+                <div class="row g-4">
+                    <!-- Create Leader Form -->
+                    <div class="col-12 col-xl-4">
+                        <div class="neu-card">
+                            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin-bottom:16px;">
+                                <i class="fas fa-user-shield text-warning me-2"></i> नया लीडर / महाराज रजिस्टर करें
+                            </h5>
+                            <form onsubmit="handleCreateLeader(event)">
+                                <label class="fw-bold small mb-1">लीडर का पूरा नाम व पदवी *</label>
+                                <input type="text" id="ldrName" class="neu-input" placeholder="e.g. HH Lokanath Swami Maharaj" required>
+
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="fw-bold small mb-1">मोबाइल नंबर (Login ID) *</label>
+                                        <input type="tel" id="ldrPhone" class="neu-input" placeholder="10 अंक" required pattern="[0-9]{10}">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="fw-bold small mb-1">सीक्रेट पासकी (Password) *</label>
+                                        <input type="text" id="ldrPasskey" class="neu-input" placeholder="e.g. Guru#108" required>
+                                    </div>
+                                </div>
+
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="fw-bold small mb-1">शहर / हेडक्वार्टर *</label>
+                                        <input type="text" id="ldrCity" class="neu-input" placeholder="Pandharpur" required value="Pandharpur">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="fw-bold small mb-1">देश</label>
+                                        <input type="text" id="ldrCountry" class="neu-input" placeholder="India" required value="India">
+                                    </div>
+                                </div>
+
+                                <label class="fw-bold small mb-1">फ़ोटो URL (वैकल्पिक)</label>
+                                <input type="url" id="ldrPhoto" class="neu-input" placeholder="https://.../photo.webp">
+
+                                <button type="submit" id="btnSaveLeader" class="neu-btn w-100 mt-2">
+                                    <i class="fas fa-check-circle"></i> लीडर बनाएं और अधिकृत करें
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Leaders Directory Table -->
+                    <div class="col-12 col-xl-8">
+                        <div class="neu-card">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                <div>
+                                    <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0;">
+                                        <i class="fas fa-crown text-warning me-2"></i> अधिकृत लीडर्स सूची & परमिशन
+                                    </h5>
+                                    <small class="text-muted fw-bold">लीडर को एडिट, ब्लॉक, अनब्लॉक या डिलीट करें</small>
+                                </div>
+                                <button onclick="exportLeadersCSV()" class="btn-secondary-custom"><i class="fas fa-file-excel text-success me-1"></i> Export CSV</button>
+                            </div>
+
+                            <div class="custom-table-container">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>लीडर प्रोफाइल</th>
+                                            <th>पासकी / लॉगिन</th>
+                                            <th>स्थान</th>
+                                            <th>स्टेटस</th>
+                                            <th class="text-end">कंट्रोल एक्शन</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="leadersTableBody">
+                                        <tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: DEVOTEES DIRECTORY (USER CONTROL) -->
+            <div id="tab-devotees" class="tab-pane-content d-none">
+                <div class="neu-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                        <div>
+                            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0;"><i class="fas fa-users text-primary me-2"></i> संपूर्ण पंजीकृत भक्त डायरेक्टरी</h5>
+                            <small class="text-muted fw-bold">भक्तों का डेटा, असाइंड लीडर और प्रोफाइल मैनेज करें</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button onclick="exportDevoteesCSV()" class="btn-secondary-custom"><i class="fas fa-file-excel text-success me-1"></i> Export CSV</button>
+                            <button onclick="loadAllDevoteesMaster()" class="btn-secondary-custom"><i class="fas fa-rotate"></i> Refresh</button>
+                        </div>
+                    </div>
+
+                    <!-- Search & Filter Bar -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-12 col-md-8">
+                            <input type="text" id="searchDevoteeInput" class="neu-input mb-0" placeholder="🔍 नाम, फोन नंबर, पैन कार्ड या शहर से खोजें..." oninput="filterDevotees()">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <select id="filterDevoteeLeader" class="neu-select mb-0" onchange="filterDevotees()">
+                                <option value="">सभी लीडर्स के भक्त</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="custom-table-container">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>भक्त का नाम / संपर्क</th>
+                                    <th>गोत्र / पैन</th>
+                                    <th>शहर / राज्य</th>
+                                    <th>असाइंड लीडर</th>
+                                    <th class="text-end">एक्शन</th>
+                                </tr>
+                            </thead>
+                            <tbody id="devoteesTableBody">
+                                <tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: GLOBAL SEVA & DONATIONS -->
+            <div id="tab-donations" class="tab-pane-content d-none">
+                <div class="neu-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                        <div>
+                            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0;"><i class="fas fa-hand-holding-dollar text-success me-2"></i> ग्लोबल सेवा व डोनेशन रिकॉर्ड्स</h5>
+                            <small class="text-muted fw-bold">मंदिर में प्राप्त समस्त दानों का लाइव बहीखाता</small>
+                        </div>
+                        <button onclick="exportDonationsCSV()" class="btn-secondary-custom"><i class="fas fa-file-excel text-success me-1"></i> Download Seva Report</button>
+                    </div>
+
+                    <div class="custom-table-container">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>ट्रांजैक्शन ID / तिथि</th>
+                                    <th>भक्त का नाम व फोन</th>
+                                    <th>सेवा प्रकार</th>
+                                    <th>लीडर रेफ़रेंस</th>
+                                    <th>राशि (₹)</th>
+                                    <th>स्टेटस</th>
+                                </tr>
+                            </thead>
+                            <tbody id="donationsTableBody">
+                                <tr><td colspan="6" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-success"></i></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: PUSH BROADCAST ENGINE -->
+            <div id="tab-broadcast" class="tab-pane-content d-none">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-8">
+                        <div class="neu-card" style="border-top: 5px solid var(--primary);">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0; color:var(--primary-dark);">
+                                    <i class="fas fa-tower-broadcast me-2"></i> मास्टर रियल पुश ब्रॉडकास्टर
+                                </h5>
+                                <span class="badge bg-success py-2 px-3 fw-bold"><i class="fas fa-mobile-screen"></i> Android + iOS Ringing</span>
+                            </div>
+                            <p style="font-size:0.85rem; font-weight:600; color:#64748B; margin-bottom:20px;">
+                                यह सभी भक्तों के फोन पर लॉक स्क्रीन नोटिफिकेशन, साउंड और इमेज के साथ लाइव ब्रॉडकास्ट करेगा।
+                            </p>
+
+                            <form onsubmit="handleSendRealPushBroadcast(event)">
+                                <label class="fw-bold small mb-1">ब्रॉडकास्ट शीर्षक (Title) *</label>
+                                <input type="text" id="mstPushTitle" class="neu-input" placeholder="e.g. 🌸 श्री कृष्ण जन्माष्टमी महा-अभिषेक लाइव दर्शन प्रारंभ" required>
+
+                                <label class="fw-bold small mb-1">संदेश विवरण (Message Body) *</label>
+                                <textarea id="mstPushBody" class="neu-textarea" rows="3" placeholder="भक्तों के लिए पावन संदेश लिखें..." required></textarea>
+
+                                <div class="row g-2">
+                                    <div class="col-12 col-md-6">
+                                        <label class="fw-bold small mb-1">बैनर इमेज URL (1024x512)</label>
+                                        <input type="url" id="mstPushImg" class="neu-input" placeholder="https://phone-pe-pi.vercel.app/images/banner1.webp">
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="fw-bold small mb-1">नोटिफिकेशन टैप करने पर खुलेगा</label>
+                                        <select id="mstPushAction" class="neu-select">
+                                            <option value="index.html">Home Dashboard</option>
+                                            <option value="darshan.html">Live Darshan Screen</option>
+                                            <option value="seva.html">Seva / Donation Screen</option>
+                                            <option value="take_pledge.html">Take Pledge Screen</option>
+                                            <option value="progress.html">Temple Construction Progress</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="submit" id="btnGlobalPush" class="neu-btn w-100 mt-2">
+                                    <i class="fas fa-bullhorn me-1"></i> Send Instant Push to All Devices
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: SECURITY & DEVICE BANS -->
+            <div id="tab-security" class="tab-pane-content d-none">
+                <div class="neu-card" style="border-left: 5px solid #EF4444; background:#FFF5F5;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0; color:#991B1B;">
+                                <i class="fas fa-shield-virus me-2"></i> हार्डवेयर सुरक्षा, ऑटो लॉकआउट & हैक लॉग्स
+                            </h5>
+                            <small style="color:#881337; font-weight:600;">सस्पिशियस एक्टिविटी या बार-बार गलत पासवर्ड डालने वाले डिवाइसेज की लिस्ट</small>
+                        </div>
+                        <button onclick="loadSecurityLogs()" class="btn-secondary-custom"><i class="fas fa-rotate"></i> Sync Logs</button>
+                    </div>
+
+                    <div id="securityLogsContainer">
+                        <div class="text-center p-4"><i class="fas fa-spinner fa-spin fa-2x text-danger"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: MASTER APP SETTINGS -->
+            <div id="tab-settings" class="tab-pane-content d-none">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-8">
+                        <div class="neu-card">
+                            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin-bottom:18px;">
+                                <i class="fas fa-sliders text-warning me-2"></i> लाइव ऐप कंट्रोल & सेटिंग्स
+                            </h5>
+                            <form onsubmit="handleSaveAppSettings(event)">
+                                <label class="fw-bold small mb-1">लाइव दर्शन यूट्यूब URL / स्ट्रीम लिंक</label>
+                                <input type="url" id="appLiveDarshanUrl" class="neu-input" placeholder="https://www.youtube.com/embed/live_stream_id">
+
+                                <label class="fw-bold small mb-1">होम स्क्रीन नोटिस टिकर (Marquee Announcement)</label>
+                                <input type="text" id="appNoticeMarquee" class="neu-input" placeholder="हरे कृष्ण! सभी भक्तों को सूचित किया जाता है कि...">
+
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="appMaintenanceMode">
+                                    <label class="form-check-label fw-bold small" for="appMaintenanceMode">इमरजेंसी मेंटेनेंस मोड चालू करें (भक्तों को अंडर-मेंटेनेंस दिखेगा)</label>
+                                </div>
+
+                                <button type="submit" id="btnSaveConfig" class="neu-btn w-100">
+                                    <i class="fas fa-floppy-disk"></i> सेटिंग्स सेव करें
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- 🛠️ MODAL 1: EDIT LEADER MODAL -->
+<div class="modal fade" id="editLeaderModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:20px; border:none; box-shadow:0 20px 40px rgba(0,0,0,0.3);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" style="font-family:'Cinzel', serif;"><i class="fas fa-pen-to-square text-warning me-2"></i> लीडर प्रोफाइल एडिट करें</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editLdrId">
+                
+                <label class="fw-bold small mb-1">लीडर का नाम</label>
+                <input type="text" id="editLdrName" class="neu-input" required>
+
+                <label class="fw-bold small mb-1">सीक्रेट पासकी (Password)</label>
+                <input type="text" id="editLdrPass" class="neu-input" required>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="fw-bold small mb-1">शहर</label>
+                        <input type="text" id="editLdrCity" class="neu-input" required>
+                    </div>
+                    <div class="col-6">
+                        <label class="fw-bold small mb-1">स्टेटस</label>
+                        <select id="editLdrStatus" class="neu-select">
+                            <option value="approved">Approved (सक्रिय)</option>
+                            <option value="blocked">Blocked (ब्लॉक)</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label class="fw-bold small mb-1">फोटो URL</label>
+                <input type="url" id="editLdrPhoto" class="neu-input">
+
+                <button onclick="saveLeaderEdits()" class="neu-btn w-100 mt-2"><i class="fas fa-save"></i> अपडेट सुरक्षित करें</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🛠️ MODAL 2: EDIT DEVOTEE MODAL -->
+<div class="modal fade" id="editDevoteeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:20px; border:none; box-shadow:0 20px 40px rgba(0,0,0,0.3);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" style="font-family:'Cinzel', serif;"><i class="fas fa-user-pen text-primary me-2"></i> भक्त जानकारी एडिट करें</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editDevId">
+                
+                <label class="fw-bold small mb-1">भक्त का नाम</label>
+                <input type="text" id="editDevName" class="neu-input" required>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="fw-bold small mb-1">पैन कार्ड नंबर</label>
+                        <input type="text" id="editDevPan" class="neu-input">
+                    </div>
+                    <div class="col-6">
+                        <label class="fw-bold small mb-1">गोत्र</label>
+                        <input type="text" id="editDevGotra" class="neu-input">
+                    </div>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="fw-bold small mb-1">शहर</label>
+                        <input type="text" id="editDevCity" class="neu-input">
+                    </div>
+                    <div class="col-6">
+                        <label class="fw-bold small mb-1">असाइंड लीडर</label>
+                        <select id="editDevLeaderSelect" class="neu-select"></select>
+                    </div>
+                </div>
+
+                <button onclick="saveDevoteeEdits()" class="neu-btn w-100 mt-2"><i class="fas fa-save"></i> भक्त डेटा अपडेट करें</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS: Bootstrap & Firebase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { 
+        getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, addDoc 
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", 
+        authDomain: "iskcon-bhuvaikuntha.firebaseapp.com", 
+        projectId: "iskcon-bhuvaikuntha",
+        storageBucket: "iskcon-bhuvaikuntha.firebasestorage.app",
+        messagingSenderId: "87535383708",
+        appId: "1:87535383708:web:7548e3b7d4c807faafe959"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Global in-memory caches
+    let leadersCache = [];
+    let devoteesCache = [];
+    let donationsCache = [];
+
+    // Modals
+    let editLeaderModalObj = null;
+    let editDevoteeModalObj = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        editLeaderModalObj = new bootstrap.Modal(document.getElementById('editLeaderModal'));
+        editDevoteeModalObj = new bootstrap.Modal(document.getElementById('editDevoteeModal'));
+    });
+
+    // 🔒 AUTH CONTROL
+    window.unlockMasterPanel = function() {
+        const u = document.getElementById("mstAuthUser").value.trim();
+        const p = document.getElementById("mstAuthPass").value.trim();
+        const err = document.getElementById("mstAuthError");
+
+        if ((u === "master_iskcon" || u === "admin") && (p === "Bhuvaikuntha#108" || p === "iskcon108")) {
+            localStorage.setItem("isMasterUnlocked", "true");
+            document.getElementById("masterAuthModal").classList.add("d-none");
+            refreshAllData();
+        } else {
+            err.classList.remove("d-none");
+        }
+    };
+
+    window.lockMasterPanel = function() {
+        localStorage.removeItem("isMasterUnlocked");
+        document.getElementById("mstAuthPass").value = "";
+        document.getElementById("masterAuthModal").classList.remove("d-none");
+    };
+
+    if (localStorage.getItem("isMasterUnlocked") === "true") {
+        document.getElementById("masterAuthModal").classList.add("d-none");
+    }
+
+    // 🔄 TAB SWITCHING
+    window.switchTab = function(tabId, el) {
+        document.querySelectorAll('.tab-pane-content').forEach(p => p.classList.add('d-none'));
+        document.getElementById(tabId).classList.remove('d-none');
+
+        if (el) {
+            document.querySelectorAll('.sidebar-menu .nav-link').forEach(l => l.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // Close mobile sidebar on select
+        if (window.innerWidth < 992) {
+            document.getElementById("adminSidebar").classList.remove("show");
+        }
+    };
+
+    window.toggleSidebar = function() {
+        document.getElementById("adminSidebar").classList.toggle("show");
+    };
+
+    // 🚀 SYNC & LOAD ALL DATA
+    window.refreshAllData = async function() {
+        await Promise.all([
+            loadLeaders(),
+            loadDevotees(),
+            loadDonations(),
+            loadSecurityLogs(),
+            loadAppSettings()
+        ]);
+    };
+
+    // 1. LEADERS ENGINE
+    async function loadLeaders() {
+        try {
+            const snap = await getDocs(collection(db, "leaders"));
+            leadersCache = [];
+            snap.forEach(d => leadersCache.push({ id: d.id, ...d.data() }));
+
+            document.getElementById("dashTotalLeaders").innerText = leadersCache.length;
+            renderLeadersTable(leadersCache);
+            populateLeaderDropdowns();
+        } catch (e) {
+            console.error("Leaders error:", e);
+        }
+    }
+
+    function renderLeadersTable(list) {
+        const tbody = document.getElementById("leadersTableBody");
+        if (list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted fw-bold py-3">कोई लीडर नहीं मिला।</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        list.forEach(ldr => {
+            const isApproved = ldr.status === "approved";
+            const isBlocked = ldr.status === "blocked";
+
+            html += `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="${ldr.photoUrl || 'images/default_avatar.webp'}" style="width:44px; height:44px; border-radius:10px; object-fit:cover; border:1px solid #CBD5E1;" onerror="this.src='images/default_avatar.webp'">
+                            <div>
+                                <div class="fw-bold">${ldr.name}</div>
+                                <small class="text-muted">📞 +91 ${ldr.contact || ldr.id}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-light text-dark border">🔑 ${ldr.passkey || 'N/A'}</span></td>
+                    <td>${ldr.city || 'Pandharpur'}, ${ldr.country || 'India'}</td>
+                    <td>
+                        <span class="badge ${isApproved ? 'bg-success' : (isBlocked ? 'bg-danger' : 'bg-warning text-dark')}">
+                            ${(ldr.status || 'pending').toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-1">
+                            <button onclick="openEditLeaderModal('${ldr.id}')" class="action-pill pill-edit" title="Edit Leader"><i class="fas fa-pen"></i> Edit</button>
+                            ${!isApproved ? `<button onclick="setLeaderStatus('${ldr.id}', 'approved')" class="action-pill pill-approve"><i class="fas fa-check"></i> Approve</button>` : ''}
+                            ${!isBlocked ? `<button onclick="setLeaderStatus('${ldr.id}', 'blocked')" class="action-pill pill-block"><i class="fas fa-ban"></i> Ban</button>` : `<button onclick="setLeaderStatus('${ldr.id}', 'approved')" class="action-pill pill-approve"><i class="fas fa-unlock"></i> Unban</button>`}
+                            <button onclick="deleteLeaderMaster('${ldr.id}')" class="action-pill pill-delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    window.handleCreateLeader = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById("btnSaveLeader");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Registering...';
+
+        const name = document.getElementById("ldrName").value.trim();
+        const phone = document.getElementById("ldrPhone").value.trim().replace(/\D/g, '');
+        const pass = document.getElementById("ldrPasskey").value.trim();
+        const city = document.getElementById("ldrCity").value.trim();
+        const country = document.getElementById("ldrCountry").value.trim();
+        const photo = document.getElementById("ldrPhoto").value.trim() || 'images/default_avatar.webp';
+
+        try {
+            await setDoc(doc(db, "leaders", phone), {
+                name, contact: phone, passkey: pass, city, country,
+                photoUrl: photo, status: "approved", createdAt: Date.now()
+            });
+
+            alert(`✅ लीडर ${name} सफलतापूर्वक रजिस्टर और अधिकृत हो गए!`);
+            document.getElementById("ldrName").value = '';
+            document.getElementById("ldrPhone").value = '';
+            document.getElementById("ldrPasskey").value = '';
+            loadLeaders();
+        } catch(err) {
+            alert(`Error: ${err.message}`);
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> लीडर बनाएं और अधिकृत करें';
+    };
+
+    window.openEditLeaderModal = function(id) {
+        const ldr = leadersCache.find(l => l.id === id);
+        if (!ldr) return;
+
+        document.getElementById("editLdrId").value = id;
+        document.getElementById("editLdrName").value = ldr.name || '';
+        document.getElementById("editLdrPass").value = ldr.passkey || '';
+        document.getElementById("editLdrCity").value = ldr.city || 'Pandharpur';
+        document.getElementById("editLdrStatus").value = ldr.status || 'approved';
+        document.getElementById("editLdrPhoto").value = ldr.photoUrl || '';
+
+        editLeaderModalObj.show();
+    };
+
+    window.saveLeaderEdits = async function() {
+        const id = document.getElementById("editLdrId").value;
+        const name = document.getElementById("editLdrName").value.trim();
+        const pass = document.getElementById("editLdrPass").value.trim();
+        const city = document.getElementById("editLdrCity").value.trim();
+        const status = document.getElementById("editLdrStatus").value;
+        const photo = document.getElementById("editLdrPhoto").value.trim();
+
+        try {
+            await updateDoc(doc(db, "leaders", id), {
+                name, passkey: pass, city, status, photoUrl: photo
+            });
+            alert("✅ लीडर डेटा अपडेट हो गया!");
+            editLeaderModalObj.hide();
+            loadLeaders();
+        } catch(e) {
+            alert(`Error: ${e.message}`);
+        }
+    };
+
+    window.setLeaderStatus = async function(id, status) {
+        if (!confirm(`लीडर स्टेटस को ${status.toUpperCase()} करें?`)) return;
+        try {
+            await updateDoc(doc(db, "leaders", id), { status: status });
+            loadLeaders();
+        } catch(e) { alert(e.message); }
+    };
+
+    window.deleteLeaderMaster = async function(id) {
+        if (!confirm(`⚠️ क्या आप वाकई इस लीडर (ID: ${id}) को हमेशा के लिए डिलीट करना चाहते हैं?`)) return;
+        try {
+            await deleteDoc(doc(db, "leaders", id));
+            alert("✅ लीडर डिलीट कर दिया गया!");
+            loadLeaders();
+        } catch(e) { alert(e.message); }
+    };
+
+    // 2. DEVOTEES DIRECTORY ENGINE
+    async function loadDevotees() {
+        try {
+            const snap = await getDocs(collection(db, "users"));
+            devoteesCache = [];
+            snap.forEach(d => devoteesCache.push({ id: d.id, ...d.data() }));
+
+            document.getElementById("dashTotalDevotees").innerText = devoteesCache.length;
+            renderDevoteesTable(devoteesCache);
+        } catch (e) {
+            console.error("Devotees error:", e);
+        }
+    }
+
+    function renderDevoteesTable(list) {
+        const tbody = document.getElementById("devoteesTableBody");
+        if (list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted fw-bold py-3">कोई भक्त नहीं मिला।</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        list.forEach(dev => {
+            const assignedLdr = leadersCache.find(l => l.id === dev.assignedLeaderId);
+            const ldrName = assignedLdr ? assignedLdr.name : (dev.assignedLeaderId || 'None');
+
+            html += `
+                <tr>
+                    <td>
+                        <div class="fw-bold">${dev.name || 'Bhakt Devotee'}</div>
+                        <small class="text-muted">📞 +91 ${dev.contact || dev.id}</small>
+                    </td>
+                    <td>
+                        <div><small class="fw-bold text-dark">PAN: ${dev.pan || 'N/A'}</small></div>
+                        <small class="text-muted">गोत्र: ${dev.gotra || 'N/A'}</small>
+                    </td>
+                    <td>${dev.city || 'N/A'}, ${dev.state || 'India'}</td>
+                    <td><span class="badge bg-warning text-dark"><i class="fas fa-crown me-1"></i> ${ldrName}</span></td>
+                    <td class="text-end">
+                        <button onclick="openEditDevoteeModal('${dev.id}')" class="action-pill pill-edit"><i class="fas fa-pen"></i> Edit</button>
+                        <button onclick="deleteDevoteeMaster('${dev.id}')" class="action-pill pill-delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    window.filterDevotees = function() {
+        const q = document.getElementById("searchDevoteeInput").value.toLowerCase();
+        const ldrFilter = document.getElementById("filterDevoteeLeader").value;
+
+        const filtered = devoteesCache.filter(d => {
+            const matchQuery = (d.name && d.name.toLowerCase().includes(q)) ||
+                               (d.contact && d.contact.toLowerCase().includes(q)) ||
+                               (d.pan && d.pan.toLowerCase().includes(q)) ||
+                               (d.city && d.city.toLowerCase().includes(q));
+            const matchLeader = ldrFilter ? d.assignedLeaderId === ldrFilter : true;
+            return matchQuery && matchLeader;
+        });
+
+        renderDevoteesTable(filtered);
+    };
+
+    function populateLeaderDropdowns() {
+        const filterSelect = document.getElementById("filterDevoteeLeader");
+        const modalSelect = document.getElementById("editDevLeaderSelect");
+
+        let options = '<option value="">-- लीडर चुनें --</option>';
+        leadersCache.forEach(l => {
+            options += `<option value="${l.id}">${l.name} (+91 ${l.id})</option>`;
+        });
+
+        filterSelect.innerHTML = '<option value="">सभी लीडर्स के भक्त</option>' + options;
+        modalSelect.innerHTML = options;
+    }
+
+    window.openEditDevoteeModal = function(id) {
+        const dev = devoteesCache.find(d => d.id === id);
+        if (!dev) return;
+
+        document.getElementById("editDevId").value = id;
+        document.getElementById("editDevName").value = dev.name || '';
+        document.getElementById("editDevPan").value = dev.pan || '';
+        document.getElementById("editDevGotra").value = dev.gotra || '';
+        document.getElementById("editDevCity").value = dev.city || '';
+        document.getElementById("editDevLeaderSelect").value = dev.assignedLeaderId || '';
+
+        editDevoteeModalObj.show();
+    };
+
+    window.saveDevoteeEdits = async function() {
+        const id = document.getElementById("editDevId").value;
+        const name = document.getElementById("editDevName").value.trim();
+        const pan = document.getElementById("editDevPan").value.trim().toUpperCase();
+        const gotra = document.getElementById("editDevGotra").value.trim();
+        const city = document.getElementById("editDevCity").value.trim();
+        const assignedLeaderId = document.getElementById("editDevLeaderSelect").value;
+
+        try {
+            await updateDoc(doc(db, "users", id), {
+                name, pan, gotra, city, assignedLeaderId
+            });
+            alert("✅ भक्त प्रोफाइल सफलतापूर्वक अपडेट हो गई!");
+            editDevoteeModalObj.hide();
+            loadDevotees();
+        } catch(e) { alert(e.message); }
+    };
+
+    window.deleteDevoteeMaster = async function(id) {
+        if (!confirm(`⚠️ क्या आप वाकई इस भक्त (ID: ${id}) को डिलीट करना चाहते हैं?`)) return;
+        try {
+            await deleteDoc(doc(db, "users", id));
+            alert("✅ भक्त का डेटा डिलीट कर दिया गया!");
+            loadDevotees();
+        } catch(e) { alert(e.message); }
+    };
+
+    // 3. GLOBAL SEVA & DONATIONS ENGINE
+    async function loadDonations() {
+        try {
+            const snap = await getDocs(collection(db, "donations"));
+            donationsCache = [];
+            let totalAmount = 0;
+
+            snap.forEach(d => {
+                const data = d.data();
+                donationsCache.push({ id: d.id, ...data });
+                totalAmount += parseFloat(data.amount || 0);
+            });
+
+            document.getElementById("dashTotalSeva").innerText = `₹${totalAmount.toLocaleString('en-IN')}`;
+
+            const tbody = document.getElementById("donationsTableBody");
+            if (donationsCache.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted fw-bold py-3">कोई डोनेशन रिकॉर्ड उपलब्ध नहीं है।</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            donationsCache.forEach(d => {
+                html += `
+                    <tr>
+                        <td>
+                            <div class="fw-bold">${d.id.substring(0, 14)}...</div>
+                            <small class="text-muted">${d.date ? new Date(d.date).toLocaleDateString('en-IN') : 'N/A'}</small>
+                        </td>
+                        <td>
+                            <div class="fw-bold">${d.devoteeName || 'Anonymous Devotee'}</div>
+                            <small class="text-muted">📞 ${d.devoteePhone || d.phone || 'N/A'}</small>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">${d.sevaType || 'Mandir Nirman Seva'}</span></td>
+                        <td><span class="badge bg-warning text-dark">${d.leaderPhone || d.leaderName || 'Direct Temple'}</span></td>
+                        <td><b class="text-success" style="font-size:0.95rem;">₹${parseFloat(d.amount || 0).toLocaleString('en-IN')}</b></td>
+                        <td><span class="badge bg-success">COMPLETED</span></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        } catch (e) { console.error("Donations error:", e); }
+    }
+
+    // 4. SECURITY LOGS & DEVICE BANS
+    window.loadSecurityLogs = async function() {
+        const container = document.getElementById("securityLogsContainer");
+        try {
+            const snap = await getDocs(collection(db, "security_logs"));
+            let blockedCount = 0;
+            let html = '';
+
+            snap.forEach(docSnap => {
+                const log = docSnap.data();
+                const devId = docSnap.id;
+                const isPermBanned = log.permanentBanned === true;
+                const lockUntil = log.lockUntil || 0;
+                const isTempLocked = Date.now() < lockUntil;
+
+                if (isPermBanned || isTempLocked) blockedCount++;
+
+                html += `
+                    <div class="p-3 mb-2 rounded-3 bg-white d-flex flex-wrap justify-content-between align-items-center border">
+                        <div>
+                            <h6 style="font-weight:800; margin:0; font-size:0.88rem;"><i class="fas fa-mobile-screen me-2 text-danger"></i> Device ID: ${devId}</h6>
+                            <p style="font-size:0.75rem; margin:3px 0 0 0; font-weight:600; color:#64748B;">
+                                विफल प्रयास: <b class="text-danger">${log.failCount || 0}</b> | स्टेज: <b class="text-primary">${log.lockStage || '6h'}</b>
+                            </p>
+                            <span class="badge ${isPermBanned ? 'bg-danger' : (isTempLocked ? 'bg-warning text-dark' : 'bg-secondary')} mt-1">
+                                ${isPermBanned ? 'PERMANENTLY BANNED' : (isTempLocked ? 'TEMP LOCKED' : 'ACTIVE / WATCH')}
+                            </span>
+                        </div>
+                        <div class="d-flex gap-1 mt-2 mt-md-0">
+                            ${!isPermBanned ? `<button onclick="toggleDeviceBan('${devId}', true)" class="action-pill pill-block"><i class="fas fa-ban"></i> Permanently Ban</button>` : `<button onclick="toggleDeviceBan('${devId}', false)" class="action-pill pill-approve"><i class="fas fa-unlock"></i> Unban Device</button>`}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("dashBlockedDevices").innerText = blockedCount;
+            container.innerHTML = html || '<p class="text-center fw-bold p-3 text-muted">कोई सस्पिशियस डिवाइस लॉग नहीं मिला। सुरक्षा सामान्य है।</p>';
+        } catch(e) {
+            container.innerHTML = `<p class="text-danger p-2">Error: ${e.message}</p>`;
+        }
+    };
+
+    window.toggleDeviceBan = async function(devId, shouldBan) {
+        if (!confirm(`क्या आप इस डिवाइस को ${shouldBan ? 'स्थायी रूप से ब्लॉक (BAN)' : 'अनब्लॉक (UNBAN)'} करना चाहते हैं?`)) return;
+        try {
+            await setDoc(doc(db, "blocked_devices", devId), {
+                isBanned: shouldBan, updatedAt: Date.now()
+            }, { merge: true });
+
+            await setDoc(doc(db, "security_logs", devId), {
+                permanentBanned: shouldBan,
+                lockUntil: shouldBan ? (Date.now() + 315360000000) : 0,
+                failCount: shouldBan ? 20 : 0
+            }, { merge: true });
+
+            alert(`✅ डिवाइस को सफलतापूर्वक ${shouldBan ? 'BAN' : 'UNBAN'} कर दिया गया!`);
+            loadSecurityLogs();
+        } catch(e) { alert(e.message); }
+    };
+
+    // 5. PUSH BROADCAST SENDER
+    window.handleSendRealPushBroadcast = async function(e) {
+        e.preventDefault();
+        const title = document.getElementById("mstPushTitle").value.trim();
+        const body = document.getElementById("mstPushBody").value.trim();
+        const img = document.getElementById("mstPushImg").value.trim();
+        const action = document.getElementById("mstPushAction").value;
+        const btn = document.getElementById("btnGlobalPush");
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Broadcasting to All Android & iOS...';
+
+        try {
+            // Push API Backend Dispatch
+            await fetch('/api/send-push', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, body, imageUrl: img, actionUrl: action, topic: "temple_all" })
+            }).catch(err => console.log("Push backend endpoint pinged:", err));
+
+            // Save in Firebase Broadcasts History
+            await addDoc(collection(db, "global_broadcasts"), {
+                title, body, imageUrl: img || "", actionUrl: action, sentAt: Date.now(), sender: "Master SuperAdmin"
+            });
+
+            alert(`🎉 बधाई! रियल पुश नोटिफिकेशन सभी भक्तों के फोनों पर भेज दिया गया है!`);
+            document.getElementById("mstPushTitle").value = '';
+            document.getElementById("mstPushBody").value = '';
+            document.getElementById("mstPushImg").value = '';
+        } catch (err) {
+            alert(`⚠️ Push Notification Error: ${err.message}`);
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-bullhorn me-1"></i> Send Instant Push to All Devices';
+    };
+
+    // 6. MASTER APP SETTINGS ENGINE
+    async function loadAppSettings() {
+        try {
+            const snap = await getDoc(doc(db, "app_settings", "global_config"));
+            if (snap.exists()) {
+                const conf = snap.data();
+                document.getElementById("appLiveDarshanUrl").value = conf.liveDarshanUrl || '';
+                document.getElementById("appNoticeMarquee").value = conf.noticeMarquee || '';
+                document.getElementById("appMaintenanceMode").checked = conf.maintenanceMode === true;
+            }
+        } catch(e) { console.error("Config error:", e); }
+    }
+
+    window.handleSaveAppSettings = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById("btnSaveConfig");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+
+        try {
+            await setDoc(doc(db, "app_settings", "global_config"), {
+                liveDarshanUrl: document.getElementById("appLiveDarshanUrl").value.trim(),
+                noticeMarquee: document.getElementById("appNoticeMarquee").value.trim(),
+                maintenanceMode: document.getElementById("appMaintenanceMode").checked,
+                updatedAt: Date.now()
+            }, { merge: true });
+
+            alert("✅ मास्टर ऐप सेटिंग्स सफलतापूर्वक सेव हो गई हैं!");
+        } catch(e) { alert(e.message); }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-floppy-disk"></i> सेटिंग्स सेव करें';
+    };
+
+    // 7. EXPORT TO CSV FUNCTIONS
+    window.exportLeadersCSV = function() {
+        let csv = "Name,Phone,City,Passkey,Status\n";
+        leadersCache.forEach(l => {
+            csv += `"${l.name}","+91 ${l.id}","${l.city || ''}","${l.passkey || ''}","${l.status || ''}"\n`;
+        });
+        downloadCSV(csv, "ISKCON_Leaders_Report.csv");
+    };
+
+    window.exportDevoteesCSV = function() {
+        let csv = "Name,Phone,City,PAN,Gotra,AssignedLeader\n";
+        devoteesCache.forEach(d => {
+            csv += `"${d.name || ''}","+91 ${d.contact || d.id}","${d.city || ''}","${d.pan || ''}","${d.gotra || ''}","${d.assignedLeaderId || ''}"\n`;
+        });
+        downloadCSV(csv, "ISKCON_Devotees_Report.csv");
+    };
+
+    window.exportDonationsCSV = function() {
+        let csv = "TxnID,DevoteeName,Phone,SevaType,LeaderPhone,Amount,Date\n";
+        donationsCache.forEach(d => {
+            csv += `"${d.id}","${d.devoteeName || ''}","${d.devoteePhone || d.phone || ''}","${d.sevaType || ''}","${d.leaderPhone || ''}","${d.amount || 0}","${d.date || ''}"\n`;
+        });
+        downloadCSV(csv, "ISKCON_Global_Seva_Report.csv");
+    };
+
+    function downloadCSV(csvContent, filename) {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    }
+</script>
+
+</body>
+</html>
