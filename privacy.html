@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - ISKCON Bhuvaikuntha</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #F8F9FA;
+            color: #000000;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Mobile Screen Container */
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            background-color: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
+            position: relative;
+        }
+
+        /* Top Header (Figma Match) */
+        .app-header {
+            background-color: #F98125; /* ISKCON Saffron/Orange Theme */
+            color: #FFFFFF;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #FFFFFF;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            margin-right: 12px;
+        }
+
+        .back-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke-width: 2.5;
+        }
+
+        .header-title {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            flex: 1;
+            text-align: center;
+            margin-right: 34px; /* Back button offset balance */
+        }
+
+        /* Content Area (15px font, 22px line-height, 16px padding) */
+        .content-body {
+            padding: 20px 16px 50px 16px;
+            font-size: 15px;
+            line-height: 22px;
+            color: #111111;
+        }
+
+        /* Metadata & Intro */
+        .doc-header {
+            border-bottom: 1px solid #EEEEEE;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+        }
+
+        .doc-main-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 4px;
+        }
+
+        .doc-sub {
+            font-size: 14px;
+            font-weight: 600;
+            color: #F98125;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .meta-dates {
+            font-size: 13px;
+            color: #666666;
+            line-height: 18px;
+        }
+
+        /* Section Blocks */
+        .section-block {
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #000000;
+            display: block;
+        }
+
+        .section-text p {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+
+        .section-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Styled Lists */
+        ul.policy-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0;
+        }
+
+        ul.policy-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 6px;
+            text-align: justify;
+        }
+
+        ul.policy-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            top: 0;
+            color: #F98125;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Contact Details & Links */
+        .contact-link {
+            color: #F98125;
+            text-decoration: none;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .contact-link:hover {
+            text-decoration: underline;
+        }
+
+        .address-box {
+            background-color: #FBFBFB;
+            border-left: 3px solid #F98125;
+            padding: 12px 14px;
+            margin-top: 10px;
+            border-radius: 0 6px 6px 0;
+            line-height: 22px;
+        }
+
+        .link-badge-box {
+            background: #FFF7ED;
+            border: 1px solid #FFEDD5;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 6px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Top App Header -->
+        <header class="app-header">
+            <button class="back-btn" onclick="history.back()" aria-label="Go Back">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <h1 class="header-title">Privacy Policy</h1>
+        </header>
+
+        <!-- Main Body -->
+        <main class="content-body">
+
+            <!-- Meta info Header -->
+            <div class="doc-header">
+                <h2 class="doc-main-title">PRIVACY POLICY</h2>
+                <div class="doc-sub">ISKCON BHUVAIKUNTHA</div>
+                <div class="meta-dates">
+                    <strong>Effective Date:</strong> 30 August 2026<br>
+                    <strong>Last Updated:</strong> 30 August 2026
+                </div>
+            </div>
+
+            <!-- Intro Overview -->
+            <section class="section-block">
+                <div class="section-text">
+                    <p>International Society for Krishna Consciousness (“ISKCON”, “we”, “us”, or “our”) respects the privacy of devotees, donors, visitors, and users of the ISKCON Bhuvaikuntha mobile application, website, and related digital services (collectively, the “Services”).</p>
+                    <p>This Privacy Policy explains what information we may collect, why we collect it, how we use it, when it may be shared, how it is protected and retained, and the choices available to users.</p>
+                    <p>This Privacy Policy applies to the ISKCON Bhuvaikuntha application on Android and iOS, as well as associated web pages and digital services operated in connection with the application.</p>
+                    <p>By using the Services, you acknowledge the privacy practices described in this Privacy Policy. Where consent or device permission is required, it will be requested separately through the appropriate application or operating-system interface.</p>
+                </div>
+            </section>
+
+            <!-- 1. INFORMATION WE MAY COLLECT -->
+            <section class="section-block">
+                <span class="section-title">1. INFORMATION WE MAY COLLECT</span>
+                <div class="section-text">
+                    <p>The information we collect depends on the features you choose to use. We may collect or process the following categories of information:</p>
+                    <ul class="policy-list">
+                        <li>Mobile number</li>
+                        <li>Full name / legal name</li>
+                        <li>Email address</li>
+                        <li>Profile photograph</li>
+                        <li>Postal address</li>
+                        <li>City</li>
+                        <li>State</li>
+                        <li>PIN/postal code</li>
+                        <li>PAN, where provided for applicable donation/tax documentation</li>
+                        <li>Gotra, where voluntarily provided for Sankalpa</li>
+                        <li>Donation and Seva information</li>
+                        <li>Donation amount</li>
+                        <li>Donation category</li>
+                        <li>Transaction/reference information</li>
+                        <li>Payment status</li>
+                        <li>Donation receipt information</li>
+                        <li>Technical and device information</li>
+                        <li>Notification-related information</li>
+                        <li>Application session information</li>
+                        <li>Information voluntarily provided when contacting us or using application features</li>
+                    </ul>
+                    <p>We do not necessarily collect every category listed above from every user. Information is collected according to the features used by the user.</p>
+                </div>
+            </section>
+
+            <!-- 2. MOBILE NUMBER LOGIN -->
+            <section class="section-block">
+                <span class="section-title">2. MOBILE NUMBER LOGIN</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha currently provides account/login functionality using a mobile number. Your mobile number may be used to:</p>
+                    <ul class="policy-list">
+                        <li>Identify your account</li>
+                        <li>Sign you into the application</li>
+                        <li>Verify your identity where required</li>
+                        <li>Associate your devotee profile with your account</li>
+                        <li>Associate eligible donation records with your account</li>
+                        <li>Maintain account security</li>
+                        <li>Recover or verify access where supported</li>
+                        <li>Communicate important account or service information</li>
+                    </ul>
+                    <p>Where mobile-number verification is required, a verification mechanism such as an OTP may be used.</p>
+                    <p>We do not ask users to provide biometric information such as fingerprints or facial scans for login.</p>
+                </div>
+            </section>
+
+            <!-- 3. LOGIN SESSION AND REMEMBERED SIGN-IN -->
+            <section class="section-block">
+                <span class="section-title">3. LOGIN SESSION AND REMEMBERED SIGN-IN</span>
+                <div class="section-text">
+                    <p>After a successful login, the application may securely maintain a login session or authentication state on your device so that you do not need to sign in every time you open the application.</p>
+                    <p>This may involve the use of secure authentication tokens, session identifiers, local application storage, or other authentication mechanisms necessary to maintain the signed-in state.</p>
+                    <p>These mechanisms are used for authentication and application functionality. Users may be required to sign in again if, for example:</p>
+                    <ul class="policy-list">
+                        <li>They log out;</li>
+                        <li>The authentication session expires;</li>
+                        <li>Application data is cleared;</li>
+                        <li>The application is reinstalled;</li>
+                        <li>The account is changed;</li>
+                        <li>A security-related re-authentication is required; or</li>
+                        <li>The authentication system otherwise requires verification.</li>
+                    </ul>
+                    <p>The application does not use biometric authentication as part of the current login flow.</p>
+                </div>
+            </section>
+
+            <!-- 4. DEVOTEE PROFILE INFORMATION -->
+            <section class="section-block">
+                <span class="section-title">4. DEVOTEE PROFILE INFORMATION</span>
+                <div class="section-text">
+                    <p>Users may create or maintain a devotee profile. Depending on the information provided by the user, the profile may contain:</p>
+                    <ul class="policy-list">
+                        <li>Full name / legal name</li>
+                        <li>Mobile number</li>
+                        <li>Email address</li>
+                        <li>Profile photograph</li>
+                        <li>PAN</li>
+                        <li>Full postal address</li>
+                        <li>City</li>
+                        <li>PIN/postal code</li>
+                        <li>State</li>
+                        <li>Gotra</li>
+                        <li>Other information voluntarily provided through available profile fields</li>
+                    </ul>
+                    <p>Profile information may be used to:</p>
+                    <ul class="policy-list">
+                        <li>Maintain the devotee's account</li>
+                        <li>Provide personalized application functionality</li>
+                        <li>Facilitate donations</li>
+                        <li>Generate applicable donation records</li>
+                        <li>Facilitate applicable tax documentation</li>
+                        <li>Provide requested devotional services</li>
+                        <li>Communicate with the user</li>
+                        <li>Provide support</li>
+                        <li>Maintain administrative records where necessary</li>
+                    </ul>
+                    <p>Users should provide accurate information where the information is required for receipts, tax documentation, donations, or other official records.</p>
+                </div>
+            </section>
+
+            <!-- 5. PROFILE PHOTOGRAPH -->
+            <section class="section-block">
+                <span class="section-title">5. PROFILE PHOTOGRAPH</span>
+                <div class="section-text">
+                    <p>Users may choose to add or change a profile photograph.</p>
+                    <p>The application may use an operating-system photo picker, media picker, camera, or other permitted mechanism for selecting or capturing an image.</p>
+                    <p>Where device permission is required, the application will request the relevant permission.</p>
+                    <p>Photo access is intended to be used only for functionality initiated by the user, such as selecting or uploading a profile photograph or other supported content.</p>
+                    <p>Users may deny or revoke applicable camera/photo permissions through their device settings. If permission is denied, the related photo functionality may not be available.</p>
+                </div>
+            </section>
+
+            <!-- 6. CAMERA ACCESS -->
+            <section class="section-block">
+                <span class="section-title">6. CAMERA ACCESS</span>
+                <div class="section-text">
+                    <p>If the user chooses a feature that requires taking a photograph, the application may request camera access.</p>
+                    <p>Camera access will only be used for the functionality for which access is requested.</p>
+                    <p>ISKCON Bhuvaikuntha does not intentionally activate the device camera in the background for unrelated monitoring or surveillance.</p>
+                    <p>Users can revoke camera permission through their Android or iOS settings.</p>
+                </div>
+            </section>
+
+            <!-- 7. GOTRA AND SANKALPA -->
+            <section class="section-block">
+                <span class="section-title">7. GOTRA AND SANKALPA</span>
+                <div class="section-text">
+                    <p>The application may provide an optional field for users to enter their Gotra for Sankalpa or other relevant devotional purposes.</p>
+                    <p>Where Gotra is optional, users may choose whether to provide it. Gotra information may be used for:</p>
+                    <ul class="policy-list">
+                        <li>Sankalpa</li>
+                        <li>Requested religious/devotional services</li>
+                        <li>Related temple administration where reasonably necessary</li>
+                    </ul>
+                    <p>Gotra information is not collected for behavioral advertising. We do not sell Gotra information to advertisers or data brokers.</p>
+                </div>
+            </section>
+
+            <!-- 8. DONATIONS AND SEVA OFFERINGS -->
+            <section class="section-block">
+                <span class="section-title">8. DONATIONS AND SEVA OFFERINGS</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha may provide facilities for devotees to make donations and participate in Seva offerings. Available offerings may include, for example:</p>
+                    <ul class="policy-list">
+                        <li>Bricks Seva</li>
+                        <li>Cement Seva</li>
+                        <li>Temple construction Seva</li>
+                        <li>Other temple Seva</li>
+                        <li>Devotional campaigns</li>
+                        <li>Preset donation amounts</li>
+                        <li>Custom donation amounts</li>
+                        <li>Other donation opportunities displayed within the Services</li>
+                    </ul>
+                    <p>Available Seva offerings and donation amounts may change from time to time. When you initiate or complete a donation, we may process information such as:</p>
+                    <ul class="policy-list">
+                        <li>Donor name</li>
+                        <li>Mobile number</li>
+                        <li>Email address</li>
+                        <li>Donation amount</li>
+                        <li>Seva/donation category</li>
+                        <li>Date and time</li>
+                        <li>Transaction/reference identifier</li>
+                        <li>Order/reference number</li>
+                        <li>Payment status</li>
+                        <li>Receipt information</li>
+                        <li>Donation history</li>
+                        <li>Information required for reconciliation</li>
+                        <li>Information required for tax or accounting purposes</li>
+                    </ul>
+                    <p>Donation records may be associated with your account where necessary to provide donation history, receipts, support, tax documentation, or other donation-related functionality.</p>
+                </div>
+            </section>
+
+            <!-- 9. DONOR INFORMATION -->
+            <section class="section-block">
+                <span class="section-title">9. DONOR INFORMATION</span>
+                <div class="section-text">
+                    <p>Before completing a donation, users may be asked to confirm or provide donor information. This may include:</p>
+                    <ul class="policy-list">
+                        <li>Full name</li>
+                        <li>Mobile number</li>
+                        <li>Email address</li>
+                        <li>PAN, where applicable</li>
+                        <li>Address, where applicable</li>
+                        <li>Other information necessary for receipts or applicable tax documentation</li>
+                    </ul>
+                    <p>Information already available in a user's devotee profile may be used to pre-fill eligible donation fields for convenience.</p>
+                    <p>Users should verify the information before completing a donation.</p>
+                </div>
+            </section>
+
+            <!-- 10. PAN INFORMATION -->
+            <section class="section-block">
+                <span class="section-title">10. PAN INFORMATION</span>
+                <div class="section-text">
+                    <p>The application may allow users to provide a Permanent Account Number (PAN), particularly where the donor wishes to receive applicable tax-related donation documentation or benefits. PAN may be processed for purposes including:</p>
+                    <ul class="policy-list">
+                        <li>Donor identification</li>
+                        <li>Eligible donation documentation</li>
+                        <li>Applicable 80G documentation</li>
+                        <li>Form 10BE or other applicable tax documentation</li>
+                        <li>Accounting</li>
+                        <li>Audit</li>
+                        <li>Statutory record keeping</li>
+                        <li>Compliance with applicable Indian tax or regulatory requirements</li>
+                    </ul>
+                    <p>PAN is not collected for behavioral advertising. We do not sell PAN information. Where PAN is not required for a particular transaction or legal purpose, users should not be required to provide it unless otherwise necessary under applicable requirements.</p>
+                </div>
+            </section>
+
+            <!-- 11. 80G AND FORM 10BE -->
+            <section class="section-block">
+                <span class="section-title">11. 80G AND FORM 10BE</span>
+                <div class="section-text">
+                    <p>Where eligible and applicable, users may request tax-benefit documentation in connection with donations. The application may provide an option relating to Income Tax benefits, 80G receipts, Form 10BE, or other applicable donation documentation. For this purpose, information such as the following may be processed:</p>
+                    <ul class="policy-list">
+                        <li>Legal name</li>
+                        <li>PAN</li>
+                        <li>Address</li>
+                        <li>Email address</li>
+                        <li>Mobile number</li>
+                        <li>Donation amount</li>
+                        <li>Donation date</li>
+                        <li>Transaction details</li>
+                        <li>Other information required under applicable law</li>
+                    </ul>
+                    <p>Tax benefits are subject to applicable law, eligibility, and the requirements applicable to the relevant donation and organization.</p>
+                </div>
+            </section>
+
+            <!-- 12. PAYMENT PROCESSING -->
+            <section class="section-block">
+                <span class="section-title">12. PAYMENT PROCESSING</span>
+                <div class="section-text">
+                    <p>Payments made through ISKCON Bhuvaikuntha are processed through authorized third-party payment service providers/payment gateways.</p>
+                    <p>The payment interface currently made available through the application may include PhonePe or another authorized payment processor selected by ISKCON.</p>
+                    <p>Depending on availability and the applicable payment provider, payment options may include:</p>
+                    <ul class="policy-list">
+                        <li>UPI</li>
+                        <li>Debit card</li>
+                        <li>Credit card</li>
+                        <li>Net banking</li>
+                        <li>Other supported payment methods</li>
+                    </ul>
+                    <p>When you proceed to payment, you may be redirected to or shown an interface operated or facilitated by a third-party payment processor. Payment authorization is performed through the applicable payment provider, bank, card network, UPI service, or other financial service involved in the transaction.</p>
+                </div>
+            </section>
+
+            <!-- 13. PAYMENT CREDENTIALS -->
+            <section class="section-block">
+                <span class="section-title">13. PAYMENT CREDENTIALS</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha is not intended to directly collect or store sensitive payment authentication credentials such as:</p>
+                    <ul class="policy-list">
+                        <li>UPI PIN</li>
+                        <li>Complete debit/credit card number</li>
+                        <li>CVV</li>
+                        <li>Internet banking password</li>
+                        <li>Banking PIN</li>
+                        <li>Payment OTP used to authorize a transaction</li>
+                    </ul>
+                    <p>Such information is entered into or processed through the applicable payment provider, bank, card network, or financial institution. Users should never disclose their UPI PIN, card PIN, CVV, banking password, or payment OTP to anyone claiming to represent ISKCON.</p>
+                </div>
+            </section>
+
+            <!-- 14. PAYMENT AND TRANSACTION INFORMATION WE MAY RECEIVE -->
+            <section class="section-block">
+                <span class="section-title">14. PAYMENT AND TRANSACTION INFORMATION WE MAY RECEIVE</span>
+                <div class="section-text">
+                    <p>Although sensitive payment credentials are processed by the applicable payment provider, ISKCON may receive or retain transaction-related information necessary to manage donations. This may include:</p>
+                    <ul class="policy-list">
+                        <li>Transaction ID</li>
+                        <li>Order ID</li>
+                        <li>Payment reference number</li>
+                        <li>Donation amount</li>
+                        <li>Payment status</li>
+                        <li>Date and time</li>
+                        <li>Payment method/category, where provided</li>
+                        <li>Successful/failed/pending status</li>
+                        <li>Refund information, where applicable</li>
+                        <li>Reconciliation information</li>
+                    </ul>
+                    <p>This information may be used for confirming donations, issuing receipts, maintaining donation history, resolving payment issues, accounting, reconciliation, audit, fraud prevention, and tax/regulatory compliance.</p>
+                </div>
+            </section>
+
+            <!-- 15. THIRD-PARTY PAYMENT SERVICES -->
+            <section class="section-block">
+                <span class="section-title">15. THIRD-PARTY PAYMENT SERVICES</span>
+                <div class="section-text">
+                    <p>Payment providers operate under their own terms, security practices, and privacy policies. When users interact with a payment provider, information processed directly by that provider may be governed by the provider's privacy policy and terms.</p>
+                    <p>ISKCON is not responsible for independent processing performed by third-party payment providers outside ISKCON's control. Users are encouraged to review the relevant payment provider's terms and privacy information.</p>
+                </div>
+            </section>
+
+            <!-- 16. NOTIFICATIONS -->
+            <section class="section-block">
+                <span class="section-title">16. NOTIFICATIONS</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha may request permission to send notifications. Notifications may include:</p>
+                    <ul class="policy-list">
+                        <li>Temple announcements</li>
+                        <li>Festival information</li>
+                        <li>Festival reminders</li>
+                        <li>Event notifications</li>
+                        <li>Darshan updates</li>
+                        <li>Seva opportunities</li>
+                        <li>Donation-related information</li>
+                        <li>Payment or receipt updates</li>
+                        <li>Important application updates</li>
+                        <li>Account-related information</li>
+                        <li>Service announcements</li>
+                        <li>Devotional messages</li>
+                        <li>Temple notices</li>
+                        <li>Other relevant ISKCON communications</li>
+                    </ul>
+                    <p>On operating systems that require permission, notifications will be enabled only after the relevant permission is granted.</p>
+                    <p>Users can disable notifications at any time through the application's available settings or their Android/iOS notification settings. Disabling optional notifications will not prevent the use of unrelated application functionality.</p>
+                </div>
+            </section>
+
+            <!-- 17. PUSH NOTIFICATION INFORMATION -->
+            <section class="section-block">
+                <span class="section-title">17. PUSH NOTIFICATION INFORMATION</span>
+                <div class="section-text">
+                    <p>To deliver push notifications, the application or its notification service provider may process a device/application notification token or similar technical identifier.</p>
+                    <p>Such identifiers are used to route notifications to the appropriate application installation. Notification tokens are not intended to be used by ISKCON to obtain the content of unrelated communications on your device.</p>
+                    <p>If the user disables notifications, notification delivery may stop according to the operating system and notification service configuration.</p>
+                </div>
+            </section>
+
+            <!-- 18. DEVICE AND TECHNICAL INFORMATION -->
+            <section class="section-block">
+                <span class="section-title">18. DEVICE AND TECHNICAL INFORMATION</span>
+                <div class="section-text">
+                    <p>When you use the application, limited technical information may be automatically processed by the application, hosting infrastructure, security systems, or service providers. Depending on the implementation, this may include:</p>
+                    <ul class="policy-list">
+                        <li>Device type</li>
+                        <li>Device model</li>
+                        <li>Operating system</li>
+                        <li>Operating-system version</li>
+                        <li>Application version</li>
+                        <li>Browser or WebView information</li>
+                        <li>IP address</li>
+                        <li>Language/locale</li>
+                        <li>Network information</li>
+                        <li>Date and time of access</li>
+                        <li>Application/session identifiers</li>
+                        <li>Server logs</li>
+                        <li>Error information</li>
+                        <li>Diagnostic information</li>
+                        <li>Security-related events</li>
+                    </ul>
+                    <p>This information may be processed for operating the application, maintaining compatibility, troubleshooting, preventing abuse, maintaining security, diagnosing errors, and improving performance and reliability.</p>
+                </div>
+            </section>
+
+            <!-- 19. IP ADDRESS -->
+            <section class="section-block">
+                <span class="section-title">19. IP ADDRESS</span>
+                <div class="section-text">
+                    <p>When you connect to the Services, our servers, hosting providers, payment processors, or other infrastructure providers may automatically receive your Internet Protocol (IP) address.</p>
+                    <p>An IP address may be processed for network communication, server operation, security, fraud prevention, troubleshooting, abuse prevention, and technical logging. An IP address may provide an approximate geographic area as part of ordinary internet operation. This is different from accessing precise GPS location.</p>
+                </div>
+            </section>
+
+            <!-- 20. LOCATION INFORMATION -->
+            <section class="section-block">
+                <span class="section-title">20. LOCATION INFORMATION</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha does not intentionally access precise GPS location unless a particular application feature actually requires location and the user grants the required operating-system permission.</p>
+                    <p>If a feature requiring precise or approximate device location is introduced or used, the application will request the appropriate permission and provide the relevant purpose disclosure as required. Users may deny or revoke location permission through their device settings. The application does not use an IP address as a substitute for undisclosed continuous precise-location tracking.</p>
+                </div>
+            </section>
+
+            <!-- 21. PHOTOS, MEDIA AND FILE ACCESS -->
+            <section class="section-block">
+                <span class="section-title">21. PHOTOS, MEDIA AND FILE ACCESS</span>
+                <div class="section-text">
+                    <p>The application may allow users to interact with permitted content such as:</p>
+                    <ul class="policy-list">
+                        <li>Profile photographs</li>
+                        <li>Darshan images</li>
+                        <li>Gallery images</li>
+                        <li>Videos</li>
+                        <li>PDFs</li>
+                        <li>Donation receipts</li>
+                        <li>Devotional files</li>
+                        <li>Other application content</li>
+                    </ul>
+                    <p>Depending on the operating system and implementation, the application may use system photo picker, file picker, share interface, download functionality, media access, or storage access where technically necessary. Access is intended to be limited to what is necessary for the functionality selected by the user.</p>
+                </div>
+            </section>
+
+            <!-- 22. DOWNLOADS -->
+            <section class="section-block">
+                <span class="section-title">22. DOWNLOADS</span>
+                <div class="section-text">
+                    <p>Where available, users may download permitted content from the application, including images, PDFs, receipts, videos, or other devotional resources.</p>
+                    <p>Downloaded files may be stored on the user's device according to the device's operating-system and storage settings. Once a file has been downloaded to the user's device, management and deletion of that local copy may be controlled by the user and the operating system.</p>
+                </div>
+            </section>
+
+            <!-- 23. DEVOTIONAL CONTENT -->
+            <section class="section-block">
+                <span class="section-title">23. DEVOTIONAL CONTENT</span>
+                <div class="section-text">
+                    <p>The application may provide devotional and temple-related content, including Daily Darshan, galleries, videos, Kirtans, lectures, temple information, schedules, festival updates, notices, and spiritual resources.</p>
+                    <p>When users access this content, ordinary technical information required to deliver the content may be processed by the application or relevant infrastructure provider.</p>
+                </div>
+            </section>
+
+            <!-- 24. LIVE DARSHAN AND STREAMING CONTENT -->
+            <section class="section-block">
+                <span class="section-title">24. LIVE DARSHAN AND STREAMING CONTENT</span>
+                <div class="section-text">
+                    <p>Where the application provides Live Darshan, live video, audio, or other streaming content, technical information necessary to establish and maintain the stream may be processed.</p>
+                    <p>If the content is provided through a third-party streaming or hosting service, that service may process limited technical information in accordance with its own privacy practices.</p>
+                </div>
+            </section>
+
+            <!-- 25. EXTERNAL LINKS -->
+            <section class="section-block">
+                <span class="section-title">25. EXTERNAL LINKS</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha may contain links to external websites, applications, or services (including ISKCON websites, payment services, video platforms, social media, maps, and communication services).</p>
+                    <p>When you open an external service, you may become subject to that service's privacy policy and terms. ISKCON does not control the independent privacy practices of third-party websites or applications.</p>
+                </div>
+            </section>
+
+            <!-- 26. COOKIES, LOCAL STORAGE AND SIMILAR TECHNOLOGIES -->
+            <section class="section-block">
+                <span class="section-title">26. COOKIES, LOCAL STORAGE AND SIMILAR TECHNOLOGIES</span>
+                <div class="section-text">
+                    <p>Web-based portions of the Services may use cookies, local storage, session storage, authentication tokens, or similar technologies where necessary for maintaining login sessions, remembering user preferences, authentication, security, application functionality, performance, and fraud prevention.</p>
+                    <p>Where applicable law requires consent for non-essential technologies, appropriate controls will be provided.</p>
+                </div>
+            </section>
+
+            <!-- 27. HOW WE USE PERSONAL INFORMATION -->
+            <section class="section-block">
+                <span class="section-title">27. HOW WE USE PERSONAL INFORMATION</span>
+                <div class="section-text">
+                    <p>We may use personal information to:</p>
+                    <ul class="policy-list">
+                        <li>Create and maintain accounts</li>
+                        <li>Authenticate users through their mobile number</li>
+                        <li>Maintain signed-in sessions</li>
+                        <li>Maintain devotee profiles</li>
+                        <li>Provide requested application functionality</li>
+                        <li>Process donations and maintain donation history</li>
+                        <li>Generate receipts</li>
+                        <li>Facilitate eligible 80G/Form 10BE documentation</li>
+                        <li>Provide requested Sankalpa-related functionality</li>
+                        <li>Provide temple and devotional services</li>
+                        <li>Send notifications and festival/event information</li>
+                        <li>Respond to user enquiries and provide support</li>
+                        <li>Maintain security, detect fraud, and troubleshoot issues</li>
+                        <li>Maintain financial/accounting records and comply with tax & legal obligations</li>
+                        <li>Protect ISKCON, devotees, donors, and users</li>
+                    </ul>
+                    <p>We do not intentionally use personal information for materially unrelated purposes without an appropriate legal basis or consent where required.</p>
+                </div>
+            </section>
+
+            <!-- 28. COMMUNICATIONS -->
+            <section class="section-block">
+                <span class="section-title">28. COMMUNICATIONS</span>
+                <div class="section-text">
+                    <p>We may use your mobile number or email address to send communications related to account verification, security, donations, payment confirmations, receipts, tax documentation, support requests, important service changes, temple info, festival alerts, and Seva opportunities.</p>
+                    <p>Where promotional communications require consent or an opt-out mechanism, appropriate controls will be provided. Essential transactional, security, or service communications may still be sent where necessary and permitted.</p>
+                </div>
+            </section>
+
+            <!-- 29. CONSENT -->
+            <section class="section-block">
+                <span class="section-title">29. CONSENT</span>
+                <div class="section-text">
+                    <p>Where consent is required, it may be obtained through application permission prompts, opt-in controls, checkboxes, donation forms, account/profile controls, operating-system permission dialogs, or other clear consent mechanisms.</p>
+                    <p>Consent for one purpose does not automatically constitute consent for unrelated processing.</p>
+                </div>
+            </section>
+
+            <!-- 30. WITHDRAWING CONSENT -->
+            <section class="section-block">
+                <span class="section-title">30. WITHDRAWING CONSENT</span>
+                <div class="section-text">
+                    <p>Where processing is based on consent, users may withdraw consent where applicable. Users may also:</p>
+                    <ul class="policy-list">
+                        <li>Disable notifications</li>
+                        <li>Revoke camera permission</li>
+                        <li>Revoke photo/media permission</li>
+                        <li>Revoke location permission if applicable</li>
+                        <li>Modify eligible profile information</li>
+                        <li>Remove/change a profile photograph</li>
+                        <li>Request deletion of eligible personal information</li>
+                        <li>Request deletion of their account</li>
+                    </ul>
+                    <p>Permissions can generally be managed through Android or iOS settings. Withdrawal does not affect processing that was lawfully performed before consent was withdrawn. Certain records may still need to be retained for legal, financial, tax, accounting, or security reasons.</p>
+                </div>
+            </section>
+
+            <!-- 31. THIRD-PARTY SERVICE PROVIDERS -->
+            <section class="section-block">
+                <span class="section-title">31. THIRD-PARTY SERVICE PROVIDERS</span>
+                <div class="section-text">
+                    <p>We may use third-party service providers to operate portions of the Services (such as payment processing, hosting, database services, mobile-number authentication, OTP delivery, push notifications, email/SMS delivery, streaming, security, and diagnostics).</p>
+                    <p>Service providers may process information only to the extent reasonably necessary to provide their services, subject to applicable legal, contractual, and technical safeguards.</p>
+                </div>
+            </section>
+
+            <!-- 32. DISCLOSURE OF INFORMATION -->
+            <section class="section-block">
+                <span class="section-title">32. DISCLOSURE OF INFORMATION</span>
+                <div class="section-text">
+                    <p>We may disclose personal information where reasonably necessary to service providers, payment processors, for accounting/tax documentation, to comply with applicable law or court orders, to investigate fraud, or to protect the safety of ISKCON and its users.</p>
+                    <p>We do not disclose personal information to unrelated third parties merely for their independent marketing purposes without an appropriate basis or consent.</p>
+                </div>
+            </section>
+
+            <!-- 33. NO SALE OF PERSONAL INFORMATION -->
+            <section class="section-block">
+                <span class="section-title">33. NO SALE OF PERSONAL INFORMATION</span>
+                <div class="section-text">
+                    <p>ISKCON does not sell devotees' or donors' personal information for monetary consideration. In particular, we do not sell mobile numbers, email addresses, postal addresses, PAN, donation records, profile photos, Gotra, or session information to advertisers or data brokers.</p>
+                </div>
+            </section>
+
+            <!-- 34. ADVERTISING AND CROSS-APP TRACKING -->
+            <section class="section-block">
+                <span class="section-title">34. ADVERTISING AND CROSS-APP TRACKING</span>
+                <div class="section-text">
+                    <p>Sensitive devotee information such as PAN, Gotra, donation history, profile information, and authentication information is not intended to be used for behavioral advertising. The application does not use such information for cross-app advertising tracking.</p>
+                </div>
+            </section>
+
+            <!-- 35. DATA SECURITY -->
+            <section class="section-block">
+                <span class="section-title">35. DATA SECURITY</span>
+                <div class="section-text">
+                    <p>We take reasonable administrative, organizational, and technical precautions designed to protect personal information against unauthorized access, loss, misuse, alteration, or destruction.</p>
+                    <p>However, no internet service or electronic storage can be guaranteed to be 100% secure. Users should protect access to their devices and should never disclose OTPs, UPI PINs, banking passwords, or CVVs to anyone.</p>
+                </div>
+            </section>
+
+            <!-- 36. DATA MINIMIZATION -->
+            <section class="section-block">
+                <span class="section-title">36. DATA MINIMIZATION</span>
+                <div class="section-text">
+                    <p>We seek to collect only information reasonably necessary for providing application functionality, user accounts, donations, devotional services, tax documentation, security, and legal compliance. Users should avoid submitting unnecessary sensitive information through free-text fields.</p>
+                </div>
+            </section>
+
+            <!-- 37. DATA RETENTION -->
+            <section class="section-block">
+                <span class="section-title">37. DATA RETENTION</span>
+                <div class="section-text">
+                    <p>Personal information is retained only for as long as reasonably necessary for the purposes described in this Privacy Policy or as required or permitted by applicable law.</p>
+                </div>
+            </section>
+
+            <!-- 38. ACCOUNT AND PROFILE RETENTION -->
+            <section class="section-block">
+                <span class="section-title">38. ACCOUNT AND PROFILE RETENTION</span>
+                <div class="section-text">
+                    <p>Account and profile information may be retained while an account remains active and for a reasonable period thereafter where necessary for administration, security, fraud prevention, dispute resolution, and legal compliance.</p>
+                </div>
+            </section>
+
+            <!-- 39. DONATION AND FINANCIAL RECORD RETENTION -->
+            <section class="section-block">
+                <span class="section-title">39. DONATION AND FINANCIAL RECORD RETENTION</span>
+                <div class="section-text">
+                    <p>Donation, transaction, receipt, accounting, and payment-reference records may be retained for the period necessary to satisfy accounting, tax, audit, and statutory requirements. Deleting an application account does not require deletion of financial records that ISKCON is legally required to retain.</p>
+                </div>
+            </section>
+
+            <!-- 40. PAN AND TAX RECORD RETENTION -->
+            <section class="section-block">
+                <span class="section-title">40. PAN AND TAX RECORD RETENTION</span>
+                <div class="section-text">
+                    <p>PAN and information associated with eligible 80G/Form 10BE documentation may be retained where necessary for statutory reporting, accounting, audit, and tax compliance. Such information will not be retained indefinitely where there is no continuing legal need.</p>
+                </div>
+            </section>
+
+            <!-- 41. TECHNICAL LOG RETENTION -->
+            <section class="section-block">
+                <span class="section-title">41. TECHNICAL LOG RETENTION</span>
+                <div class="section-text">
+                    <p>Technical, diagnostic, session, and security logs may be retained for a limited period reasonably necessary for troubleshooting, application reliability, security, and abuse detection before being deleted or anonymized.</p>
+                </div>
+            </section>
+
+            <!-- 42. ACCOUNT DELETION (UPDATED WITH LIVE URL) -->
+            <section class="section-block">
+                <span class="section-title">42. ACCOUNT DELETION</span>
+                <div class="section-text">
+                    <p>Users who have an ISKCON Bhuvaikuntha account may request deletion of their account within the app or through our dedicated public account-deletion portal.</p>
+                    <p><strong>Account Deletion Portal URL:</strong></p>
+                    <div class="link-badge-box">
+                        <a href="https://pdf-95aj.vercel.app" target="_blank" rel="noopener noreferrer" class="contact-link">https://pdf-95aj.vercel.app</a>
+                    </div>
+                    <p style="margin-top: 10px;">Following a valid account-deletion request, eligible account information will be deleted or anonymized within a reasonable period, subject to statutory retention requirements.</p>
+                </div>
+            </section>
+
+            <!-- 43. DATA RETAINED AFTER ACCOUNT DELETION -->
+            <section class="section-block">
+                <span class="section-title">43. DATA RETAINED AFTER ACCOUNT DELETION</span>
+                <div class="section-text">
+                    <p>Certain information (such as donation records, receipts, tax/80G/Form 10BE records, and audit records) may be retained after account deletion where required by law. Information retained for these purposes will not be used for marketing or active account usage.</p>
+                </div>
+            </section>
+
+            <!-- 44. DATA ACCESS, CORRECTION AND DELETION REQUESTS -->
+            <section class="section-block">
+                <span class="section-title">44. DATA ACCESS, CORRECTION AND DELETION REQUESTS</span>
+                <div class="section-text">
+                    <p>Subject to applicable law, users may request to access, correct, update, or delete eligible personal information, delete their account, or withdraw consent. Verification of identity may be required before processing requests.</p>
+                </div>
+            </section>
+
+            <!-- 45. CHILDREN'S PRIVACY -->
+            <section class="section-block">
+                <span class="section-title">45. CHILDREN'S PRIVACY</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha provides devotional and temple-related services suitable for families. The Services are not intended to knowingly collect personal information from children in violation of law without parental or guardian consent.</p>
+                </div>
+            </section>
+
+            <!-- 46. INTERNATIONAL DATA PROCESSING -->
+            <section class="section-block">
+                <span class="section-title">46. INTERNATIONAL DATA PROCESSING</span>
+                <div class="section-text">
+                    <p>Some technical service providers may operate servers or infrastructure outside the user's jurisdiction. Where personal information is processed internationally, appropriate safeguards will be used where required by law.</p>
+                </div>
+            </section>
+
+            <!-- 47. LEGAL AND REGULATORY COMPLIANCE -->
+            <section class="section-block">
+                <span class="section-title">47. LEGAL AND REGULATORY COMPLIANCE</span>
+                <div class="section-text">
+                    <p>We may process, retain, or disclose information where reasonably necessary to comply with applicable laws, tax requirements, court orders, or lawful government requests.</p>
+                </div>
+            </section>
+
+            <!-- 48. FRAUD, SECURITY AND ABUSE PREVENTION -->
+            <section class="section-block">
+                <span class="section-title">48. FRAUD, SECURITY AND ABUSE PREVENTION</span>
+                <div class="section-text">
+                    <p>Limited account, transaction, network, and device logs may be processed to prevent payment fraud, detect malicious activity, and protect application infrastructure.</p>
+                </div>
+            </section>
+
+            <!-- 49. AUTOMATED DECISION-MAKING -->
+            <section class="section-block">
+                <span class="section-title">49. AUTOMATED DECISION-MAKING</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha does not use PAN, Gotra, donation history, or profile data to make solely automated decisions that produce legal or significant effects concerning users.</p>
+                </div>
+            </section>
+
+            <!-- 50. APPLICATION PERMISSIONS -->
+            <section class="section-block">
+                <span class="section-title">50. APPLICATION PERMISSIONS</span>
+                <div class="section-text">
+                    <p>The app may request permissions such as Notification, Camera, Photo/Media, or Storage access only when required for functional features. Biometric authentication is not required for login.</p>
+                </div>
+            </section>
+
+            <!-- 51. THIRD-PARTY WEBSITES AND APPLICATIONS -->
+            <section class="section-block">
+                <span class="section-title">51. THIRD-PARTY WEBSITES AND APPLICATIONS</span>
+                <div class="section-text">
+                    <p>External websites and services linked within the app operate under their own privacy policies. We encourage users to review those external policies.</p>
+                </div>
+            </section>
+
+            <!-- 52. CHANGES TO THIS PRIVACY POLICY -->
+            <section class="section-block">
+                <span class="section-title">52. CHANGES TO THIS PRIVACY POLICY</span>
+                <div class="section-text">
+                    <p>We may update this Privacy Policy periodically. The revised policy will display an updated “Last Updated” date. Material changes will be accompanied by appropriate notice or consent where required.</p>
+                </div>
+            </section>
+
+            <!-- 53. GOOGLE PLAY PRIVACY AND DATA SAFETY -->
+            <section class="section-block">
+                <span class="section-title">53. GOOGLE PLAY PRIVACY AND DATA SAFETY</span>
+                <div class="section-text">
+                    <p>The information disclosed in the Google Play Data Safety section accurately reflects our actual collection, usage, sharing, and security practices.</p>
+                </div>
+            </section>
+
+            <!-- 54. APPLE APP PRIVACY -->
+            <section class="section-block">
+                <span class="section-title">54. APPLE APP PRIVACY</span>
+                <div class="section-text">
+                    <p>The privacy disclosures submitted through App Store Connect accurately reflect our data collection and handling practices.</p>
+                </div>
+            </section>
+
+            <!-- 55. USER PRIVACY CHOICES -->
+            <section class="section-block">
+                <span class="section-title">55. USER PRIVACY CHOICES</span>
+                <div class="section-text">
+                    <p>Users have choices to update profile details, manage device permissions, disable optional notifications, request data/account deletion, or contact us regarding privacy concerns.</p>
+                </div>
+            </section>
+
+            <!-- 56. PRIVACY POLICY AVAILABILITY -->
+            <section class="section-block">
+                <span class="section-title">56. PRIVACY POLICY AVAILABILITY</span>
+                <div class="section-text">
+                    <p>This Privacy Policy is accessible within the ISKCON Bhuvaikuntha app and via a public HTTPS webpage without requiring login.</p>
+                </div>
+            </section>
+
+            <!-- 57. QUESTIONS, PRIVACY REQUESTS AND CONTACT INFORMATION (UPDATED WITH LIVE URL) -->
+            <section class="section-block">
+                <span class="section-title">57. QUESTIONS, PRIVACY REQUESTS AND CONTACT INFORMATION</span>
+                <div class="section-text">
+                    <p>If you wish to access, correct, delete personal information, request account deletion, or register a privacy inquiry, please contact:</p>
+                    
+                    <div class="address-box">
+                        <strong>International Society for Krishna Consciousness (ISKCON)</strong><br>
+                        Hare Krishna Dham<br>
+                        28A, Gata No. 107 and 108<br>
+                        Sri Sri Radha Pandharinath Mandir<br>
+                        Near Chandrabhaga River<br>
+                        Pandharpur, Solapur, Maharashtra – 413304, India<br><br>
+                        <strong>Email:</strong> <a href="mailto:iskconpandharpur@pamho.net" class="contact-link">iskconpandharpur@pamho.net</a><br>
+                        <strong>Application:</strong> ISKCON Bhuvaikuntha<br>
+                        <strong>Account Deletion Portal:</strong> <a href="https://pdf-95aj.vercel.app" target="_blank" rel="noopener noreferrer" class="contact-link">https://pdf-95aj.vercel.app</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 58. ACKNOWLEDGEMENT -->
+            <section class="section-block">
+                <span class="section-title">58. ACKNOWLEDGEMENT</span>
+                <div class="section-text">
+                    <p>By using ISKCON Bhuvaikuntha, you acknowledge that this Privacy Policy has been made available to you and describes how information may be handled through the Services.</p>
+                    <p>Where a particular activity requires explicit consent or operating-system permission, the relevant consent or permission will be requested separately.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>
