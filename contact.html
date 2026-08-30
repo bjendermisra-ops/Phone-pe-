@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - ISKCON Bhuvaikuntha</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #F98125;
+      --primary-dark: #D96911;
+      --primary-glow: rgba(249, 129, 37, 0.25);
+      --primary-soft: #FFF7ED;
+      --primary-border: #FFEDD5;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --bg: #F8F9FC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --radius: 18px;
+      --radius-sm: 12px;
+      --shadow-subtle: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+      --shadow-hover: 0 14px 30px -4px rgba(249, 129, 37, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* Mobile Container Frame */
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      background-color: var(--surface);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.06);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Sticky Animated Top Bar */
+    .app-header {
+      background: linear-gradient(135deg, #F98125 0%, #EA580C 100%);
+      color: #FFFFFF;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(234, 88, 12, 0.25);
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      flex: 1;
+      text-align: center;
+      margin-right: 36px;
+    }
+
+    /* Content Area */
+    .content-body {
+      padding: 18px 16px 60px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero Banner */
+    .hero-card {
+      background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+      border: 1px solid #FED7AA;
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "ॐ";
+      position: absolute;
+      right: -10px;
+      bottom: -25px;
+      font-size: 110px;
+      color: rgba(249, 129, 37, 0.08);
+      font-weight: 800;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(249, 129, 37, 0.12);
+      border: 1px solid rgba(249, 129, 37, 0.25);
+      color: #C2410C;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 10px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #16A34A;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
+      animation: pulseGreen 1.8s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+    }
+
+    .hero-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #7C2D12;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .hero-desc {
+      font-size: 13.5px;
+      color: #4B5563;
+      line-height: 20px;
+    }
+
+    /* Section Titles */
+    .section-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Quick Action Grid (Call & Email) */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .quick-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-decoration: none;
+      position: relative;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .quick-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card-icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+      border: 1px solid #FED7AA;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      margin-bottom: 12px;
+      transition: all 0.25s ease;
+    }
+
+    .quick-card:hover .card-icon-wrap {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #FFFFFF;
+      transform: scale(1.08);
+    }
+
+    .card-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .card-main-text {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      word-break: break-all;
+      line-height: 18px;
+    }
+
+    .copy-chip {
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary);
+      background: var(--primary-soft);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px dashed #FDBA74;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .copy-chip:hover {
+      background: #FFEDD5;
+    }
+
+    /* Temple Map & Address Card */
+    .map-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+    }
+
+    .address-header {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .pin-box {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      color: #FFFFFF;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+      animation: bouncePin 2.5s infinite ease-in-out;
+    }
+
+    @keyframes bouncePin {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .address-details strong {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .address-details p {
+      font-size: 13px;
+      color: #475569;
+      line-height: 19px;
+    }
+
+    .directions-btn {
+      background: linear-gradient(135deg, #F98125 0%, #EA580C 100%);
+      color: #FFFFFF;
+      text-decoration: none;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 14.5px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      box-shadow: 0 8px 20px -4px rgba(249, 129, 37, 0.4);
+      transition: all 0.25s ease;
+    }
+
+    .directions-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px -4px rgba(249, 129, 37, 0.5);
+    }
+
+    .directions-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Social Channels Cards */
+    .social-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 15px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+
+    .social-btn:hover {
+      transform: translateX(4px);
+      border-color: #CBD5E1;
+      background: #F8FAFC;
+    }
+
+    .social-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .social-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: #FFFFFF;
+      transition: transform 0.2s;
+    }
+
+    .social-btn:hover .social-icon-box {
+      transform: scale(1.08);
+    }
+
+    .yt-bg { background: linear-gradient(135deg, #FF0000, #CC0000); box-shadow: 0 4px 10px rgba(255, 0, 0, 0.25); }
+    .ig-bg { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); box-shadow: 0 4px 10px rgba(214, 36, 159, 0.25); }
+    .fb-bg { background: linear-gradient(135deg, #1877F2, #0C63D4); box-shadow: 0 4px 10px rgba(24, 119, 242, 0.25); }
+
+    .social-text strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .social-text span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .arrow-icon {
+      color: #94A3B8;
+      transition: transform 0.2s;
+    }
+
+    .social-btn:hover .arrow-icon {
+      color: var(--primary);
+      transform: translateX(3px);
+    }
+
+    /* Support Card */
+    .support-card {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      font-size: 13.5px;
+      line-height: 20px;
+      color: #334155;
+    }
+
+    .support-card a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .support-card a:hover {
+      text-decoration: underline;
+    }
+
+    /* Greeting Badge */
+    .blessing-box {
+      background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+      border: 1px solid #FDBA74;
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(249, 129, 37, 0.1);
+    }
+
+    .blessing-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #C2410C;
+      margin-bottom: 3px;
+    }
+
+    .blessing-sub {
+      font-size: 13px;
+      color: #7C2D12;
+      font-weight: 500;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0F172A;
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 99px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Top Bar -->
+    <header class="app-header">
+      <button class="back-btn" onclick="history.back()" aria-label="Go Back">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="header-title">Contact Us</div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-body">
+
+      <!-- Hero Greeting -->
+      <div class="hero-card">
+        <div class="badge-status">
+          <span class="pulse-dot"></span>
+          We're Here to Help
+        </div>
+        <h2 class="hero-title">ISKCON BHUVAIKUNTHA</h2>
+        <p class="hero-desc">
+          Planning a pilgrimage or seeking information on Seva, Darshan, donations, or spiritual programs? Our team is ready to assist you.
+        </p>
+      </div>
+
+      <!-- Quick Action: Call & Email -->
+      <div>
+        <div class="section-label">Direct Communication</div>
+        <div class="quick-grid">
+          
+          <!-- Phone Card -->
+          <div class="quick-card">
+            <a href="tel:+919075220180" style="text-decoration:none; width:100%;">
+              <div class="card-icon-wrap">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+              </div>
+              <div class="card-tag">Call Helpdesk</div>
+              <div class="card-main-text">+91 90752 20180</div>
+            </a>
+            <div class="copy-chip" onclick="copyText('+919075220180', 'Phone number copied!')">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              Copy
+            </div>
+          </div>
+
+          <!-- Email Card -->
+          <div class="quick-card">
+            <a href="mailto:iskconpandharpur.in@gmail.com" style="text-decoration:none; width:100%;">
+              <div class="card-icon-wrap">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div class="card-tag">Official Email</div>
+              <div class="card-main-text" style="font-size:11.5px;">iskconpandharpur.in@gmail.com</div>
+            </a>
+            <div class="copy-chip" onclick="copyText('iskconpandharpur.in@gmail.com', 'Email copied!')">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              Copy
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Temple Location & Maps Card -->
+      <div>
+        <div class="section-label">Temple Address & Location</div>
+        <div class="map-card">
+          <div class="address-header">
+            <div class="pin-box">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </div>
+            <div class="address-details">
+              <strong>ISKCON Bhuvaikuntha Temple</strong>
+              <p>Hare Krishna Dham, East Bank of Chandrabhaga River, Pandharpur, Solapur, Maharashtra – 413304, India</p>
+            </div>
+          </div>
+
+          <!-- Official Google Maps Link Added Here -->
+          <a href="https://maps.app.goo.gl/WeoKu9GGaZBshofa7" target="_blank" rel="noopener noreferrer" class="directions-btn">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+            </svg>
+            <span>Open in Google Maps</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Social Channels -->
+      <div>
+        <div class="section-label">Connect with us online</div>
+        <div class="social-list">
+
+          <!-- YouTube -->
+          <a href="https://www.youtube.com/@iskconpandharpurofficial108" target="_blank" rel="noopener noreferrer" class="social-btn">
+            <div class="social-btn-left">
+              <div class="social-icon-box yt-bg">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+              </div>
+              <div class="social-text">
+                <strong>YouTube</strong>
+                <span>@iskconpandharpurofficial108</span>
+              </div>
+            </div>
+            <svg class="arrow-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/iskconbhuvaikuntha" target="_blank" rel="noopener noreferrer" class="social-btn">
+            <div class="social-btn-left">
+              <div class="social-icon-box ig-bg">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </div>
+              <div class="social-text">
+                <strong>Instagram</strong>
+                <span>@iskconbhuvaikuntha</span>
+              </div>
+            </div>
+            <svg class="arrow-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <!-- Facebook -->
+          <a href="https://www.facebook.com/Iskconbhuvaikuntha" target="_blank" rel="noopener noreferrer" class="social-btn">
+            <div class="social-btn-left">
+              <div class="social-icon-box fb-bg">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </div>
+              <div class="social-text">
+                <strong>Facebook</strong>
+                <span>ISKCON Bhuvaikuntha</span>
+              </div>
+            </div>
+            <svg class="arrow-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Support & Inquiries -->
+      <div class="support-card">
+        <strong style="color: var(--text-main); display:block; margin-bottom:4px;">Support & Privacy Inquiries</strong>
+        For general enquiries or account deletion assistance, email us at <a href="mailto:iskconpandharpur.in@gmail.com">iskconpandharpur.in@gmail.com</a>.
+      </div>
+
+      <!-- Final Spiritual Blessing Badge -->
+      <div class="blessing-box">
+        <div class="blessing-title">🙏 Hare Krishna 🙏</div>
+        <div class="blessing-sub">We look forward to welcoming you to ISKCON Bhuvaikuntha.</div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Toast Notification element -->
+  <div id="toast" class="toast">
+    <svg width="16" height="16" fill="none" stroke="#22C55E" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+    <span id="toastMsg">Copied!</span>
+  </div>
+
+  <!-- Micro Interaction JavaScript -->
+  <script>
+    function copyText(text, message) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text);
+      } else {
+        const tempInput = document.createElement("input");
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+      }
+      showToast(message);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toastMsg");
+      toastMsg.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2200);
+    }
+  </script>
+
+</body>
+</html>
