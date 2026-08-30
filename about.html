@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - ISKCON Bhuvaikuntha</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #F8F9FA;
+            color: #000000;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Mobile Screen Container */
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            background-color: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
+            position: relative;
+        }
+
+        /* Top Header (Figma Match) */
+        .app-header {
+            background-color: #F98125; /* ISKCON Saffron/Orange Theme */
+            color: #FFFFFF;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #FFFFFF;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            margin-right: 12px;
+        }
+
+        .back-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke-width: 2.5;
+        }
+
+        .header-title {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            flex: 1;
+            text-align: center;
+            margin-right: 34px; /* Back button offset balance */
+        }
+
+        /* Content Area (15px font, 22px line-height, 16px padding) */
+        .content-body {
+            padding: 16px 16px 50px 16px;
+            font-size: 15px;
+            line-height: 22px;
+            color: #111111;
+        }
+
+        /* Temple Image Banner Container */
+        .temple-image-wrapper {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            background-color: #FFF7ED;
+            border: 1px solid #FFE7D4;
+        }
+
+        .temple-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Section Blocks */
+        .section-block {
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #000000;
+            display: block;
+            letter-spacing: -0.2px;
+        }
+
+        .section-text p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .section-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Styled Bullet Lists */
+        ul.policy-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0;
+        }
+
+        ul.policy-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 6px;
+            text-align: justify;
+        }
+
+        ul.policy-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            top: 0;
+            color: #F98125;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Contact Details & Links */
+        .contact-link {
+            color: #F98125;
+            text-decoration: none;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .contact-link:hover {
+            text-decoration: underline;
+        }
+
+        .address-box {
+            background-color: #FBFBFB;
+            border-left: 3px solid #F98125;
+            padding: 14px 16px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            line-height: 23px;
+        }
+
+        .greetings-badge {
+            background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+            border: 1px solid #FDBA74;
+            color: #C2410C;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 24px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <button class="back-btn" onclick="history.back()" aria-label="Go Back">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <h1 class="header-title">About Us</h1>
+        </header>
+
+        <!-- Main Body -->
+        <main class="content-body">
+
+            <!-- TEMPLE IMAGE SECTION (Replace 'src' with your actual temple image path) -->
+            <div class="temple-image-wrapper">
+                <img 
+                    src="https://images.unsplash.com/photo-1545232979-fbf6c63b7e77?auto=format&fit=crop&w=800&q=80" 
+                    alt="ISKCON Bhuvaikuntha Temple Pandharpur" 
+                    class="temple-image"
+                />
+            </div>
+
+            <!-- ABOUT ISKCON BHUVAIKUNTHA -->
+            <section class="section-block">
+                <span class="section-title">ABOUT ISKCON BHUVAIKUNTHA</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha is a devotional initiative dedicated to the service of Sri Sri Radha Pandharinath and the mission of His Divine Grace A.C. Bhaktivedanta Swami Prabhupada, Founder-Acharya of the International Society for Krishna Consciousness (ISKCON).</p>
+                    <p>Located in the sacred town of Pandharpur, Maharashtra, the temple serves as a spiritual center for devotees and visitors seeking devotional association, worship, spiritual learning, and service.</p>
+                    <p>ISKCON is a worldwide spiritual movement based on the teachings of Bhagavad-gita and Srimad-Bhagavatam, with temples, communities, and devotees across many countries around the world.</p>
+                    <p>Under the guidance and inspiration of senior ISKCON Vaishnavas and spiritual leaders, ISKCON Bhuvaikuntha continues its efforts to develop facilities that support worship, devotional education, prasadam distribution, spiritual programs, pilgrim services, cow protection, and community welfare.</p>
+                    <p>Our mission is to help people deepen their relationship with Lord Krishna through bhakti-yoga, chanting of the holy names, study of Vedic scriptures, devotional service, and association with devotees.</p>
+                </div>
+            </section>
+
+            <!-- TEMPLE DEVELOPMENT -->
+            <section class="section-block">
+                <span class="section-title">TEMPLE DEVELOPMENT</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha is working toward the development and enhancement of temple facilities for the service of Lord Krishna and the devotee community.</p>
+                    <p>Devotees and well-wishers may participate in various Seva opportunities that support temple construction, maintenance, worship, spiritual activities, community services, and other devotional initiatives.</p>
+                </div>
+            </section>
+
+            <!-- SEVA & DONATIONS -->
+            <section class="section-block">
+                <span class="section-title">SEVA & DONATIONS</span>
+                <div class="section-text">
+                    <p>Your voluntary contributions help support various devotional and charitable activities associated with ISKCON Bhuvaikuntha, which may include:</p>
+                    <ul class="policy-list">
+                        <li>Temple construction and development</li>
+                        <li>Deity worship and temple services</li>
+                        <li>Prasadam distribution and community meals</li>
+                        <li>Cow protection and related care</li>
+                        <li>Spiritual education and devotional programs</li>
+                        <li>Festivals and community activities</li>
+                        <li>Pilgrim and devotee services</li>
+                        <li>Other charitable and devotional initiatives</li>
+                    </ul>
+                    <p>Available Seva opportunities and donation purposes may vary from time to time.</p>
+                    <p>We are committed to the responsible and transparent use of donations in support of the purposes for which they are received.</p>
+                </div>
+            </section>
+
+            <!-- SPIRITUAL ACTIVITIES -->
+            <section class="section-block">
+                <span class="section-title">SPIRITUAL ACTIVITIES</span>
+                <div class="section-text">
+                    <p>ISKCON Bhuvaikuntha may organize and support devotional activities such as:</p>
+                    <ul class="policy-list">
+                        <li>Hare Krishna Sankirtan</li>
+                        <li>Bhagavad-gita and Srimad-Bhagavatam classes</li>
+                        <li>Kirtan and bhajan</li>
+                        <li>Aarti and temple worship</li>
+                        <li>Festivals and special celebrations</li>
+                        <li>Prasadam distribution</li>
+                        <li>Devotional education</li>
+                        <li>Youth and family programs</li>
+                        <li>Pilgrimage and devotee activities</li>
+                        <li>Seva opportunities</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- OUR VISION -->
+            <section class="section-block">
+                <span class="section-title">OUR VISION</span>
+                <div class="section-text">
+                    <p>Our vision is to create a spiritually uplifting environment where people from all backgrounds can learn and practice bhakti-yoga, experience Krishna consciousness, participate in devotional service, and benefit from the teachings of Srila Prabhupada.</p>
+                    <p>We welcome devotees, pilgrims, visitors, and well-wishers to participate in the spiritual and devotional activities of ISKCON Bhuvaikuntha.</p>
+                </div>
+            </section>
+
+            <!-- CONTACT US -->
+            <section class="section-block">
+                <span class="section-title">CONTACT US</span>
+                <div class="section-text">
+                    <div class="address-box">
+                        <strong>International Society for Krishna Consciousness (ISKCON)</strong><br>
+                        Hare Krishna Dham<br>
+                        28A, Gata No. 107 and 108<br>
+                        Sri Sri Radha Pandharinath Mandir<br>
+                        Near Chandrabhaga River<br>
+                        Pandharpur, Solapur, Maharashtra – 413304, India<br><br>
+                        <strong>Email:</strong> <a href="mailto:iskconpandharpur@pamho.net" class="contact-link">iskconpandharpur@pamho.net</a><br>
+                        <strong>Application:</strong> ISKCON Bhuvaikuntha
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Greeting -->
+            <div class="greetings-badge">
+                🙏 Hare Krishna 🙏
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>
