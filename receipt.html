@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Payment Receipt - ISKCON</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7f9fa; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .modal-card { background: white; border-radius: 20px; width: 100%; max-width: 450px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        .close-btn { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #888; background: none; border: none; transition: 0.3s; }
+        .close-btn:active { transform: scale(0.8); }
+        .receipt-card { background: #ffffff; border: 1.5px solid #f28c28; border-radius: 18px; padding: 15px 20px; margin-top: 15px; box-shadow: 0 6px 20px rgba(0,0,0,0.02); }
+        .receipt-temple-header { display: flex; flex-direction: column; align-items: center; text-align: center; border-bottom: 2px dashed rgba(242, 140, 40, 0.2); padding-bottom: 10px; margin-bottom: 10px; }
+        .receipt-logo-img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #f28c28; margin-bottom: 6px; }
+        .receipt-temple-name { font-size: 1rem; font-weight: 800; color: #8d4925; margin: 0; }
+        .receipt-temple-sub { font-size: 0.68rem; color: #777; font-weight: 600; margin-top: 1px; }
+        .receipt-row { display: flex; justify-content: space-between; margin: 8px 0; font-size: 13px; border-bottom: 1px solid #fdfbf7; padding-bottom: 6px; }
+        .receipt-row span:first-child { font-weight: bold; color: #555; }
+        .receipt-row span:last-child { color: #111; font-weight: 800; text-align: right; }
+        
+        .action-row { display: flex; gap: 10px; margin-top: 20px; }
+        .action-btn { flex: 1; padding: 12px; border: none; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-download { background: linear-gradient(135deg, #f28c28, #e65100); color: white; }
+        .btn-share { border: 1.5px solid #c8e6c9; background: #e8f5e9; color: #1b5e20; }
+    </style>
+</head>
+<body>
+
+    <div class="modal-card">
+        <button class="close-btn" onclick="goBackToApp()">&times;</button>
+        
+        <div style="color: #2e7d32; font-size: 40px; margin-bottom: 5px; text-align: center;"><i class="fas fa-check-circle"></i></div>
+        <div style="color: #2e7d32; font-size: 18px; font-weight: bold; margin: 0 0 5px 0; text-align: center;">Donation Successful</div>
+        <div style="font-size: 12px; color: #666; margin: 0 0 15px 0; text-align: center;" id="status-text">Processing your receipt...</div>
+
+        <div class="receipt-card">
+            <div class="receipt-temple-header">
+                <img class="receipt-logo-img" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh89ueri3DvWfVUmM76dyYJSTCLcDC6oYuAT3j-ezAKl5iDeJ97q28vt2MR39RJwL8BGI91we6F4DRj-u7j1EE2NPyQRwFs0HfYcB4HjxZ9VoeUQWGR7GdARSdow00uHqEehsr6gOVDFG15mntfIdNuOrQ_fxAZHCjMWU9kEjzaUMhuN52vsKMA6Tb9Dtx3/s256/1000096788.png" alt="ISKCON Logo">
+                <h3 class="receipt-temple-name">ISKCON BHUVAIKUNTHA</h3>
+                <span class="receipt-temple-sub">Sri Sri Radha Pandharinath Mandir</span>
+            </div>
+            <div class="receipt-row"><span>Seva:</span> <span id="r-seva"></span></div>
+            <div class="receipt-row"><span>Donor Name:</span> <span id="r-name"></span></div>
+            <div class="receipt-row"><span>Mobile Number:</span> <span id="r-phone"></span></div>
+            <div class="receipt-row"><span>Amount Paid:</span> <span id="r-amt" style="color: #2e7d32; font-size: 15px;"></span></div>
+            <div class="receipt-row"><span>Transaction ID:</span> <span id="r-txid" style="font-family: monospace;"></span></div>
+            <div class="receipt-row"><span>Date & Time:</span> <span id="r-time"></span></div>
+        </div>
+
+        <div class="action-row">
+            <button class="action-btn btn-download" onclick="downloadPremiumPDF()">
+                <i class="fas fa-file-pdf"></i> Save PDF
+            </button>
+            <button class="action-btn btn-share" onclick="shareSecureReceipt()">
+                <i class="fas fa-share-nodes"></i> Share
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908",
+            authDomain: "iskcon-bhuvaikuntha.firebaseapp.com",
+            projectId: "iskcon-bhuvaikuntha",
+            storageBucket: "iskcon-bhuvaikuntha.firebasestorage.app",
+            messagingSenderId: "87535383708",
+            appId: "1:87535383708:web:7548e3b7d4c807faafe959"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name') || 'Devotee';
+        const amount = urlParams.get('amount') || '0';
+        const seva = urlParams.get('seva') || 'General Donation';
+        const phone = urlParams.get('phone') || 'N/A';
+        const txId = urlParams.get('transactionId') || '';
+        const pan = urlParams.get('pan') || '';
+        const address = urlParams.get('address') || '';
+        
+        // This is where the user will be redirected when they click close ✖
+        const returnAppUrl = urlParams.get('returnUrl');
+
+        // 🛑 1. UNIVERSAL PHONEPE TRAP KILLER (FOR ANDROID, IPHONE & WEB BROWSER)
+        (function() {
+            // History me fake state lock karo
+            window.history.pushState({ isReceiptPage: true }, "", window.location.href);
+
+            // Jab bhi user phone ka Back button dabaye ya iPhone par swipe kare:
+            window.addEventListener("popstate", function(event) {
+                goBackToApp();
+            });
+        })();
+
+        window.onload = () => {
+            document.getElementById('r-name').innerText = decodeURIComponent(name);
+            document.getElementById('r-amt').innerText = '₹' + amount + '/-';
+            document.getElementById('r-seva').innerText = decodeURIComponent(seva);
+            document.getElementById('r-txid').innerText = txId;
+            document.getElementById('r-phone').innerText = phone;
+            
+            const now = new Date();
+            document.getElementById('r-time').innerText = now.toLocaleDateString('en-IN') + ', ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            if(txId && amount) {
+                syncAndSendWhatsApp();
+            }
+        };
+
+        function syncAndSendWhatsApp() {
+            if (localStorage.getItem('synced_' + txId) === 'true') {
+                document.getElementById('status-text').innerText = "Receipt saved securely.";
+                return;
+            }
+
+            db.collection("donations").doc(txId).set({
+                name: decodeURIComponent(name), amount: Number(amount), seva: decodeURIComponent(seva),
+                paymentId: txId, contact: phone, pan: decodeURIComponent(pan), address: decodeURIComponent(address),
+                date: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                localStorage.setItem('synced_' + txId, 'true');
+                document.getElementById('status-text').innerText = "Receipt saved securely.";
+                
+                // Trigger WhatsApp
+                if(phone && phone !== 'N/A') {
+                    fetch('/api/send-whatsapp-receipt', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            phone: phone, name: decodeURIComponent(name), amount: amount, seva: decodeURIComponent(seva),
+                            transactionId: txId, pan: decodeURIComponent(pan), address: decodeURIComponent(address)
+                        })
+                    });
+                }
+            });
+        }
+
+        function downloadPremiumPDF() {
+            // Generates and downloads the premium PDF directly without corrupting browser history
+            const pdfUrl = `/api/generate-pdf?name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva)}&txId=${txId}&phone=${phone}&date=${Date.now()}&pan=${encodeURIComponent(pan)}&address=${encodeURIComponent(address)}`;
+            
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.target = '_blank';
+            link.download = `Receipt_${txId}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function shareSecureReceipt() {
+            const shareText = `Hare Krishna! 🙏\nI have successfully offered a Seva Donation of ₹${amount} for "${decodeURIComponent(seva)}" at ISKCON Bhuvaikuntha.\n\n• Donor: ${decodeURIComponent(name)}\n• Tx ID: ${txId}\n\nMay the Deities bless you! 🌸`;
+            if (navigator.share) {
+                try { await navigator.share({ title: 'Donation Receipt', text: shareText }); } catch (err) {}
+            } else { alert("Receipt details ready to share!"); }
+        }
+
+        function goBackToApp() {
+            // location.replace se PhonePe ki purani loading history clean ho jati hai
+            if (returnAppUrl && returnAppUrl !== '' && returnAppUrl !== 'null') {
+                window.location.replace(decodeURIComponent(returnAppUrl));
+            } else {
+                window.location.replace('/index.html');
+            }
+        }
+    </script>
+</body>
+</html>
