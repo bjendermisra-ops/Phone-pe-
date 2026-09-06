@@ -20,7 +20,7 @@ export async function onRequest(context) {
 
     try {
         const body = await request.json();
-        const { phone, otp } = body;
+        const { phone, otp, name } = body;
 
         if (!phone || !otp) {
             return new Response(JSON.stringify({ error: "Phone and OTP are required" }), {
@@ -29,7 +29,7 @@ export async function onRequest(context) {
             });
         }
 
-        // 🇮🇳 Ensure 91 prefix for DoubleTick API
+        // 🇮🇳 Clean phone number format (Same as working receipt.js)
         let cleanPhone = phone.toString().trim().replace(/\D/g, '');
         if (cleanPhone.length === 10) {
             cleanPhone = "91" + cleanPhone;
@@ -42,6 +42,7 @@ export async function onRequest(context) {
         const templateName = "app_registration"; 
         const doubleTickUrl = "https://public.doubletick.io/whatsapp/message/template";
         
+        // 🚀 Primary Payload (Standard Body Placeholder)
         const payload = {
             "messages": [
                 {
@@ -53,14 +54,20 @@ export async function onRequest(context) {
                         "templateData": {
                             "body": {
                                 "placeholders": [ String(otp) ]
-                            }
+                            },
+                            "buttons": [
+                                {
+                                    "type": "URL",
+                                    "parameter": String(otp)
+                                }
+                            ]
                         }
                     }
                 }
             ]
         };
 
-        const response = await fetch(doubleTickUrl, {
+        let response = await fetch(doubleTickUrl, {
             method: "POST",
             headers: { 
                 "Authorization": apiKey, 
@@ -69,7 +76,42 @@ export async function onRequest(context) {
             body: JSON.stringify(payload)
         });
 
-        const data = await response.json();
+        let data = await response.json();
+
+        // 🔄 Fallback 1: If Button format failed, try plain body without buttons
+        if (response.status !== 200 && response.status !== 201) {
+            const fallbackPayload = {
+                "messages": [
+                    {
+                        "from": senderNumber,
+                        "to": cleanPhone,
+                        "content": {
+                            "language": "en",
+                            "templateName": templateName,
+                            "templateData": {
+                                "body": {
+                                    "placeholders": [ String(otp) ]
+                                }
+                            }
+                        }
+                    }
+                ]
+            };
+
+            const fallbackRes = await fetch(doubleTickUrl, {
+                method: "POST",
+                headers: { "Authorization": apiKey, "Content-Type": "application/json" },
+                body: JSON.stringify(fallbackPayload)
+            });
+
+            const fallbackData = await fallbackRes.json();
+            if (fallbackRes.status === 200 || fallbackRes.status === 201) {
+                return new Response(JSON.stringify({ status: "success", message: "OTP Sent Successfully!" }), {
+                    status: 200,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            }
+        }
 
         if (response.status === 201 || response.status === 200) {
             return new Response(JSON.stringify({ status: "success", message: "OTP Sent Successfully!" }), {
@@ -77,14 +119,15 @@ export async function onRequest(context) {
                 headers: { ...corsHeaders, "Content-Type": "application/json" }
             });
         } else {
-            return new Response(JSON.stringify({ error: "DoubleTick failed", details: data }), {
-                status: 500,
+            console.error("DoubleTick OTP Error:", data);
+            return new Response(JSON.stringify({ status: "error", error: "DoubleTick failed", details: data }), {
+                status: 200,
                 headers: { ...corsHeaders, "Content-Type": "application/json" }
             });
         }
 
     } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
+        return new Response(JSON.stringify({ status: "error", error: error.message }), {
             status: 500,
             headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
