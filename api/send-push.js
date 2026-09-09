@@ -72,7 +72,6 @@ export default async function handler(req, res) {
                     ...(imageUrl ? { image: String(imageUrl) } : {})
                 }
             },
-
             // 🍏 4. Apple iOS APNs Alert
             apns: {
                 headers: {
