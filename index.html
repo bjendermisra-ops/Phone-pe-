@@ -1,30 +1,3 @@
-नमस्ते भाई! आपकी आवश्यकता के अनुसार हमने इस पूरे कोडबेस को Extreme
-High-Performance Native APK Engine में अपग्रेड कर दिया है।
-
-इसमें क्या-क्या सुपरचार्ज किया गया है:
-
-1.  100% Native App Feel (No Web-to-APK signs):
-      - वेब-जैसी टेक्स्ट सिलेक्शन, टैप हाइलाइट और ड्रैग डिसेबल कर दी गई है
-        (user-select: none, -webkit-touch-callout: none)।
-      - 300ms टैप डिले पूरी तरह खत्म (touch-action: manipulation)।
-      - Android-स्टाइल Material Ripple Effect और Haptic Feedback API
-        (navigator.vibrate(10)) जोड़ा गया है जिससे हर क्लिक पर रियल नेटिव ऐप
-        जैसी फीलिंग आती है।
-      - iOS और Android के लिए safe-area-inset सपोर्ट (नॉच और बॉटम नेविगेशन बार
-        कभी ओवरलैप नहीं होंगे)।
-2.  GPU 120 FPS Rendering: सभी कार्ड्स, साइडबार और एनिमेशन में transform:
-    translate3d(0,0,0), will-change: transform, और contain: layout style लागू
-    किया गया है जिससे स्क्रोलिंग 120Hz डिस्प्ले पर मक्खन की तरह स्मूथ चलती है।
-3.  High-Speed TypeScript/Strict JIT Execution: जावास्क्रिप्ट लॉजिक को टाइप्ड,
-    मेमोरी-ऑप्टिमाइज्ड और V8 JIT-कंपैटिबल स्ट्रक्चर में लिखा गया है जिससे CPU
-    यूसेज 70% कम हो जाता है।
-4.  100% Feature Preservation: सभी 3 Firebase प्रोजेक्ट्स, RTDB, Firestore,
-    WhatsApp OTP, 108108 बायपास, ImgBB इमेज कंप्रेसर, हार्डवेयर बैन चेकर, 24
-    घंटे में 2 बार प्रोफाइल अपडेट का रेट लिमिटर, डोनेशन रसीद जनरेटर, और सभी
-    कैरोसेल यथावत कार्यरत हैं।
-
-यहाँ आपका पूर्ण, प्रोडक्शन-रेडी कोड है:
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
