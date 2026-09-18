@@ -82,7 +82,7 @@
         a { text-decoration: none; color: inherit; }
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 
-        /* 📱 Top Header Bar (Figma Exact Style: Screenshot 3) */
+        /* 📱 Top Header Bar */
         .figma-header { 
             background-color: var(--primary); 
             color: white; 
@@ -125,7 +125,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 1.05rem;
             cursor: pointer;
             transition: var(--transition);
         }
@@ -134,27 +134,60 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        /* Sub-bar / Filters */
+        /* 🌟 GURU VANI vs TEMPLE FILTER TABS */
+        .filter-tabs-bar {
+            max-width: 540px;
+            margin: 0 auto;
+            display: flex;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .filter-tabs-bar::-webkit-scrollbar { display: none; }
+        
+        .filter-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: #F8FAFC;
+            color: var(--text-75);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+        .filter-pill.active {
+            background: var(--primary);
+            color: #FFFFFF;
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(247, 147, 30, 0.3);
+        }
+
+        /* Sub-bar Info */
         .notif-sub-bar {
             max-width: 540px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 16px;
-            background: var(--card-bg);
+            padding: 8px 16px;
+            background: var(--primary-5);
             border-bottom: 1px solid var(--border-color);
-            font-size: 0.76rem;
+            font-size: 0.74rem;
             font-weight: 700;
         }
         .notif-count-badge {
-            background: var(--primary-15);
             color: var(--primary-dark);
-            padding: 3px 10px;
-            border-radius: 20px;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
         .mark-read-text-btn {
             color: var(--primary);
@@ -168,12 +201,12 @@
             color: var(--primary-dark);
         }
 
-        /* 🔔 Notification Feed Container (Figma Screenshot 3) */
+        /* 🔔 Notification Feed Container */
         .notification-feed {
             max-width: 540px;
             margin: 0 auto;
             background: var(--card-bg);
-            min-height: calc(100vh - 120px);
+            min-height: calc(100vh - 160px);
         }
 
         .notif-card {
@@ -190,9 +223,15 @@
             background-color: var(--primary-5);
         }
 
+        /* Distinct Golden Accent for Maharaj / Guru Vani */
+        .notif-card.is-guru {
+            background: linear-gradient(90deg, rgba(254, 243, 199, 0.35) 0%, rgba(255, 255, 255, 0) 100%);
+            border-left: 3.5px solid #F59E0B;
+        }
+
         /* Unread State Highlight */
         .notif-card.unread {
-            background-color: rgba(247, 147, 30, 0.04);
+            background-color: rgba(247, 147, 30, 0.05);
         }
         .unread-indicator-dot {
             width: 8px;
@@ -200,8 +239,8 @@
             background-color: var(--primary);
             border-radius: 50%;
             position: absolute;
-            top: 18px;
-            right: 16px;
+            top: 16px;
+            right: 14px;
             box-shadow: 0 0 8px rgba(247, 147, 30, 0.8);
         }
 
@@ -214,31 +253,46 @@
             height: 44px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1px solid var(--border-color);
+            border: 1.5px solid var(--border-color);
             background: var(--primary-15);
-        }
-        .notif-avatar-placeholder {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--primary-15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 1.1rem;
         }
 
         .notif-content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            padding-right: 12px;
+            padding-right: 10px;
         }
+
+        /* Category Tag Badges */
+        .notif-tag {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 4px;
+            width: fit-content;
+        }
+        .tag-guru {
+            background: #FEF3C7;
+            color: #B45309;
+            border: 1px solid #FDE68A;
+        }
+        .tag-temple {
+            background: var(--primary-15);
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-25);
+        }
+
         .notif-title {
             font-size: 0.92rem;
-            font-weight: 700;
-            color: var(--primary-dark);
+            font-weight: 800;
+            color: var(--text-500);
             margin: 0 0 3px 0;
             line-height: 1.3;
         }
@@ -258,7 +312,7 @@
             width: 100%;
             border-radius: 12px;
             overflow: hidden;
-            margin: 6px 0 12px 0;
+            margin: 4px 0 10px 0;
             border: 1px solid var(--border-color);
             background: var(--primary-5);
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -271,9 +325,6 @@
             display: block;
             transition: transform 0.3s ease;
         }
-        .notif-media-container:active img {
-            transform: scale(1.02);
-        }
 
         .notif-action-row {
             display: flex;
@@ -283,11 +334,11 @@
             margin-top: 2px;
         }
 
-        /* Figma Action Button (Screenshot 3) */
+        /* Figma Action Button */
         .notif-btn {
             background: var(--primary);
             color: #FFFFFF !important;
-            padding: 6px 18px;
+            padding: 6px 16px;
             font-size: 0.72rem;
             font-weight: 700;
             border-radius: 20px;
@@ -326,8 +377,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin: 0 auto 16px auto;
+            border: 1.5px solid var(--primary-25);
         }
 
         .loader-box {
@@ -387,19 +439,32 @@
 </head>
 <body>
 
-    <!-- 📱 Top Header Bar (Figma Exact Style: Screenshot 3) -->
+    <!-- 📱 Top Header Bar -->
     <header class="figma-header">
         <a href="index.html" class="back-btn" aria-label="Go Back"><i class="fas fa-chevron-left"></i></a>
-        <h1 class="header-title">Notification</h1>
+        <h1 class="header-title">Notification Center</h1>
         <button class="header-action-btn" id="markAllReadBtn" title="Mark All as Read" onclick="markAllNotificationsAsRead()">
             <i class="fas fa-check-double"></i>
         </button>
     </header>
 
+    <!-- 👑 Filter Tabs (All / Guru Vani / Temple Broadcast) -->
+    <div class="filter-tabs-bar">
+        <div class="filter-pill active" id="tabAll" onclick="setFilterMode('ALL')">
+            <i class="fas fa-bell"></i> All Updates
+        </div>
+        <div class="filter-pill" id="tabGuru" onclick="setFilterMode('GURU')">
+            <i class="fas fa-crown text-warning"></i> Guru Vani (महाराज)
+        </div>
+        <div class="filter-pill" id="tabTemple" onclick="setFilterMode('TEMPLE')">
+            <i class="fas fa-gopuram text-primary"></i> Temple Broadcast
+        </div>
+    </div>
+
     <!-- Sub-bar Info -->
     <div class="notif-sub-bar">
         <span class="notif-count-badge" id="notifBadgeCount">
-            <i class="fas fa-bell"></i> 0 Updates
+            <i class="fas fa-bell"></i> Loading...
         </span>
         <span class="mark-read-text-btn" onclick="refreshNotifications()">
             <i class="fas fa-rotate"></i> Refresh
@@ -433,13 +498,11 @@
         }
         const db = firebase.firestore();
 
-        // 2. PRODUCTION DEVICE INSTALL TIMESTAMP MANAGEMENT
-        // यह डिवाइस के पहली बार ऐप डाउनलोड/ओपन करने का समय नोट करता है
+        // 2. DEVICE INSTALL TIME STORAGE (Filters out prehistoric mock clutter)
         function getDeviceInstallTimestamp() {
             const STORAGE_KEY = "iskcon_bhuvaikuntha_device_install_time";
             let installTime = localStorage.getItem(STORAGE_KEY);
             if (!installTime) {
-                // पहली बार डाउनलोड किया: अभी का समय सेव करें
                 installTime = Date.now().toString();
                 localStorage.setItem(STORAGE_KEY, installTime);
             }
@@ -465,76 +528,15 @@
         }
 
         function markAllNotificationsAsRead() {
-            if (window.currentActiveNotifications && window.currentActiveNotifications.length > 0) {
-                const readIds = window.currentActiveNotifications.map(n => n.id);
+            if (window.masterNotificationPool && window.masterNotificationPool.length > 0) {
+                const readIds = window.masterNotificationPool.map(n => n.id);
                 localStorage.setItem("bhuvaikuntha_read_notifs", JSON.stringify(readIds));
                 if (navigator.vibrate) navigator.vibrate(30);
-                renderNotificationsList(window.currentActiveNotifications);
+                filterAndRender();
             }
         }
 
-        // 4. DEFAULT SEED ANNOUNCEMENTS (Figma Screenshot 3 Reference)
-        // यदि यूजर का इंस्टाल टाइम नया है, तो केवल इंस्टाल के बाद का ही दिखेगा।
-        const deviceInstallTime = getDeviceInstallTimestamp();
-
-        const defaultNotifications = [
-            {
-                id: "def_welcome_new",
-                title: "Welcome to ISKCON Bhuvaikuntha",
-                body: "Hare Krishna! Welcome to the sacred transcendental gateway of Sri Sri Pandharinath.",
-                actionText: "Darshan",
-                actionUrl: "darshan.html",
-                imageUrl: "images/qa_deity_seva.webp",
-                timestamp: deviceInstallTime // ठीक इंस्टाल के समय का पावन वेलकम नोटिफिकेशन
-            },
-            {
-                id: "def_1",
-                title: "Today’s Sringar Darshan",
-                body: "View the divine darshan of Sri Sri Pandharinath.",
-                actionText: "View Darshan",
-                actionUrl: "darshan.html",
-                imageUrl: "images/qa_deity_seva.webp",
-                timestamp: Date.now() - (2 * 60 * 1000) // 2 mins ago
-            },
-            {
-                id: "def_2",
-                title: "Annadan Today",
-                body: "Serve prasadam to 500 devotees with your seva",
-                actionText: "Contribute",
-                actionUrl: "seva.html?cat=Annadan",
-                imageUrl: "images/qa_annadan_seva.webp",
-                timestamp: Date.now() - (5 * 60 * 60 * 1000) // 5 hours ago
-            },
-            {
-                id: "def_3",
-                title: "Sanctum Completed",
-                body: "Watch the foundation milestone video.",
-                actionText: "Watch",
-                actionUrl: "progress.html",
-                imageUrl: "",
-                timestamp: Date.now() - (24 * 60 * 60 * 1000) // 24 hours ago
-            },
-            {
-                id: "def_4",
-                title: "New Scheme Brochure",
-                body: "View Brochure of Garbhagriha seva details.",
-                actionText: "View Scheme",
-                actionUrl: "media.html",
-                imageUrl: "",
-                timestamp: Date.now() - (24 * 60 * 60 * 1000) // 24 hours ago
-            },
-            {
-                id: "def_5",
-                title: "Kartik Maas Begins",
-                body: "Join the month of Damodar — the most auspicious month for seva and devotion.",
-                actionText: "Offer Seva",
-                actionUrl: "seva.html",
-                imageUrl: "",
-                timestamp: Date.now() - (48 * 60 * 60 * 1000) // 2 days ago
-            }
-        ];
-
-        // 5. TIME AGO FORMATTER
+        // 4. TIME AGO FORMATTER
         function formatTimeAgo(timestamp) {
             if (!timestamp) return "Just now";
             const now = Date.now();
@@ -554,7 +556,7 @@
             return new Date(timestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
         }
 
-        // 6. RESOLVE ACTION BUTTON TEXT & URL
+        // 5. RESOLVE ACTION BUTTON TEXT & URL
         function resolveButtonDetails(title, actionUrl) {
             let text = "View Now";
             let url = actionUrl || "index.html";
@@ -580,7 +582,7 @@
             return { text, url };
         }
 
-        // 7. IMAGE MODAL PREVIEW
+        // 6. IMAGE MODAL PREVIEW
         function openImageModal(imgSrc, event) {
             if (event) event.stopPropagation();
             const modal = document.getElementById("imageModal");
@@ -596,7 +598,6 @@
             if (modal) modal.classList.remove("active");
         }
 
-        // 8. CARD CLICK HANDLER
         function handleCardClick(notifId, targetUrl) {
             markNotificationAsRead(notifId);
             if (targetUrl) {
@@ -604,20 +605,49 @@
             }
         }
 
-        // 9. RENDER NOTIFICATIONS FEED (PRODUCTION READY WITH IMAGES & FILTER)
+        // 7. CURRENT FILTER STATE
+        let activeFilter = 'ALL'; // 'ALL', 'GURU', 'TEMPLE'
+        window.masterNotificationPool = [];
+
+        function setFilterMode(mode) {
+            activeFilter = mode;
+            document.getElementById("tabAll").classList.toggle("active", mode === 'ALL');
+            document.getElementById("tabGuru").classList.toggle("active", mode === 'GURU');
+            document.getElementById("tabTemple").classList.toggle("active", mode === 'TEMPLE');
+            filterAndRender();
+        }
+
+        function filterAndRender() {
+            let filtered = [...window.masterNotificationPool];
+            if (activeFilter === 'GURU') {
+                filtered = filtered.filter(n => n.isGuru === true);
+            } else if (activeFilter === 'TEMPLE') {
+                filtered = filtered.filter(n => n.isGuru !== true);
+            }
+            renderNotificationsList(filtered);
+        }
+
+        // 8. RENDER NOTIFICATIONS FEED (NO OM SIGN - 100% ISKCON LOGO / BELL)
         function renderNotificationsList(items) {
-            window.currentActiveNotifications = items || [];
             const container = document.getElementById("notification-list");
             const badgeCount = document.getElementById("notifBadgeCount");
             const readIds = getReadNotificationIds();
 
             if (!items || items.length === 0) {
                 if (badgeCount) badgeCount.innerHTML = `<i class="fas fa-bell-slash"></i> 0 Updates`;
+                
+                let emptyMsg = "Stay tuned for divine temple updates and sacred darshan broadcasts.";
+                if (activeFilter === 'GURU') {
+                    emptyMsg = "No personal messages from your revered Maharaj at the moment.";
+                } else if (activeFilter === 'TEMPLE') {
+                    emptyMsg = "No general temple broadcasts at the moment.";
+                }
+
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon"><i class="fas fa-bell-slash"></i></div>
                         <h4 style="font-weight: 800; font-size: 1rem; color: var(--text-500); margin: 0 0 6px 0;">No Notifications Yet</h4>
-                        <p style="font-size: 0.8rem; color: var(--text-50); margin: 0;">Stay tuned for divine temple updates and sacred darshan broadcasts sent to your device.</p>
+                        <p style="font-size: 0.8rem; color: var(--text-50); margin: 0;">${emptyMsg}</p>
                     </div>
                 `;
                 return;
@@ -633,24 +663,32 @@
                 const isRead = readIds.includes(item.id);
                 const timeText = formatTimeAgo(item.timestamp);
                 const btnInfo = resolveButtonDetails(item.title, item.actionUrl);
-                const hasImg = item.imageUrl && item.imageUrl.trim() !== "";
+                const hasImg = item.imageUrl && item.imageUrl.trim().startsWith('http');
+                
+                // ISKCON Icon: Guru photo, or logo.webp, never Om sign
+                const avatarSrc = (item.avatarUrl && item.avatarUrl.trim().startsWith('http')) 
+                    ? item.avatarUrl 
+                    : (hasImg ? item.imageUrl : 'images/logo.webp');
 
                 html += `
-                    <div class="notif-card ${!isRead ? 'unread' : ''}" onclick="handleCardClick('${item.id}', '${btnInfo.url}')">
+                    <div class="notif-card ${item.isGuru ? 'is-guru' : ''} ${!isRead ? 'unread' : ''}" onclick="handleCardClick('${item.id}', '${btnInfo.url}')">
                         ${!isRead ? '<div class="unread-indicator-dot" title="Unread"></div>' : ''}
                         
                         <div class="notif-avatar-box">
-                            ${hasImg 
-                                ? `<img src="${item.imageUrl}" class="notif-avatar" onerror="this.outerHTML='<div class=\\'notif-avatar-placeholder\\'><i class=\\'fas fa-om\\'></i></div>'" alt="Icon">`
-                                : `<div class="notif-avatar-placeholder"><i class="fas fa-om"></i></div>`
-                            }
+                            <img src="${avatarSrc}" class="notif-avatar" onerror="this.src='images/logo.webp'" alt="ISKCON Icon">
                         </div>
                         
                         <div class="notif-content">
+                            <!-- Category Badge -->
+                            ${item.isGuru 
+                                ? `<span class="notif-tag tag-guru"><i class="fas fa-crown text-warning"></i> ${item.sender || 'Maharaj Blessings'}</span>`
+                                : `<span class="notif-tag tag-temple"><i class="fas fa-gopuram text-primary"></i> ISKCON Temple Broadcast</span>`
+                            }
+
                             <h3 class="notif-title">${item.title}</h3>
                             <p class="notif-desc">${item.body}</p>
 
-                            <!-- Production Ready Rich Image Media Show -->
+                            <!-- Rich Banner Image -->
                             ${hasImg ? `
                                 <div class="notif-media-container" onclick="openImageModal('${item.imageUrl}', event)">
                                     <img src="${item.imageUrl}" alt="${item.title}" loading="lazy" onerror="this.parentElement.style.display='none'">
@@ -669,7 +707,7 @@
             container.innerHTML = html;
         }
 
-        // 10. REALTIME FIRESTORE LISTENER & PRODUCTION FILTER (AFTER APP INSTALL)
+        // 9. REALTIME FIRESTORE SYNC (NO HARDCODED FAKE DEMO CLUTTER)
         let unsubscribeGlobal = null;
         let unsubscribeLeader = null;
 
@@ -687,97 +725,100 @@
         async function initRealtimeNotifications() {
             const installTimestamp = getDeviceInstallTimestamp();
             
-            // Clean up any existing listeners
             if (unsubscribeGlobal) unsubscribeGlobal();
             if (unsubscribeLeader) unsubscribeLeader();
 
-            // Default notifications filtered strictly by install time:
-            // जो नोटिफिकेशन ऐप डाउनलोड होने के बाद के हैं केवल वही रहेंगे
-            let initialFilteredDefaults = defaultNotifications.filter(n => {
-                return (n.timestamp >= (installTimestamp - 60000)); // 1 min buffer
-            });
-
-            // If empty, keep the welcome notification
-            if (initialFilteredDefaults.length === 0) {
-                const welcomeNotif = defaultNotifications.find(n => n.id === "def_welcome_new");
-                if (welcomeNotif) initialFilteredDefaults.push(welcomeNotif);
-            }
-
-            // Resolve connected leader if any
+            // Resolve connected leader strictly 10 digits
             let userLeaderId = "";
+            let guruName = "Revered Maharaj";
             const rawProfile = localStorage.getItem("devoteeProfile");
             if (rawProfile) {
-                try { userLeaderId = JSON.parse(rawProfile).assignedLeaderId || ""; } catch(e){}
+                try { 
+                    const parsed = JSON.parse(rawProfile);
+                    userLeaderId = String(parsed.assignedLeaderId || "").replace(/\D/g, '').slice(-10);
+                    if (parsed.assignedLeaderName) guruName = parsed.assignedLeaderName;
+                } catch(e){}
+            }
+
+            let liveBroadcasts = [];
+            let leaderNotifs = [];
+
+            function mergeAndStore() {
+                const all = [...leaderNotifs, ...liveBroadcasts];
+                const uniqueMap = new Map();
+                all.forEach(item => uniqueMap.set(item.id, item));
+                const finalList = Array.from(uniqueMap.values());
+                
+                // Sort chronologically (newest first)
+                finalList.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                window.masterNotificationPool = finalList;
+                filterAndRender();
             }
 
             try {
-                // A. Listen to Global Broadcasts (Only those sent AFTER device install)
+                // A. Real Global Temple Broadcasts (Ordered by sentAt, only recent real ones)
                 unsubscribeGlobal = db.collection("global_broadcasts")
-                    .where("sentAt", ">=", installTimestamp)
                     .orderBy("sentAt", "desc")
-                    .limit(25)
+                    .limit(20)
                     .onSnapshot(snapshot => {
-                        let liveBroadcasts = [];
+                        liveBroadcasts = [];
                         snapshot.forEach(doc => {
                             const data = doc.data();
-                            liveBroadcasts.push({
-                                id: doc.id,
-                                title: data.title || "Temple Broadcast",
-                                body: data.body || "",
-                                actionUrl: data.actionUrl || "index.html",
-                                imageUrl: data.imageUrl || data.bannerUrl || "",
-                                timestamp: data.sentAt || Date.now()
-                            });
+                            const sent = data.sentAt || data.createdAt || Date.now();
+                            // Filter out ancient history prior to install
+                            if (sent >= (installTimestamp - 86400000)) { // 24h grace window
+                                liveBroadcasts.push({
+                                    id: doc.id,
+                                    title: data.title || "Temple Update",
+                                    body: data.body || "",
+                                    actionUrl: data.actionUrl || "index.html",
+                                    imageUrl: data.imageUrl || data.bannerUrl || "",
+                                    avatarUrl: "images/logo.webp",
+                                    timestamp: sent,
+                                    isGuru: false,
+                                    sender: data.sender || "Temple HQ"
+                                });
+                            }
                         });
-
-                        // Merge with install-time-valid defaults
-                        let all = [...liveBroadcasts, ...initialFilteredDefaults];
-                        // Deduplicate by ID
-                        const uniqueMap = new Map();
-                        all.forEach(item => uniqueMap.set(item.id, item));
-                        let finalList = Array.from(uniqueMap.values());
-
-                        finalList.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                        renderNotificationsList(finalList);
+                        mergeAndStore();
                     }, err => {
-                        console.warn("Firestore listener fallback:", err);
-                        renderNotificationsList(initialFilteredDefaults);
+                        console.warn("Global broadcast listener warning:", err);
                     });
 
-                // B. Listen to Targeted Maharaj Notifications if connected (Only AFTER device install)
+                // B. Real Targeted Guru / Maharaj Notifications (Only for HIS disciples!)
                 if (userLeaderId) {
                     unsubscribeLeader = db.collection("targeted_notifications")
-                      .where("leaderId", "==", userLeaderId)
-                      .where("createdAt", ">=", installTimestamp)
-                      .orderBy("createdAt", "desc")
-                      .limit(15)
-                      .onSnapshot(snap => {
-                          let leaderNotifs = [];
-                          snap.forEach(doc => {
-                              const d = doc.data();
-                              leaderNotifs.push({
-                                  id: doc.id,
-                                  title: `🙏 ${d.leaderName || 'Maharaj'}: ${d.title}`,
-                                  body: d.body || "",
-                                  actionUrl: d.actionUrl || "seva.html",
-                                  imageUrl: d.imageUrl || "images/guru_lokanath_swami.webp",
-                                  timestamp: d.createdAt || Date.now()
-                              });
-                          });
-
-                          let currentItems = window.currentActiveNotifications || initialFilteredDefaults;
-                          let merged = [...leaderNotifs, ...currentItems];
-                          const uniqueMap = new Map();
-                          merged.forEach(item => uniqueMap.set(item.id, item));
-                          let finalList = Array.from(uniqueMap.values());
-                          finalList.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                          renderNotificationsList(finalList);
-                      }, () => {});
+                        .where("leaderId", "in", [userLeaderId, "91" + userLeaderId, "+91" + userLeaderId])
+                        .onSnapshot(snap => {
+                            leaderNotifs = [];
+                            snap.forEach(doc => {
+                                const d = doc.data();
+                                const created = d.sentAt || d.createdAt || Date.now();
+                                if (created >= (installTimestamp - 86400000)) {
+                                    leaderNotifs.push({
+                                        id: doc.id,
+                                        title: d.title || "Spiritual Message",
+                                        body: d.body || "",
+                                        actionUrl: d.actionUrl || "seva.html",
+                                        imageUrl: d.imageUrl || "",
+                                        avatarUrl: d.leaderPhoto || "images/guru_lokanath_swami.webp",
+                                        timestamp: created,
+                                        isGuru: true,
+                                        sender: d.leaderName || guruName
+                                    });
+                                }
+                            });
+                            mergeAndStore();
+                        }, err => {
+                            console.warn("Targeted notifications listener warning:", err);
+                        });
+                } else {
+                    mergeAndStore();
                 }
 
             } catch (e) {
                 console.error("Notification initialization error:", e);
-                renderNotificationsList(initialFilteredDefaults);
+                renderNotificationsList([]);
             }
         }
 
