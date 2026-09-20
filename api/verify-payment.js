@@ -20,11 +20,11 @@ export default async function handler(req, res) {
 
         const cleanTxId = payment_id.trim();
 
-        // PhonePe V2 Sandbox Credentials
-        const clientId = "ISKCONISONLINE_260731175";
-        const clientSecret = "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
+        // 🔑 Real PhonePe V2 Production Credentials
+        const clientId = "SU2608031047283544010005";
+        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const clientVersion = 1;
-        const merchantId = "ISKCONISONLINE";
+        const merchantId = "SU2608031047283544010005";
 
         const tokenPayload = new URLSearchParams();
         tokenPayload.append("client_id", clientId);
@@ -34,9 +34,9 @@ export default async function handler(req, res) {
 
         let accessToken = null;
 
-        // --- STEP 1: Attempt OAuth Token Generation via pg-sandbox ---
+        // --- STEP 1: OAuth Token via Production Server ---
         try {
-            const tokenUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
+            const tokenUrl = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
             const tokenResponse = await fetch(tokenUrl, {
                 method: "POST",
                 headers: {
@@ -48,13 +48,17 @@ export default async function handler(req, res) {
             const tokenData = await tokenResponse.json();
             if (tokenResponse.status === 200 && tokenData.access_token) {
                 accessToken = tokenData.access_token;
+            } else {
+                console.error("Verify Token Error:", tokenData);
             }
-        } catch (err) {}
+        } catch (err) {
+            console.error("Verify Token Fetch Error:", err);
+        }
 
-        // --- STEP 1.5: If pg-sandbox fails, fallback to apphub UAT server ---
+        // Fallback Token URL
         if (!accessToken) {
             try {
-                const fallbackTokenUrl = "https://api-preprod.phonepe.com/apis/apphub/v1/oauth/token";
+                const fallbackTokenUrl = "https://api.phonepe.com/apis/apphub/v1/oauth/token";
                 const fallbackResponse = await fetch(fallbackTokenUrl, {
                     method: "POST",
                     headers: {
@@ -74,8 +78,8 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: "Failed to generate status check OAuth token." });
         }
 
-        // STEP 2: Call V2 Sandbox Status Check API securely (No 'pg/' inside URL in Sandbox) [6.3.6]
-        const statusUrl = `https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/${cleanTxId}/status`;
+        // --- STEP 2: Real Production Status Check API ---
+        const statusUrl = `https://api.phonepe.com/apis/pg/checkout/v2/order/${cleanTxId}/status`;
 
         const response = await fetch(statusUrl, {
             method: "GET",
@@ -88,7 +92,7 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        // PhonePe V2 returns COMPLETED or SUCCESS status [6.3.3]
+        // PhonePe V2 returns COMPLETED or SUCCESS status
         if (response.status === 200 && (data.state === "COMPLETED" || data.state === "SUCCESS")) {
             return res.status(200).json({ 
                 status: 'success', 
