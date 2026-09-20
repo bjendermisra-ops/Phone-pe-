@@ -30,10 +30,12 @@ export async function onRequest(context) {
         }
 
         const cleanTxId = String(rawTxId).trim();
-        const clientId = "ISKCONISONLINE_260731175";
-        const clientSecret = "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
+
+        // 🔑 Real PhonePe V2 Production Credentials
+        const clientId = "SU2608031047283544010005";
+        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const clientVersion = 1;
-        const merchantId = "ISKCONISONLINE";
+        const merchantId = "SU2608031047283544010005";
 
         const tokenPayload = new URLSearchParams();
         tokenPayload.append("client_id", clientId);
@@ -43,8 +45,9 @@ export async function onRequest(context) {
 
         let accessToken = null;
 
+        // Step 1: Real Production Token Endpoint
         try {
-            const tokenUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
+            const tokenUrl = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
             const tokenResponse = await fetch(tokenUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -54,12 +57,17 @@ export async function onRequest(context) {
             const tokenData = await tokenResponse.json();
             if (tokenResponse.status === 200 && tokenData.access_token) {
                 accessToken = tokenData.access_token;
+            } else {
+                console.error("Token Error:", tokenData);
             }
-        } catch (err) {}
+        } catch (err) {
+            console.error("Token Fetch Error:", err);
+        }
 
+        // Fallback Token URL (sirf agar primary endpoint fail ho)
         if (!accessToken) {
             try {
-                const fallbackTokenUrl = "https://api-preprod.phonepe.com/apis/apphub/v1/oauth/token";
+                const fallbackTokenUrl = "https://api.phonepe.com/apis/apphub/v1/oauth/token";
                 const fallbackResponse = await fetch(fallbackTokenUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -79,7 +87,8 @@ export async function onRequest(context) {
             });
         }
 
-        const statusUrl = `https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/${cleanTxId}/status`;
+        // Step 2: Real Production Status Check API
+        const statusUrl = `https://api.phonepe.com/apis/pg/checkout/v2/order/${cleanTxId}/status`;
         const response = await fetch(statusUrl, {
             method: "GET",
             headers: {
