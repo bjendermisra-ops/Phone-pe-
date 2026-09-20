@@ -29,8 +29,9 @@ export async function onRequest(context) {
             });
         }
 
-        const clientId = "ISKCONISONLINE_260731175";
-        const clientSecret = "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
+        // 🔑 Real PhonePe Live Credentials
+        const clientId = "SU2608031047283544010005";
+        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const clientVersion = 1;
 
         const transactionId = "TXN" + Date.now();
@@ -42,6 +43,7 @@ export async function onRequest(context) {
         
         const redirectUrl = `https://${host}/receipt.html?status=success&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva || 'Seva Donation')}&phone=${phone}&transactionId=${transactionId}&pan=${encodeURIComponent(pan || '')}&address=${encodeURIComponent(address || '')}&returnUrl=${encodedReturn}`;
 
+        // 1. Generate Real Production OAuth Token
         const tokenPayload = new URLSearchParams();
         tokenPayload.append("client_id", clientId);
         tokenPayload.append("client_version", clientVersion.toString());
@@ -49,10 +51,11 @@ export async function onRequest(context) {
         tokenPayload.append("grant_type", "client_credentials");
 
         let accessToken = null;
-        const tokenHost = "https://api-preprod.phonepe.com/apis/pg-sandbox";
+        
+        // Production Token URL
+        const tokenUrl = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
 
         try {
-            const tokenUrl = `${tokenHost}/v1/oauth/token`;
             const tokenResponse = await fetch(tokenUrl, { 
                 method: "POST", 
                 headers: { "Content-Type": "application/x-www-form-urlencoded" }, 
@@ -61,12 +64,17 @@ export async function onRequest(context) {
             const tokenData = await tokenResponse.json();
             if (tokenResponse.status === 200 && tokenData.access_token) { 
                 accessToken = tokenData.access_token; 
+            } else {
+                console.error("Token Error:", tokenData);
             }
-        } catch (err) {}
+        } catch (err) {
+            console.error("Token Fetch Error:", err);
+        }
 
+        // Fallback Token URL (sirf agar pehla fail ho)
         if (!accessToken) {
             try {
-                const fallbackTokenUrl = "https://api-preprod.phonepe.com/apis/apphub/v1/oauth/token";
+                const fallbackTokenUrl = "https://api.phonepe.com/apis/apphub/v1/oauth/token";
                 const fallbackResponse = await fetch(fallbackTokenUrl, { 
                     method: "POST", 
                     headers: { "Content-Type": "application/x-www-form-urlencoded" }, 
@@ -86,7 +94,8 @@ export async function onRequest(context) {
             });
         }
 
-        const payUrl = `${tokenHost}/checkout/v2/pay`;
+        // 2. Real Production Pay URL
+        const payUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
         const paymentPayload = {
             merchantOrderId: transactionId,
             amount: amountInPaise,
@@ -121,6 +130,7 @@ export async function onRequest(context) {
                 headers: { ...corsHeaders, "Content-Type": "application/json" }
             });
         } else {
+            console.error("PhonePe Pay Error:", payData);
             return new Response(JSON.stringify({ error: payData.message || "PhonePe Pay-link failed." }), {
                 status: 500,
                 headers: { ...corsHeaders, "Content-Type": "application/json" }
