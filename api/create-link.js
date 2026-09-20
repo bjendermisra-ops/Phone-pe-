@@ -17,16 +17,16 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Required fields missing: name, amount, phone' }); 
         }
 
-        // 🔑 PhonePe V2 Credentials (Sandbox or Production)
-        const isProduction = process.env.PHONEPE_ENV === "PRODUCTION";
-        const clientId = process.env.PHONEPE_CLIENT_ID || "ISKCONISONLINE_260731175";
-        const clientSecret = process.env.PHONEPE_CLIENT_SECRET || "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
+        // 🔑 PhonePe V2 Credentials (Real / Production)
+        const isProduction = process.env.PHONEPE_ENV ? process.env.PHONEPE_ENV === "PRODUCTION" : true; 
+        const clientId = process.env.PHONEPE_CLIENT_ID || "SU2608031047283544010005";
+        const clientSecret = process.env.PHONEPE_CLIENT_SECRET || "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const clientVersion = 1;
 
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
 
-        // 🎯 Safe Receipt Return URL (Bypasses PhonePe back-loop)
+        // 🎯 Return URL
         const host = req.headers.host || 'phone-pe-pi.vercel.app';
         const protocol = host.includes('localhost') ? 'http' : 'https';
         const encodedReturn = returnUrl ? encodeURIComponent(returnUrl) : encodeURIComponent(`${protocol}://${host}/index.html`);
@@ -41,10 +41,13 @@ export default async function handler(req, res) {
         tokenPayload.append("grant_type", "client_credentials");
 
         let accessToken = null;
-        const tokenHost = isProduction ? "https://api.phonepe.com/apis/pg" : "https://api-preprod.phonepe.com/apis/pg-sandbox";
+        
+        // Correct Production & Sandbox Endpoints
+        const tokenUrl = isProduction 
+            ? "https://api.phonepe.com/apis/identity-manager/v1/oauth/token" 
+            : "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
 
         try {
-            const tokenUrl = `${tokenHost}/v1/oauth/token`;
             const tokenResponse = await fetch(tokenUrl, { 
                 method: "POST", 
                 headers: { "Content-Type": "application/x-www-form-urlencoded" }, 
@@ -53,12 +56,20 @@ export default async function handler(req, res) {
             const tokenData = await tokenResponse.json();
             if (tokenResponse.status === 200 && tokenData.access_token) { 
                 accessToken = tokenData.access_token; 
+            } else {
+                console.error("Token API Failed:", tokenData);
             }
-        } catch (err) {}
+        } catch (err) {
+            console.error("Token Fetch Error:", err);
+        }
 
+        // Fallback Token URL (sirf agar pehla fail ho)
         if (!accessToken) {
             try {
-                const fallbackTokenUrl = isProduction ? "https://api.phonepe.com/apis/apphub/v1/oauth/token" : "https://api-preprod.phonepe.com/apis/apphub/v1/oauth/token";
+                const fallbackTokenUrl = isProduction 
+                    ? "https://api.phonepe.com/apis/apphub/v1/oauth/token" 
+                    : "https://api-preprod.phonepe.com/apis/apphub/v1/oauth/token";
+                    
                 const fallbackResponse = await fetch(fallbackTokenUrl, { 
                     method: "POST", 
                     headers: { "Content-Type": "application/x-www-form-urlencoded" }, 
@@ -75,8 +86,11 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: "Failed to generate PhonePe PG OAuth Token." }); 
         }
 
-        // 2. Create Universal Android + iOS Checkout Pay Link
-        const payUrl = `${tokenHost}/checkout/v2/pay`;
+        // 2. Create Universal Checkout Pay Link
+        const payUrl = isProduction 
+            ? "https://api.phonepe.com/apis/pg/checkout/v2/pay" 
+            : "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay";
+
         const paymentPayload = {
             merchantOrderId: transactionId,
             amount: amountInPaise,
