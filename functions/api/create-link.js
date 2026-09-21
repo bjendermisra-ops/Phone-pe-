@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 export default async function handler(req, res) {
     const origin = req.headers.origin || '*';
     if (origin !== '*') {
@@ -13,16 +15,16 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     try {
-        const { name, amount, phone, email, seva, pan, address } = req.body;
+        const { name, amount, phone, email, seva, pan, address, returnUrl } = req.body;
 
         if (!name || !amount || !phone) { 
             return res.status(400).json({ error: 'Required fields missing: name, amount, phone' }); 
         }
 
-        // 🔑 Live Production Credentials
-        const clientId = "SU2608031047283544010005";
-        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
-        const clientVersion = 1;
+        // 🔑 Real Production Option 1 (Salt Key & Index)
+        const merchantId = "ISKCONISONLINE";
+        const saltKey = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
+        const saltIndex = 1;
 
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
@@ -31,95 +33,85 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Minimum amount must be at least ₹1' });
         }
 
+        let cleanPhone = phone.toString().trim().replace(/\D/g, '');
+        if (cleanPhone.length > 10) cleanPhone = cleanPhone.slice(-10);
+
         const host = req.headers.host || 'phone-pe-pi.vercel.app';
         const protocol = req.headers['x-forwarded-proto'] || 'https';
-        
-        // Clean Standard Redirect URL
-        const redirectUrl = `${protocol}://${host}/receipt.html?orderId=${transactionId}&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva || 'General Donation')}&phone=${phone}&pan=${encodeURIComponent(pan || '')}&address=${encodeURIComponent(address || '')}`;
+        const redirectUrl = `${protocol}://${host}/receipt.html?orderId=${transactionId}&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva || 'General Donation')}&phone=${cleanPhone}&pan=${encodeURIComponent(pan || '')}&address=${encodeURIComponent(address || '')}`;
 
-        // 1. Generate Live OAuth Token (Standard Identity Manager)
-        const tokenPayload = new URLSearchParams({
-            client_id: clientId,
-            client_version: clientVersion.toString(),
-            client_secret: clientSecret,
-            grant_type: "client_credentials"
-        });
-
-        let accessToken = null;
-        try {
-            const tokenRes = await fetch("https://api.phonepe.com/apis/identity-manager/v1/oauth/token", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: tokenPayload.toString()
-            });
-            const tokenJson = await tokenRes.json();
-            if (tokenRes.ok && tokenJson.access_token) {
-                accessToken = tokenJson.access_token;
-            }
-        } catch (e) {}
-
-        if (!accessToken) {
-            try {
-                const tokenRes2 = await fetch("https://api.phonepe.com/apis/pg/v1/oauth/token", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: tokenPayload.toString()
-                });
-                const tokenJson2 = await tokenRes2.json();
-                if (tokenRes2.ok && tokenJson2.access_token) {
-                    accessToken = tokenJson2.access_token;
-                }
-            } catch (e) {}
-        }
-
-        if (!accessToken) {
-            return res.status(500).json({ error: "PhonePe OAuth Token generation failed." });
-        }
-
-        // 2. Official PhonePe Checkout V2 (The exact one that opened ISKCONBHUVAIKUNTHA)
-        const payUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
-        const paymentPayload = {
-            merchantOrderId: transactionId,
+        // 1. PhonePe Option 1 (V1 Standard Payload)
+        const payload = {
+            merchantId: merchantId,
+            merchantTransactionId: transactionId,
+            merchantUserId: "MUID" + cleanPhone,
             amount: amountInPaise,
-            expireAfter: 1200,
-            metaInfo: {
-                udf1: String(name).slice(0, 50),
-                udf2: String(phone).slice(0, 15),
-                udf3: String(seva || "General Seva").slice(0, 50)
-            },
-            paymentFlow: { 
-                type: "PG_CHECKOUT", 
-                message: "ISKCON Seva Donation",
-                merchantUrls: { 
-                    redirectUrl: redirectUrl 
-                } 
+            redirectUrl: redirectUrl,
+            redirectMode: "REDIRECT",
+            callbackUrl: redirectUrl,
+            mobileNumber: cleanPhone,
+            paymentInstrument: {
+                type: "PAY_PAGE"
             }
         };
 
-        const payResponse = await fetch(payUrl, {
+        // 2. Base64 Encode & Generate SHA256 Checksum (No OAuth needed!)
+        const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
+        const stringToHash = base64Payload + "/pg/v1/pay" + saltKey;
+        const sha256Hash = crypto.createHash('sha256').update(stringToHash).digest('hex');
+        const checksum = `${sha256Hash}###${saltIndex}`;
+
+        // 3. Official Production Endpoint
+        const prodUrl = "https://api.phonepe.com/apis/hermes/pg/v1/pay";
+
+        let response = await fetch(prodUrl, {
             method: "POST",
-            headers: { 
-                "Content-Type": "application/json", 
-                "Authorization": `O-Bearer ${accessToken}`
+            headers: {
+                "Content-Type": "application/json",
+                "X-VERIFY": checksum,
+                "accept": "application/json"
             },
-            body: JSON.stringify(paymentPayload)
+            body: JSON.stringify({ request: base64Payload })
         });
 
-        const payData = await payResponse.json();
+        let data = await response.json();
 
-        if (payResponse.ok && payData.redirectUrl) {
+        // Fallback: Agar Sub-merchant ID (SU...) mapped ho
+        if (!response.ok && data.code === "MERCHANT_NOT_FOUND") {
+            payload.merchantId = "SU2608031047283544010005";
+            const subBase64 = Buffer.from(JSON.stringify(payload)).toString('base64');
+            const subHash = crypto.createHash('sha256').update(subBase64 + "/pg/v1/pay" + saltKey).digest('hex');
+            const subChecksum = `${subHash}###${saltIndex}`;
+
+            response = await fetch(prodUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-VERIFY": subChecksum,
+                    "accept": "application/json"
+                },
+                body: JSON.stringify({ request: subBase64 })
+            });
+            data = await response.json();
+        }
+
+        const paymentUrl = data?.data?.instrumentResponse?.redirectInfo?.url;
+
+        if (response.ok && paymentUrl) {
             return res.status(200).json({ 
-                payment_url: payData.redirectUrl,
+                payment_url: paymentUrl,
                 orderId: transactionId
             });
         } else {
+            console.error("PhonePe V1 Error:", data);
             return res.status(500).json({ 
-                error: payData.message || "Checkout creation failed", 
-                details: payData 
+                error: data.message || "Payment initiation failed", 
+                details: data 
             });
         }
 
     } catch (error) {
+        console.error("Handler Error:", error);
         return res.status(500).json({ error: error.message });
     }
 }
