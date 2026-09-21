@@ -15,98 +15,85 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     try {
-        const { name, amount, phone, email, seva, pan, address, returnUrl } = req.body;
+        const { name, amount, phone, seva } = req.body;
 
         if (!name || !amount || !phone) { 
             return res.status(400).json({ error: 'Required fields missing: name, amount, phone' }); 
         }
 
-        // 🔑 Real Production Option 1 (Salt Key & Index)
-        const merchantId = "ISKCONISONLINE";
         const saltKey = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const saltIndex = 1;
-
         const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
-
-        if (isNaN(amountInPaise) || amountInPaise < 100) {
-            return res.status(400).json({ error: 'Minimum amount must be at least ₹1' });
-        }
 
         let cleanPhone = phone.toString().trim().replace(/\D/g, '');
         if (cleanPhone.length > 10) cleanPhone = cleanPhone.slice(-10);
 
         const host = req.headers.host || 'phone-pe-pi.vercel.app';
         const protocol = req.headers['x-forwarded-proto'] || 'https';
-        const redirectUrl = `${protocol}://${host}/receipt.html?orderId=${transactionId}&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva || 'General Donation')}&phone=${cleanPhone}&pan=${encodeURIComponent(pan || '')}&address=${encodeURIComponent(address || '')}`;
+        const redirectUrl = `${protocol}://${host}/receipt.html?orderId=${transactionId}&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva || 'General Donation')}&phone=${cleanPhone}`;
 
-        // 1. PhonePe Option 1 (V1 Standard Payload)
-        const payload = {
-            merchantId: merchantId,
-            merchantTransactionId: transactionId,
-            merchantUserId: "MUID" + cleanPhone,
-            amount: amountInPaise,
-            redirectUrl: redirectUrl,
-            redirectMode: "REDIRECT",
-            callbackUrl: redirectUrl,
-            mobileNumber: cleanPhone,
-            paymentInstrument: {
-                type: "PAY_PAGE"
-            }
-        };
+        // Function to call PhonePe V1 with a given merchantId
+        async function callPhonePe(mId) {
+            const payload = {
+                merchantId: mId,
+                merchantTransactionId: transactionId,
+                merchantUserId: "MUID" + cleanPhone,
+                amount: amountInPaise,
+                redirectUrl: redirectUrl,
+                redirectMode: "REDIRECT",
+                callbackUrl: redirectUrl,
+                mobileNumber: cleanPhone,
+                paymentInstrument: {
+                    type: "PAY_PAGE"
+                }
+            };
 
-        // 2. Base64 Encode & Generate SHA256 Checksum (No OAuth needed!)
-        const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
-        const stringToHash = base64Payload + "/pg/v1/pay" + saltKey;
-        const sha256Hash = crypto.createHash('sha256').update(stringToHash).digest('hex');
-        const checksum = `${sha256Hash}###${saltIndex}`;
+            const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
+            const stringToHash = base64Payload + "/pg/v1/pay" + saltKey;
+            const sha256Hash = crypto.createHash('sha256').update(stringToHash).digest('hex');
+            const checksum = `${sha256Hash}###${saltIndex}`;
 
-        // 3. Official Production Endpoint
-        const prodUrl = "https://api.phonepe.com/apis/hermes/pg/v1/pay";
-
-        let response = await fetch(prodUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-VERIFY": checksum,
-                "accept": "application/json"
-            },
-            body: JSON.stringify({ request: base64Payload })
-        });
-
-        let data = await response.json();
-
-        // Fallback: Agar Sub-merchant ID (SU...) mapped ho
-        if (!response.ok && data.code === "MERCHANT_NOT_FOUND") {
-            payload.merchantId = "SU2608031047283544010005";
-            const subBase64 = Buffer.from(JSON.stringify(payload)).toString('base64');
-            const subHash = crypto.createHash('sha256').update(subBase64 + "/pg/v1/pay" + saltKey).digest('hex');
-            const subChecksum = `${subHash}###${saltIndex}`;
-
-            response = await fetch(prodUrl, {
+            const response = await fetch("https://api.phonepe.com/apis/hermes/pg/v1/pay", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-VERIFY": subChecksum,
+                    "X-VERIFY": checksum,
+                    "X-MERCHANT-ID": mId,
                     "accept": "application/json"
                 },
-                body: JSON.stringify({ request: subBase64 })
+                body: JSON.stringify({ request: base64Payload })
             });
-            data = await response.json();
+
+            const data = await response.json().catch(() => ({}));
+            return { status: response.status, ok: response.ok, data };
         }
 
-        const paymentUrl = data?.data?.instrumentResponse?.redirectInfo?.url;
+        // Try Attempt 1: ISKCONISONLINE
+        let result = await callPhonePe("ISKCONISONLINE");
 
-        if (response.ok && paymentUrl) {
+        // Try Attempt 2: SU2608031047283544010005 (if first fails)
+        if (!result.ok) {
+            const result2 = await callPhonePe("SU2608031047283544010005");
+            if (result2.ok) {
+                result = result2;
+            }
+        }
+
+        const paymentUrl = result.data?.data?.instrumentResponse?.redirectInfo?.url;
+
+        if (result.ok && paymentUrl) {
             return res.status(200).json({ 
                 payment_url: paymentUrl,
-                orderId: transactionId
+                orderId: transactionId 
             });
         } else {
-            console.error("PhonePe V1 Error:", data);
+            console.error("PhonePe V1 Fail:", result);
+            // Show exact PhonePe response inside the alert popup
+            const exactMsg = result.data?.message || result.data?.code || "Unknown Error";
             return res.status(500).json({ 
-                error: data.message || "Payment initiation failed", 
-                details: data 
+                error: `PhonePe [${result.status}]: ${result.data?.code || ''} - ${exactMsg}`,
+                raw: result.data 
             });
         }
 
