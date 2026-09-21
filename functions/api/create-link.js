@@ -7,7 +7,7 @@ export default async function handler(req, res) {
         res.setHeader('Access-Control-Allow-Origin', '*');
     }
     res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-MERCHANT-ID');
 
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -19,9 +19,10 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Required fields missing: name, amount, phone' }); 
         }
 
-        // 🔑 Live Approved Paylink Credentials
-        const clientId = process.env.PHONEPE_CLIENT_ID || "SU2608031047283544010005";
-        const clientSecret = process.env.PHONEPE_CLIENT_SECRET || "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
+        // 🔑 Live Production Credentials (Explicitly assigned)
+        const clientId = "SU2608031047283544010005";
+        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
+        const merchantId = "ISKCONISONLINE";
         const clientVersion = 1;
 
         const transactionId = "TXN" + Date.now();
@@ -41,17 +42,16 @@ export default async function handler(req, res) {
         const protocol = req.headers['x-forwarded-proto'] || 'https';
         const redirectUrl = `${protocol}://${host}/receipt.html?orderId=${transactionId}&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva || 'General Donation')}&phone=${phone}&pan=${encodeURIComponent(pan || '')}&address=${encodeURIComponent(address || '')}`;
 
-        // 1. Generate Live OAuth Token
-        const tokenPayload = new URLSearchParams({
-            client_id: clientId,
-            client_version: clientVersion.toString(),
-            client_secret: clientSecret,
-            grant_type: "client_credentials"
-        });
+        // 1. Generate Live OAuth Token (Form URL-Encoded)
+        const tokenPayload = new URLSearchParams();
+        tokenPayload.append("client_id", clientId);
+        tokenPayload.append("client_version", clientVersion.toString());
+        tokenPayload.append("client_secret", clientSecret);
+        tokenPayload.append("grant_type", "client_credentials");
 
         const tokenEndpoints = [
-            "https://api.phonepe.com/apis/identity-manager/v1/oauth/token",
             "https://api.phonepe.com/apis/pg/v1/oauth/token",
+            "https://api.phonepe.com/apis/identity-manager/v1/oauth/token",
             "https://api.phonepe.com/apis/apphub/v1/oauth/token"
         ];
 
@@ -72,14 +72,14 @@ export default async function handler(req, res) {
         }
 
         if (!accessToken) {
-            return res.status(500).json({ error: "Failed to generate PhonePe PG OAuth Token." });
+            return res.status(500).json({ error: "Failed to authenticate with PhonePe Production. Check Client Secret." });
         }
 
-        // 2. Official PhonePe Paylinks API (The exact service active on your account)
+        // 2. Official PhonePe Paylinks API with Mandatory Sub-Merchant Header
         const payUrl = "https://api.phonepe.com/apis/pg/paylinks/v1/pay";
         const paymentPayload = {
             merchantOrderId: transactionId,
-            description: `Seva Donation for ${seva || 'ISKCON Bhuvaikuntha'}`.slice(0, 50),
+            description: `Donation: ${seva || 'ISKCON'}`.slice(0, 50),
             amount: amountInPaise,
             paymentFlow: {
                 type: "PAYLINK",
@@ -106,14 +106,13 @@ export default async function handler(req, res) {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json", 
-                "Authorization": `O-Bearer ${accessToken}`
+                "Authorization": `O-Bearer ${accessToken}`,
+                "X-MERCHANT-ID": merchantId // ✅ MANDATORY FOR SU... CLIENTS
             },
             body: JSON.stringify(paymentPayload)
         });
 
         const payData = await payResponse.json();
-
-        // Paylink returns paylinkUrl or redirectUrl
         const finalUrl = payData.paylinkUrl || payData.redirectUrl;
 
         if (payResponse.ok && finalUrl) {
@@ -123,9 +122,9 @@ export default async function handler(req, res) {
                 phonepeOrderId: payData.orderId
             });
         } else {
-            console.error("PhonePe Paylink Error:", payData);
+            console.error("PhonePe Error:", payData);
             return res.status(500).json({ 
-                error: payData.message || "PhonePe Pay-link generation failed.",
+                error: payData.message || "Paylink generation failed.",
                 details: payData 
             });
         }
