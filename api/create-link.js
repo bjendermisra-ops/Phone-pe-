@@ -7,22 +7,21 @@ export default async function handler(req, res) {
         res.setHeader('Access-Control-Allow-Origin', '*');
     }
     res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-MERCHANT-ID');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     try {
-        const { name, amount, phone, email, seva, pan, address, returnUrl } = req.body;
+        const { name, amount, phone, email, seva, pan, address } = req.body;
 
         if (!name || !amount || !phone) { 
             return res.status(400).json({ error: 'Required fields missing: name, amount, phone' }); 
         }
 
-        // 🔑 Live Production Credentials (Explicitly assigned)
+        // 🔑 Live Production Credentials
         const clientId = "SU2608031047283544010005";
         const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
-        const merchantId = "ISKCONISONLINE";
         const clientVersion = 1;
 
         const transactionId = "TXN" + Date.now();
@@ -32,73 +31,68 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Minimum amount must be at least ₹1' });
         }
 
-        // Clean Indian Mobile Number with Country Code (+91)
-        let rawPhone = phone.toString().trim().replace(/\D/g, '');
-        if (rawPhone.length === 10) rawPhone = "91" + rawPhone;
-        else if (rawPhone.startsWith("0")) rawPhone = "91" + rawPhone.substring(1);
-        const formattedPhone = "+" + rawPhone;
-
         const host = req.headers.host || 'phone-pe-pi.vercel.app';
         const protocol = req.headers['x-forwarded-proto'] || 'https';
+        
+        // Clean Standard Redirect URL
         const redirectUrl = `${protocol}://${host}/receipt.html?orderId=${transactionId}&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva || 'General Donation')}&phone=${phone}&pan=${encodeURIComponent(pan || '')}&address=${encodeURIComponent(address || '')}`;
 
-        // 1. Generate Live OAuth Token (Form URL-Encoded)
-        const tokenPayload = new URLSearchParams();
-        tokenPayload.append("client_id", clientId);
-        tokenPayload.append("client_version", clientVersion.toString());
-        tokenPayload.append("client_secret", clientSecret);
-        tokenPayload.append("grant_type", "client_credentials");
-
-        const tokenEndpoints = [
-            "https://api.phonepe.com/apis/pg/v1/oauth/token",
-            "https://api.phonepe.com/apis/identity-manager/v1/oauth/token",
-            "https://api.phonepe.com/apis/apphub/v1/oauth/token"
-        ];
+        // 1. Generate Live OAuth Token (Standard Identity Manager)
+        const tokenPayload = new URLSearchParams({
+            client_id: clientId,
+            client_version: clientVersion.toString(),
+            client_secret: clientSecret,
+            grant_type: "client_credentials"
+        });
 
         let accessToken = null;
-        for (const endpoint of tokenEndpoints) {
+        try {
+            const tokenRes = await fetch("https://api.phonepe.com/apis/identity-manager/v1/oauth/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: tokenPayload.toString()
+            });
+            const tokenJson = await tokenRes.json();
+            if (tokenRes.ok && tokenJson.access_token) {
+                accessToken = tokenJson.access_token;
+            }
+        } catch (e) {}
+
+        if (!accessToken) {
             try {
-                const tokenRes = await fetch(endpoint, {
+                const tokenRes2 = await fetch("https://api.phonepe.com/apis/pg/v1/oauth/token", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: tokenPayload.toString()
                 });
-                const tokenJson = await tokenRes.json();
-                if (tokenRes.ok && tokenJson.access_token) {
-                    accessToken = tokenJson.access_token;
-                    break;
+                const tokenJson2 = await tokenRes2.json();
+                if (tokenRes2.ok && tokenJson2.access_token) {
+                    accessToken = tokenJson2.access_token;
                 }
             } catch (e) {}
         }
 
         if (!accessToken) {
-            return res.status(500).json({ error: "Failed to authenticate with PhonePe Production. Check Client Secret." });
+            return res.status(500).json({ error: "PhonePe OAuth Token generation failed." });
         }
 
-        // 2. Official PhonePe Paylinks API with Mandatory Sub-Merchant Header
-        const payUrl = "https://api.phonepe.com/apis/pg/paylinks/v1/pay";
+        // 2. Official PhonePe Checkout V2 (The exact one that opened ISKCONBHUVAIKUNTHA)
+        const payUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
         const paymentPayload = {
             merchantOrderId: transactionId,
-            description: `Donation: ${seva || 'ISKCON'}`.slice(0, 50),
             amount: amountInPaise,
-            paymentFlow: {
-                type: "PAYLINK",
-                customerDetails: {
-                    name: String(name).slice(0, 50),
-                    phoneNumber: formattedPhone
-                },
-                notificationChannels: {
-                    SMS: false,
-                    EMAIL: false
-                },
-                merchantUrls: {
-                    redirectUrl: redirectUrl
-                }
-            },
+            expireAfter: 1200,
             metaInfo: {
                 udf1: String(name).slice(0, 50),
                 udf2: String(phone).slice(0, 15),
                 udf3: String(seva || "General Seva").slice(0, 50)
+            },
+            paymentFlow: { 
+                type: "PG_CHECKOUT", 
+                message: "ISKCON Seva Donation",
+                merchantUrls: { 
+                    redirectUrl: redirectUrl 
+                } 
             }
         };
 
@@ -106,31 +100,26 @@ export default async function handler(req, res) {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json", 
-                "Authorization": `O-Bearer ${accessToken}`,
-                "X-MERCHANT-ID": merchantId // ✅ MANDATORY FOR SU... CLIENTS
+                "Authorization": `O-Bearer ${accessToken}`
             },
             body: JSON.stringify(paymentPayload)
         });
 
         const payData = await payResponse.json();
-        const finalUrl = payData.paylinkUrl || payData.redirectUrl;
 
-        if (payResponse.ok && finalUrl) {
+        if (payResponse.ok && payData.redirectUrl) {
             return res.status(200).json({ 
-                payment_url: finalUrl,
-                orderId: transactionId,
-                phonepeOrderId: payData.orderId
+                payment_url: payData.redirectUrl,
+                orderId: transactionId
             });
         } else {
-            console.error("PhonePe Error:", payData);
             return res.status(500).json({ 
-                error: payData.message || "Paylink generation failed.",
+                error: payData.message || "Checkout creation failed", 
                 details: payData 
             });
         }
 
     } catch (error) {
-        console.error("Handler Error:", error);
         return res.status(500).json({ error: error.message });
     }
 }
