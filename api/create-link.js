@@ -13,32 +13,30 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     try {
-        const { name, amount, phone, email, seva, pan, address, returnUrl } = req.body;
+        const { name, amount, phone, seva } = req.body;
 
         if (!name || !amount || !phone) { 
             return res.status(400).json({ error: 'Required fields missing: name, amount, phone' }); 
         }
 
-        // 🔑 Real Production Credentials
         const clientId = process.env.PHONEPE_CLIENT_ID || "SU2608031047283544010005";
         const clientSecret = process.env.PHONEPE_CLIENT_SECRET || "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const merchantId = process.env.PHONEPE_MERCHANT_ID || "ISKCONISONLINE";
         const clientVersion = 1;
 
-        // Transaction ID (Unique & Clean alphanumeric)
-        const transactionId = "TXN" + Date.now() + Math.floor(1000 + Math.random() * 9000);
+        // Transaction ID: Alphanumeric only (max 35 chars)
+        const transactionId = "TXN" + Date.now();
         const amountInPaise = Math.round(parseFloat(amount) * 100);
 
-        if (isNaN(amountInPaise) || amountInPaise <= 0) {
-            return res.status(400).json({ error: 'Invalid amount.' });
+        if (isNaN(amountInPaise) || amountInPaise < 100) {
+            return res.status(400).json({ error: 'Minimum amount must be at least ₹1 (100 paise)' });
         }
 
         const host = req.headers.host || 'phone-pe-pi.vercel.app';
-        const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
-        const encodedReturn = returnUrl ? encodeURIComponent(returnUrl) : encodeURIComponent(`${protocol}://${host}/index.html`);
+        const protocol = req.headers['x-forwarded-proto'] || 'https';
         
-        // IMPORTANT: We do NOT pass status=success here. Verification script checks real status.
-        const redirectUrl = `${protocol}://${host}/receipt.html?orderId=${transactionId}&name=${encodeURIComponent(name)}&amount=${amount}&seva=${encodeURIComponent(seva || 'Seva Donation')}&phone=${phone}&pan=${encodeURIComponent(pan || '')}&address=${encodeURIComponent(address || '')}&returnUrl=${encodedReturn}`;
+        // Clean Redirect URL (Only orderId)
+        const redirectUrl = `${protocol}://${host}/receipt.html?orderId=${transactionId}`;
 
         // 1. Get Live OAuth Token
         const tokenPayload = new URLSearchParams({
@@ -71,23 +69,22 @@ export default async function handler(req, res) {
         }
 
         if (!accessToken) {
-            return res.status(500).json({ error: "Failed to generate PhonePe Live OAuth Token. Check credentials or network." });
+            return res.status(500).json({ error: "Failed to generate PhonePe PG OAuth Token." });
         }
 
-        // 2. Create Live Checkout Pay Link (Production V2)
+        // 2. Strict PhonePe V2 Payload (Notice: metaInfo with udf1/udf2, NOT metaData)
         const payUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
         const paymentPayload = {
             merchantOrderId: transactionId,
             amount: amountInPaise,
             expireAfter: 1200,
-            metaData: {
-                donorName: name,
-                donorPhone: phone,
-                sevaType: seva || "General Seva"
+            metaInfo: {
+                udf1: String(name).slice(0, 50),
+                udf2: String(phone).slice(0, 15),
+                udf3: String(seva || "General Seva").slice(0, 50)
             },
             paymentFlow: { 
                 type: "PG_CHECKOUT", 
-                message: `Seva Donation for ${seva || 'ISKCON Bhuvaikuntha'}`,
                 merchantUrls: { 
                     redirectUrl: redirectUrl 
                 } 
@@ -109,7 +106,7 @@ export default async function handler(req, res) {
         if (payResponse.ok && payData.redirectUrl) {
             return res.status(200).json({ 
                 payment_url: payData.redirectUrl,
-                orderId: transactionId 
+                orderId: transactionId
             });
         } else {
             console.error("PhonePe Pay Error:", payData);
@@ -118,7 +115,6 @@ export default async function handler(req, res) {
                 details: payData 
             });
         }
-
     } catch (error) {
         console.error("Handler Error:", error);
         return res.status(500).json({ error: error.message });
