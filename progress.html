@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Construction Progress - ISKCON Bhuvaikuntha</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #F7931E; --primary-dark: #E07E0D; --bg: #FDFBF7; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding-bottom: 40px; color: #1A202C; }
+        .app-header { background: var(--primary); color: white; padding: 14px 16px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .back-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding-right: 10px; }
+        .header-title { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 800; margin: 0; }
+        .progress-card { background: white; border-radius: 16px; overflow: hidden; margin: 16px 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(247,147,30,0.15); }
+        .img-wrapper { width: 100%; height: 220px; background: #FFF0DE; position: relative; overflow: hidden; }
+        .progress-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .progress-body { padding: 16px; }
+        .progress-bar-custom { height: 8px; background: #E2E8F0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { height: 100%; background: var(--primary); border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <button class="back-btn" onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i></button>
+        <h1 class="header-title">Temple Construction Progress</h1>
+    </header>
+
+    <div class="container-fluid px-0">
+        <!-- Card 1: Main Temple Foundation -->
+        <div class="progress-card">
+            <div class="img-wrapper">
+                <img 
+                    src="https://i.ibb.co/DDSY5hQt/images-3.jpg" 
+                    referrerpolicy="no-referrer"
+                    class="progress-img" 
+                    alt="Main Sanctum Foundation"
+                    onerror="this.onerror=null; this.src='images/slider_cement.webp';"
+                >
+            </div>
+            <div class="progress-body">
+                <span class="badge bg-success mb-2">Phase 1 Completed</span>
+                <h4 style="font-family:'Cinzel', serif; font-weight:800; margin:0 0 6px 0;">Main Temple Foundation & Pillars</h4>
+                <p style="font-size:0.8rem; color:#718096; line-height:1.5;">Sanctum sanctorum plinth and base pillar structural casting successfully completed near the sacred Chandrabhaga river bank.</p>
+                <div class="progress-bar-custom"><div class="progress-fill" style="width: 85%;"></div></div>
+                <div class="d-flex justify-content-between small fw-bold text-muted"><span>Progress: 85%</span><span>Phase 1</span></div>
+            </div>
+        </div>
+
+        <!-- Card 2: Anna Daan Hall & Goshala -->
+        <div class="progress-card">
+            <div class="img-wrapper">
+                <img 
+                    src="https://i.ibb.co/C59t6KYV/Prasadam-Hall.jpg" 
+                    referrerpolicy="no-referrer"
+                    class="progress-img" 
+                    alt="Prasadam Hall & Goshala"
+                    onerror="this.onerror=null; this.src='images/slider_sqft.webp';"
+                >
+            </div>
+            <div class="progress-body">
+                <span class="badge bg-warning text-dark mb-2">In Progress</span>
+                <h4 style="font-family:'Cinzel', serif; font-weight:800; margin:0 0 6px 0;">Anna Daan Hall & Goshala Shelter</h4>
+                <p style="font-size:0.8rem; color:#718096; line-height:1.5;">Pilgrim prasadam dining hall and protected sanctuary shelter for indigenous Gir cows currently under construction.</p>
+                <div class="progress-bar-custom"><div class="progress-fill" style="width: 55%;"></div></div>
+                <div class="d-flex justify-content-between small fw-bold text-muted"><span>Progress: 55%</span><span>Phase 2</span></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
