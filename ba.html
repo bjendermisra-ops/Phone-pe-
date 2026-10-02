@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FF9933">
+    <title>Leader Command HQ - ISKCON Bhuvaikuntha</title>
+
+    <!-- Enterprise Fonts & Icons (Strictly Zero Om Symbols) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+    <style>
+/* ISKCON Bhuvaikuntha - Leader Command HQ Enterprise Theme
+   Enterprise theme. */
+:root{
+  --primary:#F7931E;--primary-dark:#D37407;--primary-light:#FFF5EA;
+  --dark-sidebar:#0A0C12;--dark-surface:#121520;--dark-card:#1B202E;
+  --bg-body:#F3F5F9;--card-bg:#FFFFFF;
+  --text-main:#0F172A;--text-muted:#64748B;
+  --border-color:#E5E9F0;--border-dark:#1F2433;
+  --badge-green:#DCFCE7;--badge-green-txt:#15803D;
+  --badge-red:#FEE2E2;--badge-red-txt:#B91C1C;
+  --badge-gold:#FEF3C7;--badge-gold-txt:#B45309;
+  --accent-blue:#3B82F6;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.04),0 2px 8px rgba(15,23,42,.04);
+  --shadow-md:0 8px 28px rgba(15,23,42,.08);
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg-body);
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--text-main);margin:0;padding:0;overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;
+}
+/* Cinzel hata diya (slow + outdated look); saare inline Cinzel headings clean font me */
+[style*="Cinzel"]{font-family:'Plus Jakarta Sans',system-ui,sans-serif!important;letter-spacing:-.01em}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:#94A3B8}
+
+/* ===== LOCK SCREEN ===== */
+.auth-lock-overlay{
+  position:fixed;inset:0;width:100vw;height:100vh;z-index:999999;
+  display:flex;align-items:center;justify-content:center;padding:16px;
+  background:
+    radial-gradient(900px 500px at 15% 10%,rgba(247,147,30,.18),transparent 60%),
+    radial-gradient(700px 500px at 90% 90%,rgba(59,130,246,.12),transparent 60%),
+    #07080C;
+}
+.auth-lock-card{
+  background:#fff;border-radius:24px;padding:38px 30px;width:100%;max-width:430px;text-align:center;
+  box-shadow:0 40px 80px -20px rgba(0,0,0,.8),0 0 0 1px rgba(247,147,30,.25);
+}
+
+/* ===== SHELL ===== */
+.admin-wrapper{display:flex;min-height:100vh;width:100%}
+
+/* ===== SIDEBAR ===== */
+.admin-sidebar{
+  width:272px;flex-shrink:0;display:flex;flex-direction:column;justify-content:space-between;
+  position:sticky;top:0;height:100vh;z-index:1050;color:#F8FAFC;
+  background:linear-gradient(180deg,#0D1018 0%,#080A10 100%);
+  border-right:1px solid var(--border-dark);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-brand{
+  padding:22px 20px;display:flex;align-items:center;gap:14px;
+  border-bottom:1px solid var(--border-dark);
+  background:linear-gradient(135deg,rgba(247,147,30,.10),transparent 70%);
+}
+.sidebar-brand>i{
+  width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem!important;color:#1A1203!important;
+  background:linear-gradient(135deg,#FFC24D,#F7931E);box-shadow:0 6px 18px rgba(247,147,30,.35);
+}
+.sidebar-brand img{width:44px;height:44px;border-radius:12px;object-fit:cover}
+.sidebar-brand h5{margin:0;font-weight:800;font-size:1.02rem;color:#FFE3A8;letter-spacing:.08em}
+.sidebar-menu{list-style:none;padding:16px 12px;margin:0;overflow-y:auto;flex-grow:1}
+.sidebar-menu li{margin-bottom:4px}
+.sidebar-menu .nav-link{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;
+  color:#8D9AB0;font-weight:700;font-size:.84rem;text-decoration:none;cursor:pointer;
+  border-left:3px solid transparent;transition:background .2s,color .2s,transform .2s;
+}
+.sidebar-menu .nav-link i{font-size:1rem;width:22px;text-align:center;opacity:.9}
+.sidebar-menu .nav-link:hover{background:rgba(255,255,255,.05);color:#FFD27A;transform:translateX(2px)}
+.sidebar-menu .nav-link.active{
+  color:#FFB020;border-left-color:var(--primary);
+  background:linear-gradient(90deg,rgba(247,147,30,.22),rgba(247,147,30,.03));
+}
+
+/* ===== MAIN + TOPBAR ===== */
+.admin-main{flex-grow:1;display:flex;flex-direction:column;min-width:0;background:var(--bg-body)}
+.admin-topbar{
+  position:sticky;top:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px;background:rgba(255,255,255,.85);
+  backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--border-color);
+}
+.admin-content{padding:24px;flex-grow:1;max-width:1600px;width:100%;margin:0 auto}
+.tab-pane-content{animation:paneIn .28s ease both}
+@keyframes paneIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ===== CARDS ===== */
+.neu-card{
+  background:var(--card-bg);border-radius:var(--radius);border:1px solid var(--border-color);
+  box-shadow:var(--shadow-sm);padding:22px;margin-bottom:22px;
+}
+.stat-widget{
+  position:relative;overflow:hidden;background:#fff;border-radius:var(--radius);
+  border:1px solid var(--border-color);padding:18px 18px 18px 22px;
+  display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm);
+  transition:transform .2s,box-shadow .2s;
+}
+.stat-widget::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--primary),#FFC24D)}
+.stat-widget:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.stat-icon-box{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+
+/* ===== LEADERBOARD ===== */
+.leaderboard-card{
+  position:relative;overflow:hidden;background:#fff;border-radius:var(--radius);
+  border:1px solid var(--border-color);padding:18px;box-shadow:var(--shadow-sm);
+  transition:transform .25s,box-shadow .25s,border-color .25s;
+}
+.leaderboard-card:hover{border-color:var(--primary);box-shadow:0 12px 30px rgba(247,147,30,.18);transform:translateY(-3px)}
+.leaderboard-rank-badge{position:absolute;top:12px;right:12px;font-size:.7rem;font-weight:800;padding:4px 10px;border-radius:20px}
+
+/* ===== FORMS ===== */
+.neu-input,.neu-select,.neu-textarea{
+  width:100%;padding:11px 14px;margin-bottom:12px;background:#F8FAFC;
+  border:1.5px solid var(--border-color);border-radius:11px;
+  font-size:.87rem;font-weight:600;color:var(--text-main);outline:none;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.neu-input::placeholder,.neu-textarea::placeholder{color:#A0AEC0;font-weight:500}
+.neu-input:focus,.neu-select:focus,.neu-textarea:focus{
+  border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(247,147,30,.14);
+}
+.filter-chip-bar{
+  display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;padding:14px 16px;margin-bottom:18px;
+  background:#F8FAFC;border:1px solid var(--border-color);border-radius:14px;
+}
+
+/* ===== BUTTONS ===== */
+.neu-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;border:none;
+  padding:12px 20px;border-radius:11px;font-weight:800;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;
+  color:#fff!important;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  box-shadow:0 6px 18px rgba(247,147,30,.28);transition:transform .15s,box-shadow .2s,opacity .2s;
+}
+.neu-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(247,147,30,.36)}
+.neu-btn:active{transform:scale(.97)}
+.neu-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-secondary-custom{
+  display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:10px;
+  background:#fff;color:#475569!important;border:1px solid var(--border-color);
+  font-weight:700;font-size:.78rem;box-shadow:var(--shadow-sm);transition:all .2s;
+}
+.btn-secondary-custom:hover{background:#F1F5F9;color:#0F172A!important;border-color:#CBD5E1}
+
+/* ===== PILLS ===== */
+.action-pill{
+  display:inline-flex;align-items:center;gap:4px;padding:7px 10px;border:none;border-radius:9px;
+  font-size:.74rem;font-weight:800;cursor:pointer;text-decoration:none;transition:transform .15s,filter .15s;
+}
+.action-pill:hover{transform:translateY(-1px);filter:brightness(.95)}
+.pill-approve{background:var(--badge-green);color:var(--badge-green-txt)}
+.pill-block{background:var(--badge-red);color:var(--badge-red-txt)}
+.pill-edit{background:#E0E7FF;color:#4338CA}
+.pill-delete{background:#FEE2E2;color:#DC2626}
+.pill-wa{background:#DCFCE7;color:#15803D}
+.badge{font-weight:700;letter-spacing:.02em;border-radius:8px}
+
+/* ===== TABLES ===== */
+.custom-table-container{border-radius:14px;overflow:auto;max-height:70vh;border:1px solid var(--border-color);background:#fff}
+.custom-table{width:100%;border-collapse:separate;border-spacing:0;margin:0;min-width:760px}
+.custom-table th{
+  position:sticky;top:0;z-index:2;background:#F8FAFC;color:#475569;white-space:nowrap;
+  font-weight:800;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:13px 16px;border-bottom:1.5px solid var(--border-color);
+}
+.custom-table td{padding:13px 16px;border-bottom:1px solid #EEF1F6;font-size:.85rem;font-weight:600;vertical-align:middle}
+.custom-table tbody tr{transition:background .15s}
+.custom-table tbody tr:nth-child(even) td{background:#FCFDFE}
+.custom-table tbody tr:hover td{background:#FFF8EE}
+.currency-font{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:800}
+
+/* ===== MODALS ===== */
+.modal-content{border-radius:20px!important;box-shadow:0 30px 70px rgba(15,23,42,.35)}
+.modal-backdrop.show{opacity:.55}
+
+/* ===== MOBILE ===== */
+.mobile-menu-btn{display:none}
+.sidebar-backdrop{display:none;position:fixed;inset:0;width:100vw;height:100vh;background:rgba(5,7,12,.65);z-index:1040;backdrop-filter:blur(3px)}
+.sidebar-backdrop.show{display:block}
+@media (max-width:991px){
+  .mobile-menu-btn{display:block;background:none;border:none;font-size:1.3rem;color:#1E293B}
+  .admin-sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);box-shadow:20px 0 50px rgba(0,0,0,.5)}
+  .admin-sidebar.show{transform:translateX(0)}
+  .admin-topbar{padding:10px 14px}
+  .admin-content{padding:14px}
+  .neu-card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== LEADER OVERRIDES ===== */
+:root{--primary:#FF9933;--primary-dark:#E67E00;--primary-light:#FFF5EA;--bg-body:#FDFBF7}
+.goal-container{position:relative;overflow:hidden;border-radius:18px;padding:22px 24px;margin-bottom:22px;color:#fff;border:1px solid var(--border-dark);
+  background:radial-gradient(600px 220px at 100% 0,rgba(255,153,51,.24),transparent 60%),linear-gradient(135deg,#0F1117,#1E2433);box-shadow:0 14px 34px rgba(15,23,42,.22)}
+.goal-bar-wrap{height:14px;background:rgba(255,255,255,.12);border-radius:20px;overflow:hidden;margin:12px 0 8px}
+.goal-bar-fill{position:relative;height:100%;border-radius:20px;background:linear-gradient(90deg,#FBBF24,#FF9933,#10B981);transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.goal-bar-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:translateX(-100%);animation:ldShine 2.4s infinite}
+@keyframes ldShine{to{transform:translateX(100%)}}
+.top-donor-card{transition:transform .2s,box-shadow .2s}
+.top-donor-card:hover{transform:translateX(4px);box-shadow:0 10px 26px rgba(255,153,51,.2)}
+.donor-rank-badge{box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.whatsapp-btn{border-radius:10px;box-shadow:0 4px 12px rgba(34,197,94,.3);transition:transform .15s,background .2s}
+.whatsapp-btn:hover{transform:translateY(-1px)}
+.pill-view{background:#FEF3C7;color:#B45309}
+#dlgIconBox{animation:ldPulse 1.8s ease-in-out infinite}
+@keyframes ldPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,153,51,.3)}50%{box-shadow:0 0 0 14px rgba(255,153,51,0)}}
+.modal.fade .modal-dialog{transition:transform .35s cubic-bezier(.2,1.2,.3,1)}
+.modal.fade:not(.show) .modal-dialog{transform:translateY(24px) scale(.92)}
+
+</style>
+</head>
+<body>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+<!-- 🛑 PERMANENT DEVICE BAN SCREEN -->
+<div id="deviceBannedOverlay" class="auth-lock-overlay d-none" style="background:#450a0a; z-index:100000;">
+    <div class="auth-lock-card" style="border-color:#EF4444; box-shadow:0 25px 50px rgba(239, 68, 68, 0.4);">
+        <div style="width:65px; height:65px; background:#FEE2E2; border:2px solid #EF4444; border-radius:18px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#DC2626;">
+            <i class="fas fa-ban"></i>
+        </div>
+        <h4 style="font-family:'Cinzel', serif; font-weight:900; color:#991B1B; margin:0 0 8px 0;">DEVICE PERMANENTLY BANNED</h4>
+        <p style="font-size:0.85rem; font-weight:600; color:#18181b; line-height:1.5; margin-bottom:16px;">
+            बार-बार अनधिकृत प्रयासों के कारण यह डिवाइस इस्कॉन सुरक्षा प्रणाली द्वारा स्थायी रूप से ब्लॉक कर दिया गया है।
+        </p>
+        <div class="p-2 mb-3 bg-light border border-danger rounded-3 text-start small fw-bold">
+            <div>Hardware Device ID: <span id="banDevId" class="text-dark">--</span></div>
+            <div class="text-danger mt-1">Status: HARDWARE LOCK (Access Denied)</div>
+        </div>
+        <a href="https://wa.me/919876543210?text=Hare%20Krishna%20Temple%20Admin,%20my%20device%20is%20blocked" target="_blank" class="neu-btn w-100" style="background:#22C55E; color:white; text-decoration:none;">
+            <i class="fab fa-whatsapp me-1"></i> Contact Temple Support to Reopen
+        </a>
+    </div>
+</div>
+
+<!-- 🔒 LEADER AUTH GUARD (15-MIN INACTIVITY AUTO-LOCK) -->
+<div id="leaderAuthModal" class="auth-lock-overlay">
+    <div class="auth-lock-card">
+        <div style="width:62px; height:62px; background:#FEF08A; border-radius:18px; margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:1.75rem; color:#18181b; box-shadow: 0 8px 20px rgba(254, 240, 138, 0.35);">
+            <i class="fas fa-crown"></i>
+        </div>
+        <h4 style="font-family:'Cinzel', serif; font-weight:900; margin:0 0 6px 0; color:#18181B;">LEADER COMMAND HQ</h4>
+        <p style="font-size:0.82rem; font-weight:600; color:#64748B; margin-bottom:18px;">लीडर / महाराज लॉगिन और व्यक्तिगत शिष्य डैशबोर्ड</p>
+        
+        <!-- Toggle Login / Register -->
+        <div class="d-flex gap-2 mb-3">
+            <button onclick="toggleLeaderAuthTab('login')" id="tabLdrLog" class="neu-btn flex-grow-1" style="padding:9px; font-size:0.82rem;">Leader Login</button>
+            <button onclick="toggleLeaderAuthTab('reg')" id="tabLdrReg" class="btn-secondary-custom flex-grow-1 justify-content-center" style="padding:9px; font-size:0.82rem;">Register Leader</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="ldrLogView" class="text-start">
+            <label class="fw-bold small mb-1">Registered Leader Mobile Number</label>
+            <input type="tel" id="ldrAuthPhone" class="neu-input" placeholder="10-digit mobile number">
+
+            <label class="fw-bold small mb-1">Secret Passkey</label>
+            <input type="password" id="ldrAuthPass" class="neu-input" placeholder="••••••••••••" onkeypress="if(event.key==='Enter') unlockLeaderPanel()">
+            
+            <div id="ldrAuthError" class="alert alert-danger p-2 mb-2 d-none fw-bold small text-center">
+                <i class="fas fa-triangle-exclamation me-1"></i> <span id="ldrErrorMsg"></span>
+            </div>
+            
+            <button onclick="unlockLeaderPanel()" id="btnLdrUnlock" class="neu-btn w-100 mt-1">
+                <i class="fas fa-key me-1"></i> Authorize & Enter HQ
+            </button>
+        </div>
+
+        <!-- Self-Registration Form -->
+        <div id="ldrRegView" class="text-start d-none">
+            <label class="fw-bold small mb-1">Leader Title & Full Name *</label>
+            <input type="text" id="regLdrName" class="neu-input" placeholder="e.g. HH Lokanath Swami Maharaj" required>
+
+            <label class="fw-bold small mb-1">Mobile Number (Login ID) *</label>
+            <input type="tel" id="regLdrPhone" class="neu-input" placeholder="10-digit mobile" required>
+
+            <label class="fw-bold small mb-1">Create Secret Passkey *</label>
+            <input type="password" id="regLdrPass" class="neu-input" placeholder="••••••••" required>
+
+            <button onclick="registerLeaderAccount()" id="btnLdrReg" class="neu-btn w-100 mt-1" style="background:#FEF08A; color:#18181B !important;">
+                <i class="fas fa-user-plus me-1"></i> Submit Registration
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-wrapper">
+
+    <!-- 🌟 ENTERPRISE SIDEBAR (STRICTLY NO OM ICON) -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div>
+            <div class="sidebar-brand">
+                <i class="fas fa-landmark-dome text-warning fa-2x"></i>
+                <div>
+                    <h5>BHUVAIKUNTHA</h5>
+                    <small style="color:#94A3B8; font-weight:800; font-size:0.68rem; letter-spacing:1px;">LEADER PORTAL HQ</small>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a class="nav-link active" onclick="switchTab('tab-overview', this)"><i class="fas fa-chart-pie"></i> Overview & Goals</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-devotees', this)"><i class="fas fa-users"></i> My Devotees Directory</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-donations', this)"><i class="fas fa-hand-holding-dollar"></i> Seva & Donations</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-topdonors', this)"><i class="fas fa-trophy"></i> Top Seva Donors</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-broadcast', this)"><i class="fas fa-paper-plane"></i> Send Push Broadcast</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-pledges', this)"><i class="fas fa-handshake"></i> Devotee Pledges</a></li>
+                <li><a class="nav-link" onclick="switchTab('tab-profile', this)"><i class="fas fa-id-card"></i> Leader Profile & Goals</a></li>
+            </ul>
+        </div>
+
+        <div class="p-3 border-top border-dark">
+            <button onclick="lockLeaderPanel()" class="btn btn-dark w-100 text-danger fw-bold d-flex align-items-center justify-content-center gap-2" style="background:#141721; border:1px solid var(--border-dark); border-radius:12px; font-size:0.84rem;">
+                <i class="fas fa-lock"></i> Lock Leader Session
+            </button>
+        </div>
+    </aside>
+
+    <!-- 🌟 RIGHT MAIN CONTENT -->
+    <main class="admin-main">
+
+        <!-- TOPBAR -->
+        <header class="admin-topbar">
+            <div class="d-flex align-items-center gap-2">
+                <button class="mobile-menu-btn me-1" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <div>
+                    <h6 style="margin:0; font-weight:900; font-size:1.05rem;" id="leaderHeaderName">Leader Command</h6>
+                    <small class="text-muted fw-bold" style="font-size:0.72rem;"><i class="fas fa-circle text-success me-1"></i> Dedicated Disciples Hub</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button onclick="fetchLeaderDevotees()" class="btn-secondary-custom" title="Sync Live Data">
+                    <i class="fas fa-rotate"></i> <span class="d-none d-sm-inline">Live Sync</span>
+                </button>
+                <span class="badge bg-warning text-dark py-2 px-3 fw-bold" style="font-size:0.72rem;"><i class="fas fa-crown me-1"></i> LEADER PORTAL</span>
+            </div>
+        </header>
+
+        <!-- CONTENT TABS -->
+        <div class="admin-content">
+
+            <!-- ==================== TAB 1: OVERVIEW & GOALS ==================== -->
+            <div id="tab-overview" class="tab-pane-content">
+                
+                <!-- 🎯 SANKALPA SEVA TARGET PROGRESS BAR -->
+                <div class="goal-container">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <div>
+                            <span class="badge bg-warning text-dark mb-1 fw-bold"><i class="fas fa-bullseye me-1"></i> मंदिर निर्माण सेवा संकल्प</span>
+                            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0; color:#FFE082;" id="goalTitleDisplay">शाखा संकल्प प्रगति (Branch Seva Target)</h5>
+                        </div>
+                        <div class="text-end">
+                            <span class="small text-muted fw-bold">संकल्प लक्ष्य:</span>
+                            <h5 class="fw-bold m-0 text-white currency-font" id="goalTargetAmountDisplay">₹50,00,000</h5>
+                        </div>
+                    </div>
+
+                    <div class="goal-bar-wrap">
+                        <div class="goal-bar-fill" id="goalProgressBar" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center small fw-bold pt-1">
+                        <span class="text-success" id="goalCollectedText">संकलित: ₹0 (0%)</span>
+                        <span class="text-warning" id="goalRemainingText">शेष: ₹50,00,000</span>
+                    </div>
+                </div>
+
+                <!-- KPI STATS -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-widget">
+                            <div>
+                                <small class="text-muted fw-bold text-uppercase" style="font-size:0.7rem;">कुल संकलित सेवा</small>
+                                <h4 class="fw-bold m-0 mt-1 text-success currency-font" id="statTotalDonations" style="font-size:1.25rem;">₹0</h4>
+                            </div>
+                            <div class="stat-icon-box bg-success bg-opacity-10 text-success"><i class="fas fa-indian-rupee-sign"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-widget">
+                            <div>
+                                <small class="text-muted fw-bold text-uppercase" style="font-size:0.7rem;">जुड़े हुए शिष्य</small>
+                                <h4 class="fw-bold m-0 mt-1 text-primary" id="statDevoteeCount" style="font-size:1.25rem;">0</h4>
+                            </div>
+                            <div class="stat-icon-box bg-primary bg-opacity-10 text-primary"><i class="fas fa-users"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-widget">
+                            <div>
+                                <small class="text-muted fw-bold text-uppercase" style="font-size:0.7rem;">कुल सेवा रसीदें</small>
+                                <h4 class="fw-bold m-0 mt-1 text-warning" id="statTotalTransactions" style="font-size:1.25rem;">0</h4>
+                            </div>
+                            <div class="stat-icon-box bg-warning bg-opacity-10 text-warning"><i class="fas fa-receipt"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-widget">
+                            <div>
+                                <small class="text-muted fw-bold text-uppercase" style="font-size:0.7rem;">औसत सेवा / भक्त</small>
+                                <h4 class="fw-bold m-0 mt-1 text-info currency-font" id="statAvgDonation" style="font-size:1.25rem;">₹0</h4>
+                            </div>
+                            <div class="stat-icon-box bg-info bg-opacity-10 text-info"><i class="fas fa-chart-line"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Welcome Card -->
+                <div class="neu-card" style="background: linear-gradient(135deg, #0F1117 0%, #1A1E29 100%); color:#FFFFFF; border:1px solid var(--border-dark);">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div>
+                            <span class="badge bg-warning text-dark mb-2 fw-bold"><i class="fas fa-crown me-1"></i> Spiritual Leadership</span>
+                            <h4 style="font-family:'Cinzel', serif; font-weight:800; margin:0;" id="welcomeLeaderTitle">हरे कृष्ण महाराज / प्रभुजी!</h4>
+                            <p style="color:#94A3B8; font-size:0.85rem; margin:4px 0 0 0;">यहाँ से आप अपने शिष्यों की सेवा, डोनेशन फ़िल्टर और केवल अपने शिष्यों को लाइव टॉपिक पुश भेज सकते हैं।</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button onclick="switchTab('tab-broadcast')" class="neu-btn"><i class="fas fa-paper-plane"></i> शिष्य पुश अलर्ट</button>
+                            <button onclick="switchTab('tab-donations')" class="btn btn-outline-warning fw-bold" style="border-radius:12px;"><i class="fas fa-filter me-1"></i> सेवा फ़िल्टर</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TAB 2: MY DEVOTEES DIRECTORY ==================== -->
+            <div id="tab-devotees" class="tab-pane-content d-none">
+                <div class="neu-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <div>
+                            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0;">
+                                <i class="fas fa-users text-primary me-2"></i> मेरे मार्गदर्शन में पंजीकृत भक्त
+                            </h5>
+                            <small class="text-muted fw-bold">आपके अंतर्गत जुड़े भक्तों की संपूर्ण सूची, सेवा टीयर व संपर्क सूत्र</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button onclick="exportMyDevoteesCSV()" class="btn-secondary-custom"><i class="fas fa-file-excel text-success"></i> Export CSV</button>
+                            <button onclick="fetchLeaderDevotees()" class="btn-secondary-custom"><i class="fas fa-rotate"></i> Sync</button>
+                        </div>
+                    </div>
+
+                    <!-- Search & VIP Tier Filter Bar -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-12 col-md-8">
+                            <input type="text" id="searchDevoteeInput" class="neu-input mb-0" placeholder="🔍 नाम, मोबाइल नंबर, शहर या गोत्र से खोजें..." oninput="filterDevoteesList()">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <select id="filterDevoteeTier" class="neu-select mb-0" onchange="filterDevoteesList()">
+                                <option value="all">सभी भक्त (All Tiers)</option>
+                                <option value="vip">👑 महा-दानवीर (Seva ≥ ₹1,00,000)</option>
+                                <option value="gold">🥇 गोल्ड सेवक (Seva ≥ ₹25,000)</option>
+                                <option value="silver">🥈 सिल्वर सेवक (Seva ≥ ₹5,000)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="custom-table-container">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>भक्त का नाम व फोन</th>
+                                    <th>सेवा श्रेणी (Tier)</th>
+                                    <th>गोत्र / पैन</th>
+                                    <th>स्थान</th>
+                                    <th>कुल सेवा (₹)</th>
+                                    <th>अकाउंट स्टेटस</th>
+                                    <th class="text-end">त्वरित संपर्क</th>
+                                </tr>
+                            </thead>
+                            <tbody id="devoteeListTableBody">
+                                <tr><td colspan="7" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TAB 3: SEVA & DONATIONS (SMART MULTI-FILTERS) ==================== -->
+            <div id="tab-donations" class="tab-pane-content d-none">
+                <div class="neu-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <div>
+                            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0;">
+                                <i class="fas fa-hand-holding-dollar text-success me-2"></i> सेवा व डोनेशन अन्वेषक (Smart Multi-Filters)
+                            </h5>
+                            <small class="text-muted fw-bold">Highest-to-Lowest, Date Range, Today/Month और सेवा प्रकार अनुसार फ़िल्टर करें</small>
+                        </div>
+                        <button onclick="exportMyDonationsCSV()" class="btn-secondary-custom"><i class="fas fa-file-excel text-success"></i> Download Seva Report</button>
+                    </div>
+
+                    <!-- 🎛️ FILTER CONTROLS -->
+                    <div class="filter-chip-bar">
+                        <div style="flex: 2; min-width: 200px;">
+                            <label class="fw-bold small mb-1">🔍 खोजें (Search Devotee / Seva)</label>
+                            <input type="text" id="searchDonationInput" class="neu-input mb-0" placeholder="भक्त का नाम, फोन या सेवा प्रकार..." oninput="applyDonationFilters()">
+                        </div>
+                        <div style="flex: 1.3; min-width: 170px;">
+                            <label class="fw-bold small mb-1">⚡ सॉर्टिंग (Sort Order)</label>
+                            <select id="sortDonationOrder" class="neu-select mb-0" onchange="applyDonationFilters()">
+                                <option value="high-to-low">💰 High to Low (अधिक से कम)</option>
+                                <option value="low-to-high">💵 Low to High (कम से अधिक)</option>
+                                <option value="latest-date" selected>📅 Latest First (नया पहले)</option>
+                                <option value="oldest-date">⏳ Oldest First (पुराना पहले)</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1.2; min-width: 150px;">
+                            <label class="fw-bold small mb-1">समयावधि (Period)</label>
+                            <select id="periodDonationFilter" class="neu-select mb-0" onchange="handlePeriodFilterChange()">
+                                <option value="all">संपूर्ण समय (All Time)</option>
+                                <option value="today">आज (Today)</option>
+                                <option value="yesterday">कल (Yesterday)</option>
+                                <option value="this_month">इस महीने (This Month)</option>
+                                <option value="custom">कस्टम तिथि (Custom Range)</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1.2; min-width: 150px;">
+                            <label class="fw-bold small mb-1">सेवा प्रकार (Category)</label>
+                            <select id="filterSevaCategory" class="neu-select mb-0" onchange="applyDonationFilters()">
+                                <option value="">सभी सेवा प्रकार</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Custom Date Range Bar -->
+                    <div id="customDateRangeBar" class="row g-2 mb-3 d-none">
+                        <div class="col-6 col-md-3">
+                            <label class="fw-bold small mb-1">आरंभ तिथि (Start Date)</label>
+                            <input type="date" id="donStartDate" class="neu-input mb-0" onchange="applyDonationFilters()">
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <label class="fw-bold small mb-1">अंतिम तिथि (End Date)</label>
+                            <input type="date" id="donEndDate" class="neu-input mb-0" onchange="applyDonationFilters()">
+                        </div>
+                    </div>
+
+                    <!-- Live Calculation Bar -->
+                    <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                        <div>
+                            <span class="badge bg-light text-dark border p-2 fw-bold">
+                                परिणाम: <span id="filteredDonationCount" class="text-primary">0</span> रसीदें
+                            </span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success p-2 fw-bold ms-2">
+                                कुल राशि: <span id="filteredDonationTotal" class="currency-font">₹0</span>
+                            </span>
+                        </div>
+                        <button onclick="resetDonationFilters()" class="btn btn-sm btn-link text-muted fw-bold text-decoration-none">
+                            <i class="fas fa-undo me-1"></i> रीसेट फ़िल्टर्स
+                        </button>
+                    </div>
+
+                    <div class="custom-table-container">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>ट्रांजैक्शन ID / तिथि</th>
+                                    <th>भक्त का नाम व संपर्क</th>
+                                    <th>सेवा प्रकार</th>
+                                    <th>दान राशि (₹)</th>
+                                    <th class="text-end">व्हाट्सएप आभार</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderDonationsTableBody">
+                                <tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-success"></i></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TAB 4: TOP SEVA DONORS LEADERBOARD ==================== -->
+            <div id="tab-topdonors" class="tab-pane-content d-none">
+                <div class="neu-card">
+                    <h5 style="font-family:'Cinzel', serif; font-weight:800; margin-bottom:6px;">
+                        <i class="fas fa-trophy text-warning me-2"></i> शीर्ष सेवाकर्ता लीडरबोर्ड (Hall of Fame)
+                    </h5>
+                    <p style="font-size:0.82rem; font-weight:600; color:#64748B; margin-bottom:18px;">
+                        आपके मार्गदर्शन में सर्वोच्च मंदिर निर्माण सेवा करने वाले शीर्ष भक्तगण।
+                    </p>
+
+                    <div id="topDonorsContainer">
+                        <div class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TAB 5: TARGETED PUSH BROADCAST ==================== -->
+            <div id="tab-broadcast" class="tab-pane-content d-none">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-8">
+                        <div class="neu-card" style="border-top: 5px solid var(--primary);">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0; color:var(--primary-dark);">
+                                    <i class="fas fa-paper-plane me-2"></i> टारगेटेड शिष्य पुश ब्रॉडकास्टर
+                                </h5>
+                                <span class="badge bg-success py-2 px-3 fw-bold"><i class="fas fa-tower-broadcast me-1"></i> FCM Dedicated Topic</span>
+                            </div>
+                            <p style="font-size:0.84rem; font-weight:600; color:#64748B; margin-bottom:16px;">
+                                यह लाइव नोटिफिकेशन <b>केवल आपके मार्गदर्शन में जुड़े शिष्यों के मोबाइल</b> पर लॉक-स्क्रीन साउंड के साथ डिलीवर होगा।
+                            </p>
+
+                            <!-- Live Diagnostics Preview -->
+                            <div class="p-3 mb-3 bg-light rounded-3 border">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="small fw-bold text-muted"><i class="fas fa-users me-1 text-primary"></i> टारगेटेड शिष्य संख्या:</span>
+                                    <span class="badge bg-primary" id="diagDevoteeCount">0 शिष्य जुड़े हैं</span>
+                                </div>
+                            </div>
+
+                            <form onsubmit="handleSendLeaderTargetedPush(event)">
+                                <label class="fw-bold small mb-1">ब्रॉडकास्ट शीर्षक (Title) *</label>
+                                <input type="text" id="ldrPushTitle" class="neu-input" placeholder="e.g. 🌸 विशेष गुरु पूर्णिमा / एकादशी आशीर्वाद एवं संदेश" required>
+
+                                <label class="fw-bold small mb-1">संदेश विवरण (Sacred Message Body) *</label>
+                                <textarea id="ldrPushBody" class="neu-textarea" rows="3" placeholder="अपने शिष्यों के लिए पावन संदेश लिखें..." required></textarea>
+
+                                <div class="row g-2">
+                                    <div class="col-12 col-md-6">
+                                        <label class="fw-bold small mb-1">बैनर इमेज URL</label>
+                                        <input type="url" id="ldrPushImg" class="neu-input" placeholder="https://.../banner1.webp">
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="fw-bold small mb-1">टैप करने पर खुलेगा (Action Screen)</label>
+                                        <select id="ldrPushAction" class="neu-select">
+                                            <option value="index.html">Home Dashboard</option>
+                                            <option value="darshan.html">Live Darshan Screen</option>
+                                            <option value="seva.html">Seva / Donation Screen</option>
+                                            <option value="take_pledge.html">Take Pledge Screen</option>
+                                            <option value="progress.html">Temple Construction Progress</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="submit" id="btnSendLeaderPush" class="neu-btn w-100 mt-2">
+                                    <i class="fas fa-paper-plane me-1"></i> Send Push Broadcast (My Disciples Only)
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TAB 6: DEVOTEES PLEDGES ==================== -->
+            <div id="tab-pledges" class="tab-pane-content d-none">
+                <div class="neu-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 style="font-family:'Cinzel', serif; font-weight:800; margin:0;">
+                                <i class="fas fa-handshake text-warning me-2"></i> भक्त संकल्प & प्लेज ट्रैकर
+                            </h5>
+                            <small class="text-muted fw-bold">भक्तों द्वारा लिए गए मासिक/वार्षिक मंदिर निर्माण संकल्प</small>
+                        </div>
+                        <button onclick="fetchLeaderDevotees()" class="btn-secondary-custom"><i class="fas fa-rotate"></i> Sync</button>
+                    </div>
+
+                    <div id="pledgesContainer">
+                        <div class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TAB 7: LEADER PROFILE & GOAL CONFIG ==================== -->
+            <div id="tab-profile" class="tab-pane-content d-none">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-7">
+                        <div class="neu-card text-center">
+                            <img id="profLeaderImg" src="images/default_avatar.webp" style="width:88px; height:88px; border-radius:22px; object-fit:cover; border:3px solid var(--primary); margin-bottom:12px;" onerror="this.src='images/default_avatar.webp'">
+                            <h4 style="font-family:'Cinzel', serif; font-weight:900; margin:0;" id="profLeaderName">Revered Maharaj</h4>
+                            <p class="text-muted fw-bold small mb-3" id="profLeaderPhone">📞 +91 ----------</p>
+
+                            <div class="p-3 bg-light rounded-3 text-start border mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted fw-bold small">अधिकार क्षेत्र (City):</span>
+                                    <span class="fw-bold small" id="profLeaderCity">Pandharpur</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted fw-bold small">सुरक्षा पासकी (Passkey):</span>
+                                    <span class="badge bg-dark" id="profLeaderPasskey">••••••••</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted fw-bold small">खाता स्टेटस:</span>
+                                    <span class="badge bg-success">ACTIVE LEADER</span>
+                                </div>
+                            </div>
+
+                            <!-- Goal Setting Form -->
+                            <div class="text-start p-3 bg-light rounded-3 border mb-3">
+                                <label class="fw-bold small mb-1"><i class="fas fa-bullseye text-warning me-1"></i> शाखा सेवा संकल्प लक्ष्य (₹)</label>
+                                <div class="d-flex gap-2">
+                                    <input type="number" id="inputTargetGoal" class="neu-input mb-0" placeholder="e.g. 5000000" value="5000000">
+                                    <button onclick="saveLeaderGoalTarget()" class="btn btn-warning fw-bold text-dark px-3" style="border-radius:10px;">Save</button>
+                                </div>
+                            </div>
+
+                            <button onclick="lockLeaderPanel()" class="btn btn-outline-danger fw-bold w-100" style="border-radius:12px;">
+                                <i class="fas fa-lock me-1"></i> सुरक्षित लॉगआउट करें
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- 🛠️ DEVOTEE DONATION HISTORY MODAL -->
+<div class="modal fade" id="devoteeHistoryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius:20px; border:none;">
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <h5 class="modal-title fw-bold" style="font-family:'Cinzel', serif;" id="modalDevoteeName">Devotee Seva Records</h5>
+                    <small class="text-muted fw-bold" id="modalDevoteeContact">+91 ----------</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="custom-table-container">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Txn ID</th>
+                                <th>तारीख</th>
+                                <th>सेवा प्रकार</th>
+                                <th>राशि (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalDevoteeDonationsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🎨 HIGH-END POPUP MODAL -->
+<div class="modal fade" id="customDialogModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content text-center p-4" style="border-radius:24px; border:none; box-shadow:0 25px 50px rgba(0,0,0,0.3);">
+            <div id="dlgIconBox" style="width:68px; height:68px; border-radius:20px; margin:0 auto 16px auto; display:flex; align-items:center; justify-content:center; font-size:2rem;">
+                <i id="dlgIcon" class="fas fa-circle-check"></i>
+            </div>
+            <h5 id="dlgTitle" style="font-family:'Cinzel', serif; font-weight:900; margin:0 0 8px 0;">सूचना</h5>
+            <p id="dlgMessage" style="font-size:0.86rem; font-weight:600; color:#64748B; margin-bottom:14px; line-height:1.5;"></p>
+            
+            <div id="dlgDetailsBox" class="p-2 mb-3 bg-light rounded-3 text-start small fw-bold d-none" style="font-size:0.75rem; border:1px solid #E2E8F0;">
+                <span id="dlgDetailsText"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="button" id="dlgCancelBtn" class="btn btn-secondary flex-grow-1 fw-bold d-none" style="border-radius:12px; font-size:0.85rem;" data-bs-dismiss="modal">रद्द करें</button>
+                <button type="button" id="dlgConfirmBtn" class="neu-btn flex-grow-1" style="border-radius:12px;" data-bs-dismiss="modal">ठीक है</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- 🔥 FIREBASE MODULE SCRIPT -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { 
+        getFirestore, collection, query, where, getDocs, addDoc, doc, getDoc, setDoc 
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAHksBlu9ue2p7AxXuUKALmEws5mscO908", 
+        authDomain: "iskcon-bhuvaikuntha.firebaseapp.com", 
+        projectId: "iskcon-bhuvaikuntha",
+        storageBucket: "iskcon-bhuvaikuntha.firebasestorage.app",
+        messagingSenderId: "87535383708",
+        appId: "1:87535383708:web:7548e3b7d4c807faafe959"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Global in-memory caches
+    let myDevoteesList = [];
+    let myDonationsList = [];
+    let myPledgesList = [];
+    let filteredLeaderDonations = [];
+    let devoteeHistoryModalObj = null;
+    let customDialogModalObj = null;
+
+    let targetGoalAmount = parseFloat(localStorage.getItem("leader_target_goal") || "5000000");
+
+    // 🔒 15-MINUTE IDLE AUTO-LOCKOUT TIMER
+    let idleTimer = null;
+    function resetIdleTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            lockLeaderPanel();
+            alert("🔒 सुरक्षा सूचना: 15 मिनट निष्क्रियता के कारण लीडर सत्र लॉक कर दिया गया है।");
+        }, 15 * 60 * 1000);
+    }
+    ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+        window.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        devoteeHistoryModalObj = new bootstrap.Modal(document.getElementById('devoteeHistoryModal'));
+        customDialogModalObj = new bootstrap.Modal(document.getElementById('customDialogModal'));
+    });
+
+    // 📱 PHONE NORMALIZATION & DATE FORMATTING UTILITIES
+    function clean10DigitPhone(rawPhone) {
+        if (!rawPhone) return '';
+        return String(rawPhone).replace(/\D/g, '').slice(-10);
+    }
+
+    function formatRecordDate(rawDate) {
+        if (!rawDate) return 'N/A';
+        try {
+            let d;
+            if (typeof rawDate.toDate === 'function') {
+                d = rawDate.toDate();
+            } else if (rawDate.seconds) {
+                d = new Date(rawDate.seconds * 1000);
+            } else {
+                d = new Date(rawDate);
+            }
+            if (isNaN(d.getTime())) return 'N/A';
+            return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        } catch (e) {
+            return 'N/A';
+        }
+    }
+
+    function getTimestampMillis(rawDate) {
+        if (!rawDate) return 0;
+        try {
+            if (typeof rawDate.toDate === 'function') return rawDate.toDate().getTime();
+            if (rawDate.seconds) return rawDate.seconds * 1000;
+            const parsed = new Date(rawDate).getTime();
+            return isNaN(parsed) ? 0 : parsed;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    // 🎨 CUSTOM POPUP SYSTEM
+    window.showCustomAlert = function(title, message, type = 'success', details = '') {
+        const iconBox = document.getElementById("dlgIconBox");
+        const icon = document.getElementById("dlgIcon");
+        const titleEl = document.getElementById("dlgTitle");
+        const msgEl = document.getElementById("dlgMessage");
+        const detailsBox = document.getElementById("dlgDetailsBox");
+        const detailsText = document.getElementById("dlgDetailsText");
+        const cancelBtn = document.getElementById("dlgCancelBtn");
+        const confirmBtn = document.getElementById("dlgConfirmBtn");
+
+        cancelBtn.classList.add("d-none");
+        confirmBtn.onclick = () => customDialogModalObj.hide();
+
+        titleEl.innerText = title;
+        msgEl.innerText = message;
+
+        if (details) {
+            detailsText.innerHTML = details;
+            detailsBox.classList.remove("d-none");
+        } else {
+            detailsBox.classList.add("d-none");
+        }
+
+        if (type === 'success') {
+            iconBox.style.background = "#DCFCE7";
+            iconBox.style.color = "#15803D";
+            icon.className = "fas fa-circle-check";
+            confirmBtn.className = "neu-btn flex-grow-1";
+            confirmBtn.style.background = "linear-gradient(135deg, #22C55E 0%, #16A34A 100%)";
+        } else if (type === 'error') {
+            iconBox.style.background = "#FEE2E2";
+            iconBox.style.color = "#DC2626";
+            icon.className = "fas fa-circle-xmark";
+            confirmBtn.className = "neu-btn flex-grow-1";
+            confirmBtn.style.background = "linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)";
+        } else if (type === 'warning') {
+            iconBox.style.background = "#FEF08A";
+            iconBox.style.color = "#854D0E";
+            icon.className = "fas fa-triangle-exclamation";
+            confirmBtn.className = "neu-btn flex-grow-1";
+            confirmBtn.style.background = "linear-gradient(135deg, #FF9933 0%, #E67E00 100%)";
+        }
+
+        customDialogModalObj.show();
+    };
+
+    // 🔒 DEVICE SECURITY
+    function generateDeviceHardwareId() {
+        let storedId = localStorage.getItem("iskcon_dev_hw_id");
+        if (!storedId) {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            let glStr = '';
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) glStr = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            }
+            const raw = `${navigator.userAgent}_${screen.width}x${screen.height}_${screen.colorDepth}_${navigator.hardwareConcurrency || 4}_${glStr}_${navigator.language}`;
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) {
+                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+                hash |= 0;
+            }
+            storedId = "HW_" + Math.abs(hash).toString(16) + "_" + (navigator.platform || 'AND').replace(/[^a-zA-Z0-9]/g, '');
+            localStorage.setItem("iskcon_dev_hw_id", storedId);
+        }
+        return storedId;
+    }
+
+    const currentDeviceId = generateDeviceHardwareId();
+    document.getElementById("banDevId").innerText = currentDeviceId;
+
+    let activeLeaderId = clean10DigitPhone(localStorage.getItem("activeLeaderPhone") || "");
+    let activeLeaderName = localStorage.getItem("activeLeaderName") || "Leader Admin";
+
+    async function verifyDeviceSecurity() {
+        try {
+            const banSnap = await getDoc(doc(db, "blocked_devices", currentDeviceId));
+            if (banSnap.exists() && banSnap.data().isBanned === true) {
+                showPermanentBanScreen();
+                return true;
+            }
+            const logSnap = await getDoc(doc(db, "security_logs", currentDeviceId));
+            if (logSnap.exists()) {
+                const log = logSnap.data();
+                if (log.permanentBanned === true) {
+                    showPermanentBanScreen();
+                    return true;
+                }
+                if (log.lockUntil && Date.now() < log.lockUntil) {
+                    const hours = Math.ceil((log.lockUntil - Date.now()) / (1000 * 60 * 60));
+                    showLockError(`🚨 डिवाइस सुरक्षा कारणों से अगले ${hours} घंटों के लिए लॉक है।`);
+                    return true;
+                }
+            }
+        } catch(e) {}
+        return false;
+    }
+
+    function showPermanentBanScreen() {
+        document.getElementById("deviceBannedOverlay").classList.remove("d-none");
+        document.getElementById("leaderAuthModal").classList.add("d-none");
+    }
+
+    function showLockError(msg) {
+        const err = document.getElementById("ldrAuthError");
+        const errMsg = document.getElementById("ldrErrorMsg");
+        errMsg.innerText = msg;
+        err.classList.remove("d-none");
+    }
+
+    // 🔒 AUTH LOGIC
+    window.toggleLeaderAuthTab = function(tab) {
+        document.getElementById("ldrLogView").classList.toggle("d-none", tab !== 'login');
+        document.getElementById("ldrRegView").classList.toggle("d-none", tab !== 'reg');
+        document.getElementById("tabLdrLog").className = tab === 'login' ? 'neu-btn flex-grow-1' : 'btn-secondary-custom flex-grow-1 justify-content-center';
+        document.getElementById("tabLdrReg").className = tab === 'reg' ? 'neu-btn flex-grow-1' : 'btn-secondary-custom flex-grow-1 justify-content-center';
+    };
+
+    window.unlockLeaderPanel = async function() {
+        if (await verifyDeviceSecurity()) return;
+
+        const phone = clean10DigitPhone(document.getElementById("ldrAuthPhone").value);
+        const pass = document.getElementById("ldrAuthPass").value.trim();
+        const btn = document.getElementById("btnLdrUnlock");
+
+        if(!phone || !pass) {
+            showLockError("कृपया मोबाइल नंबर और पासकी दर्ज करें।");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Verifying...';
+
+        try {
+            let snap = await getDoc(doc(db, "leaders", phone));
+            if (!snap.exists()) {
+                snap = await getDoc(doc(db, "leaders", "91" + phone));
+            }
+
+            if (snap.exists()) {
+                const data = snap.data();
+                if (data.status === "blocked") {
+                    showLockError("आपका लीडर खाता मास्टर सुपरएडमिन द्वारा ब्लॉक कर दिया गया है।");
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-key me-1"></i> Authorize & Enter HQ';
+                    return;
+                }
+                if (data.passkey === pass) {
+                    await setDoc(doc(db, "security_logs", currentDeviceId), { failCount: 0, lockUntil: 0 }, { merge: true });
+
+                    activeLeaderId = phone;
+                    activeLeaderName = data.name || "Revered Maharaj";
+                    localStorage.setItem("isLeaderUnlocked", "true");
+                    localStorage.setItem("activeLeaderPhone", phone);
+                    localStorage.setItem("activeLeaderName", activeLeaderName);
+
+                    updateLeaderUIInfo(data);
+                    document.getElementById("leaderAuthModal").classList.add("d-none");
+                    resetIdleTimer();
+                    fetchLeaderDevotees();
+                    return;
+                }
+            }
+            showLockError("⚠️ अमान्य मोबाइल नंबर या पासकी!");
+        } catch(e) {
+            showLockError(`Error: ${e.message}`);
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-key me-1"></i> Authorize & Enter HQ';
+    };
+
+    window.registerLeaderAccount = async function() {
+        if (await verifyDeviceSecurity()) return;
+
+        const name = document.getElementById("regLdrName").value.trim();
+        const phone = clean10DigitPhone(document.getElementById("regLdrPhone").value);
+        const pass = document.getElementById("regLdrPass").value.trim();
+        const btn = document.getElementById("btnLdrReg");
+
+        if (!name || !phone || !pass) {
+            showCustomAlert("अपूर्ण जानकारी", "कृपया सभी विवरण ठीक से भरें।", "warning");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Registering...';
+
+        try {
+            await setDoc(doc(db, "leaders", phone), {
+                name: name,
+                contact: phone,
+                passkey: pass,
+                country: "India",
+                city: "Global",
+                status: "approved",
+                createdAt: Date.now()
+            });
+
+            showCustomAlert("सफलतापूर्वक पंजीकृत", `लीडर अकाउंट बन गया है! अब आप लॉगिन कर सकते हैं।`, "success");
+            window.toggleLeaderAuthTab('login');
+            document.getElementById("ldrAuthPhone").value = phone;
+            document.getElementById("ldrAuthPass").value = pass;
+        } catch(e) {
+            showCustomAlert("पंजीकरण त्रुटि", e.message, "error");
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus me-1"></i> Submit Registration';
+    };
+
+    window.lockLeaderPanel = function() {
+        localStorage.removeItem("isLeaderUnlocked");
+        document.getElementById("ldrAuthPass").value = "";
+        document.getElementById("leaderAuthModal").classList.remove("d-none");
+    };
+
+    function updateLeaderUIInfo(data) {
+        document.getElementById("leaderHeaderName").innerText = activeLeaderName;
+        document.getElementById("welcomeLeaderTitle").innerText = `${activeLeaderName} - लीडर डैशबोर्ड`;
+        document.getElementById("profLeaderName").innerText = activeLeaderName;
+        document.getElementById("profLeaderPhone").innerText = `📞 +91 ${activeLeaderId}`;
+        document.getElementById("profLeaderCity").innerText = data?.city || 'Pandharpur';
+        document.getElementById("profLeaderPasskey").innerText = data?.passkey || 'N/A';
+        if (data?.photoUrl) document.getElementById("profLeaderImg").src = data.photoUrl;
+
+        document.getElementById("goalTargetAmountDisplay").innerText = `₹${targetGoalAmount.toLocaleString('en-IN')}`;
+        document.getElementById("inputTargetGoal").value = targetGoalAmount;
+    }
+
+    window.saveLeaderGoalTarget = function() {
+        const val = parseFloat(document.getElementById("inputTargetGoal").value || "5000000");
+        if (val > 0) {
+            targetGoalAmount = val;
+            localStorage.setItem("leader_target_goal", val.toString());
+            document.getElementById("goalTargetAmountDisplay").innerText = `₹${val.toLocaleString('en-IN')}`;
+            updateSankalpaGoalProgress();
+            showCustomAlert("लक्ष्य अपडेट", `शाखा सेवा लक्ष्य ₹${val.toLocaleString('en-IN')} सेट हो गया!`, "success");
+        }
+    };
+
+    // 🔄 TABS & SIDEBAR
+    window.switchTab = function(tabId, el) {
+        document.querySelectorAll('.tab-pane-content').forEach(p => p.classList.add('d-none'));
+        document.getElementById(tabId).classList.remove('d-none');
+
+        if (el) {
+            document.querySelectorAll('.sidebar-menu .nav-link').forEach(l => l.classList.remove('active'));
+            el.classList.add('active');
+        }
+        if (window.innerWidth < 992) {
+            toggleSidebar();
+        }
+    };
+
+    window.toggleSidebar = function() {
+        document.getElementById("adminSidebar").classList.toggle("show");
+        document.getElementById("sidebarBackdrop").classList.toggle("show");
+    };
+
+    // 🚀 ZERO-COST TARGETED DATA ENGINE (Scalable to 5 Lakh Users without Reading All Donations)
+    window.fetchLeaderDevotees = async function() {
+        if (!activeLeaderId) return;
+
+        const tableBody = document.getElementById("devoteeListTableBody");
+        const donTableBody = document.getElementById("leaderDonationsTableBody");
+        tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-warning"></i></td></tr>`;
+        donTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-success"></i></td></tr>`;
+
+        try {
+            const cleanLeaderId = clean10DigitPhone(activeLeaderId);
+
+            // 1. Fetch Leader Profile Info
+            const ldrSnap = await getDoc(doc(db, "leaders", cleanLeaderId));
+            if (ldrSnap.exists()) updateLeaderUIInfo(ldrSnap.data());
+
+            // 2. High-Performance Index Query (Fetches ONLY disciples of this leader)
+            const discipleQuery = query(
+                collection(db, "users"), 
+                where("assignedLeaderId", "in", [cleanLeaderId, "91" + cleanLeaderId, "+91" + cleanLeaderId])
+            );
+            const userSnap = await getDocs(discipleQuery);
+
+            myDevoteesList = [];
+            const devoteePhoneSet = new Set();
+
+            userSnap.forEach(d => {
+                const u = { id: d.id, ...d.data() };
+                const isBlocked = u.status === 'blocked' || u.isBanned === true;
+                u.isBlocked = isBlocked;
+                myDevoteesList.push(u);
+
+                const p1 = clean10DigitPhone(u.contact);
+                const p2 = clean10DigitPhone(d.id);
+                const p3 = clean10DigitPhone(u.phone);
+                if (p1) devoteePhoneSet.add(p1);
+                if (p2) devoteePhoneSet.add(p2);
+                if (p3) devoteePhoneSet.add(p3);
+            });
+
+            document.getElementById("statDevoteeCount").innerText = myDevoteesList.length;
+            document.getElementById("diagDevoteeCount").innerText = `${myDevoteesList.length} शिष्य जुड़े हैं`;
+
+            // 3. TARGETED DONATIONS QUERY: Fetches ONLY donations assigned to this leader (Zero-cost optimization!)
+            let donDocs = [];
+            try {
+                const targetedDonQuery = query(
+                    collection(db, "donations"), 
+                    where("leaderPhone", "in", [cleanLeaderId, "91" + cleanLeaderId])
+                );
+                const targetedSnap = await getDocs(targetedDonQuery);
+                targetedSnap.forEach(d => donDocs.push({ id: d.id, ...d.data() }));
+            } catch(e) {}
+
+            // Fallback: If leaderPhone wasn't set on older records, fetch remaining matching devotee phone records
+            if (donDocs.length === 0) {
+                const allSnap = await getDocs(collection(db, "donations"));
+                allSnap.forEach(d => {
+                    const don = { id: d.id, ...d.data() };
+                    const rawContact = don.devoteePhone || don.phone || don.contact || don.mobile || '';
+                    const cleanDonContact = clean10DigitPhone(rawContact);
+                    const donLeader = clean10DigitPhone(don.leaderPhone || don.leaderId || don.assignedLeaderId);
+                    if ((cleanDonContact && devoteePhoneSet.has(cleanDonContact)) || (donLeader === cleanLeaderId)) {
+                        donDocs.push(don);
+                    }
+                });
+            }
+
+            myDonationsList = [];
+            let totalAmount = 0;
+            let devoteeDonationTotals = {};
+            let categories = new Set();
+
+            donDocs.forEach(don => {
+                const rawContact = don.devoteePhone || don.phone || don.contact || don.mobile || '';
+                const cleanDonContact = clean10DigitPhone(rawContact);
+                const amt = parseFloat(don.amount || don.donationAmount || don.amt || 0);
+                const timeMs = getTimestampMillis(don.date || don.createdAt);
+
+                myDonationsList.push({ ...don, parsedAmount: amt, parsedTime: timeMs });
+                totalAmount += amt;
+
+                const sevaName = don.sevaType || don.seva || don.sevaName || don.title || 'Mandir Nirman';
+                categories.add(sevaName);
+
+                if (cleanDonContact) {
+                    devoteeDonationTotals[cleanDonContact] = (devoteeDonationTotals[cleanDonContact] || 0) + amt;
+                }
+            });
+
+            // Populate category filter dropdown
+            const catSelect = document.getElementById("filterSevaCategory");
+            let catOptions = '<option value="">सभी सेवा प्रकार</option>';
+            categories.forEach(c => { catOptions += `<option value="${c}">${c}</option>`; });
+            catSelect.innerHTML = catOptions;
+
+            // Update stats
+            document.getElementById("statTotalDonations").innerText = `₹${totalAmount.toLocaleString('en-IN')}`;
+            document.getElementById("statTotalTransactions").innerText = myDonationsList.length;
+            const avg = myDevoteesList.length > 0 ? Math.round(totalAmount / myDevoteesList.length) : 0;
+            document.getElementById("statAvgDonation").innerText = `₹${avg.toLocaleString('en-IN')}`;
+
+            // Map totals to devotees
+            myDevoteesList.forEach(dev => {
+                const p1 = clean10DigitPhone(dev.contact);
+                const p2 = clean10DigitPhone(dev.id);
+                const p3 = clean10DigitPhone(dev.phone);
+                dev.totalSevaAmount = devoteeDonationTotals[p1] || devoteeDonationTotals[p2] || devoteeDonationTotals[p3] || 0;
+            });
+
+            // Update Sankalpa Progress Meter
+            updateSankalpaGoalProgress(totalAmount);
+
+            // Render Views
+            renderDevoteesTable(myDevoteesList);
+            applyDonationFilters();
+            renderTopDonorsLeaderboard();
+            fetchLeaderPledges(Array.from(devoteePhoneSet));
+
+        } catch(e) {
+            console.error("Leader fetch error:", e);
+            tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger fw-bold py-3">त्रुटि: ${e.message}</td></tr>`;
+        }
+    };
+
+    function updateSankalpaGoalProgress(currentAmount) {
+        if (currentAmount === undefined) {
+            currentAmount = 0;
+            myDonationsList.forEach(d => currentAmount += (d.parsedAmount || 0));
+        }
+        const pct = Math.min(100, Math.round((currentAmount / targetGoalAmount) * 100));
+        const bar = document.getElementById("goalProgressBar");
+        if (bar) bar.style.width = `${pct}%`;
+
+        const rem = Math.max(0, targetGoalAmount - currentAmount);
+        document.getElementById("goalCollectedText").innerText = `संकलित: ₹${currentAmount.toLocaleString('en-IN')} (${pct}%)`;
+        document.getElementById("goalRemainingText").innerText = `शेष लक्ष्य: ₹${rem.toLocaleString('en-IN')}`;
+    }
+
+    // 1. RENDER DEVOTEES TABLE (WITH MASTER BAN REFLECTION & VIP TIERS)
+    function renderDevoteesTable(list) {
+        const tbody = document.getElementById("devoteeListTableBody");
+        if (list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted fw-bold py-4">कोई भक्त इस श्रेणी में नहीं मिला।</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        list.forEach(dev => {
+            const devPhone = clean10DigitPhone(dev.contact || dev.id || dev.phone);
+            const devName = dev.name || dev.devoteeName || 'Devotee';
+            const sevaAmt = dev.totalSevaAmount || 0;
+            const isBlocked = dev.isBlocked === true;
+
+            // Tier Calculation
+            let tierBadge = '<span class="badge bg-secondary">सेवक</span>';
+            if (sevaAmt >= 100000) {
+                tierBadge = '<span class="badge bg-purple text-dark border border-warning" style="background:#F3E8FF; color:#6B21A8; font-weight:800;">👑 महा-दानवीर</span>';
+            } else if (sevaAmt >= 25000) {
+                tierBadge = '<span class="badge bg-warning text-dark font-weight:800;">🥇 गोल्ड सेवक</span>';
+            } else if (sevaAmt >= 5000) {
+                tierBadge = '<span class="badge bg-light text-dark border font-weight:800;">🥈 सिल्वर सेवक</span>';
+            }
+
+            // Divine WhatsApp Message
+            const waMessage = encodeURIComponent(
+                `हरे कृष्ण ${devName}! 🙏\n\n` +
+                `दंडवत प्रणाम। श्री पंढरपुर धाम भुवैकण्ठ मंदिर निर्माण सेवा में आपके निरंतर पावन सहयोग पर श्री श्री राधा पंढरीनाथ जी की असीम कृपा सदा बनी रहे।\n\n` +
+                `- ${activeLeaderName}\nइस्कॉन भुवैकण्ठ, पंढरपुर धाम`
+            );
+            const waLink = `https://wa.me/91${devPhone}?text=${waMessage}`;
+
+            html += `
+                <tr style="${isBlocked ? 'background:#FFF5F5;' : ''}">
+                    <td>
+                        <div class="fw-bold ${isBlocked ? 'text-danger' : ''}">${devName}</div>
+                        <small class="text-muted">📞 +91 ${devPhone}</small>
+                    </td>
+                    <td>${tierBadge}</td>
+                    <td>
+                        <div><small class="fw-bold text-dark">PAN: ${dev.pan || 'N/A'}</small></div>
+                        <small class="text-muted">गोत्र: ${dev.gotra || 'N/A'}</small>
+                    </td>
+                    <td>${dev.city || 'N/A'}</td>
+                    <td><b class="text-success currency-font" style="font-size:0.95rem;">₹${sevaAmt.toLocaleString('en-IN')}</b></td>
+                    <td>
+                        <span class="badge ${isBlocked ? 'bg-danger' : 'bg-success'}">
+                            ${isBlocked ? 'SUSPENDED BY HQ' : 'ACTIVE'}
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-1">
+                            <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat</a>
+                            <button onclick="openDevoteeHistoryModal('${devPhone}', '${devName}')" class="action-pill pill-view"><i class="fas fa-eye"></i> सेवा हिस्ट्री</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    window.filterDevoteesList = function() {
+        const q = document.getElementById("searchDevoteeInput").value.toLowerCase();
+        const tier = document.getElementById("filterDevoteeTier").value;
+
+        const filtered = myDevoteesList.filter(d => {
+            const matchQ = ((d.name || d.devoteeName || '').toLowerCase().includes(q)) ||
+                           (clean10DigitPhone(d.contact || d.id || d.phone).includes(q)) ||
+                           ((d.city || '').toLowerCase().includes(q)) ||
+                           ((d.gotra || '').toLowerCase().includes(q));
+
+            const amt = d.totalSevaAmount || 0;
+            let matchTier = true;
+            if (tier === 'vip') matchTier = amt >= 100000;
+            else if (tier === 'gold') matchTier = amt >= 25000 && amt < 100000;
+            else if (tier === 'silver') matchTier = amt >= 5000 && amt < 25000;
+
+            return matchQ && matchTier;
+        });
+
+        renderDevoteesTable(filtered);
+    };
+
+    // 2. DONATION MULTI-FILTER & SORT ENGINE
+    window.handlePeriodFilterChange = function() {
+        const val = document.getElementById("periodDonationFilter").value;
+        const customBar = document.getElementById("customDateRangeBar");
+        if (val === 'custom') {
+            customBar.classList.remove('d-none');
+        } else {
+            customBar.classList.add('d-none');
+        }
+        applyDonationFilters();
+    };
+
+    window.applyDonationFilters = function() {
+        const q = (document.getElementById("searchDonationInput").value || '').toLowerCase();
+        const sortOrder = document.getElementById("sortDonationOrder").value;
+        const category = document.getElementById("filterSevaCategory").value;
+        const period = document.getElementById("periodDonationFilter").value;
+        const startDateVal = document.getElementById("donStartDate").value;
+        const endDateVal = document.getElementById("donEndDate").value;
+
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const startOfYesterday = startOfToday - (24 * 60 * 60 * 1000);
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+        filteredLeaderDonations = myDonationsList.filter(d => {
+            const name = (d.devoteeName || d.name || d.donorName || '').toLowerCase();
+            const phone = clean10DigitPhone(d.devoteePhone || d.contact || d.phone || d.mobile);
+            const seva = (d.sevaType || d.seva || d.sevaName || d.title || '').toLowerCase();
+            const txn = (d.id || '').toLowerCase();
+            const matchQ = name.includes(q) || phone.includes(q) || seva.includes(q) || txn.includes(q);
+
+            const currentSeva = d.sevaType || d.seva || d.sevaName || d.title || '';
+            const matchCat = category ? (currentSeva === category) : true;
+
+            let matchPeriod = true;
+            const t = d.parsedTime;
+            if (period === 'today') {
+                matchPeriod = t >= startOfToday;
+            } else if (period === 'yesterday') {
+                matchPeriod = (t >= startOfYesterday && t < startOfToday);
+            } else if (period === 'this_month') {
+                matchPeriod = t >= startOfMonth;
+            } else if (period === 'custom') {
+                if (startDateVal) {
+                    const s = new Date(startDateVal).getTime();
+                    if (t < s) matchPeriod = false;
+                }
+                if (endDateVal) {
+                    const e = new Date(endDateVal).getTime() + (24 * 60 * 60 * 1000) - 1;
+                    if (t > e) matchPeriod = false;
+                }
+            }
+
+            return matchQ && matchCat && matchPeriod;
+        });
+
+        // Sorting
+        filteredLeaderDonations.sort((a, b) => {
+            const amtA = a.parsedAmount || 0;
+            const amtB = b.parsedAmount || 0;
+            if (sortOrder === "high-to-low") return amtB - amtA;
+            if (sortOrder === "low-to-high") return amtA - amtB;
+            if (sortOrder === "oldest-date") return a.parsedTime - b.parsedTime;
+            return b.parsedTime - a.parsedTime;
+        });
+
+        // Calculations
+        let fTotal = 0;
+        filteredLeaderDonations.forEach(d => fTotal += (d.parsedAmount || 0));
+        document.getElementById("filteredDonationCount").innerText = filteredLeaderDonations.length;
+        document.getElementById("filteredDonationTotal").innerText = `₹${fTotal.toLocaleString('en-IN')}`;
+
+        renderDonationsTable(filteredLeaderDonations);
+    };
+
+    window.resetDonationFilters = function() {
+        document.getElementById("searchDonationInput").value = '';
+        document.getElementById("sortDonationOrder").value = 'latest-date';
+        document.getElementById("periodDonationFilter").value = 'all';
+        document.getElementById("filterSevaCategory").value = '';
+        document.getElementById("donStartDate").value = '';
+        document.getElementById("donEndDate").value = '';
+        document.getElementById("customDateRangeBar").classList.add('d-none');
+        applyDonationFilters();
+    };
+
+    function renderDonationsTable(list) {
+        const tbody = document.getElementById("leaderDonationsTableBody");
+        if (list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted fw-bold py-4">कोई सेवा दान रिकॉर्ड नहीं मिला।</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        list.forEach(d => {
+            const rawPhone = d.devoteePhone || d.contact || d.phone || d.mobile;
+            const dPhone = clean10DigitPhone(rawPhone) || 'N/A';
+            const donorName = d.devoteeName || d.name || d.donorName || 'Devotee';
+            const sevaName = d.sevaType || d.seva || d.sevaName || d.title || 'Mandir Nirman';
+            const amt = d.parsedAmount || parseFloat(d.amount || d.donationAmount || 0);
+            const dateStr = formatRecordDate(d.date || d.createdAt);
+            const txnId = d.paymentId || d.txId || d.transactionId || d.id;
+
+            // 1-Click Clean WhatsApp Blessing (Zero raw links)
+            const waAckMessage = encodeURIComponent(
+                `हरे कृष्ण ${donorName} जी! 🙏\n\n` +
+                `श्री राधा पंढरीनाथ मंदिर (इस्कॉन भुवैकण्ठ) निर्माण में आपकी ₹${amt.toLocaleString('en-IN')} की सेवा प्राप्त हुई।\n\n` +
+                `📜 *विवरण:* ${sevaName} | Txn: ${txnId}\n` +
+                `✅ आपकी अधिकृत 80G रसीद आपके इसी व्हाट्सएप नंबर पर भेजी जा चुकी है।\n\n` +
+                `भगवान श्री कृष्ण एवं श्री विट्ठल-रुक्मिणी जी की अहैतुकी कृपा आप पर बनी रहे।\n- ${activeLeaderName}`
+            );
+
+            html += `
+                <tr>
+                    <td>
+                        <div class="fw-bold currency-font">${d.id.substring(0, 12)}...</div>
+                        <small class="text-muted">${dateStr}</small>
+                    </td>
+                    <td>
+                        <div class="fw-bold">${donorName}</div>
+                        <small class="text-muted">📞 +91 ${dPhone}</small>
+                    </td>
+                    <td><span class="badge bg-light text-dark border">${sevaName}</span></td>
+                    <td><b class="text-success currency-font" style="font-size:0.95rem;">₹${amt.toLocaleString('en-IN')}</b></td>
+                    <td class="text-end">
+                        <a href="https://wa.me/91${dPhone}?text=${waAckMessage}" target="_blank" class="whatsapp-btn">
+                            <i class="fab fa-whatsapp"></i> आभार भेजें
+                        </a>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    // 3. TOP SEVA DONORS LEADERBOARD
+    function renderTopDonorsLeaderboard() {
+        const container = document.getElementById("topDonorsContainer");
+        const sortedDevotees = [...myDevoteesList].sort((a, b) => (b.totalSevaAmount || 0) - (a.totalSevaAmount || 0));
+        const topDonors = sortedDevotees.filter(d => (d.totalSevaAmount || 0) > 0).slice(0, 15);
+
+        if (topDonors.length === 0) {
+            container.innerHTML = `<div class="text-center py-4 text-muted fw-bold">अभी कोई शीर्ष दान रिकॉर्ड दर्ज नहीं है।</div>`;
+            return;
+        }
+
+        let html = '';
+        topDonors.forEach((dev, idx) => {
+            const rank = idx + 1;
+            const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : 'bg-light text-dark border'));
+            const rankIcon = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
+            const devPhone = clean10DigitPhone(dev.contact || dev.id || dev.phone);
+
+            html += `
+                <div class="top-donor-card">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="donor-rank-badge ${rankClass}">${rankIcon}</div>
+                        <div>
+                            <h6 style="font-weight:900; margin:0;">${dev.name || dev.devoteeName || 'Devotee'}</h6>
+                            <small class="text-muted">📞 +91 ${devPhone} | 📍 ${dev.city || 'N/A'}</small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <h5 style="font-weight:900; margin:0; color:#15803D;" class="currency-font">₹${(dev.totalSevaAmount || 0).toLocaleString('en-IN')}</h5>
+                        <span class="badge bg-warning text-dark" style="font-size:0.7rem;">TOP SEVAK</span>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // 4. DEVOTEES PLEDGES
+    async function fetchLeaderPledges(phoneList) {
+        const container = document.getElementById("pledgesContainer");
+        try {
+            const snap = await getDocs(collection(db, "pledges"));
+            myPledgesList = [];
+            snap.forEach(d => {
+                const pl = { id: d.id, ...d.data() };
+                const plPhone = clean10DigitPhone(pl.phone || pl.contact);
+                if (phoneList.includes(plPhone)) {
+                    myPledgesList.push(pl);
+                }
+            });
+
+            if (myPledgesList.length === 0) {
+                container.innerHTML = `<div class="text-center py-4 text-muted fw-bold">आपके भक्तों का कोई सक्रिय संकल्प (Pledge) दर्ज नहीं है।</div>`;
+                return;
+            }
+
+            let html = '';
+            myPledgesList.forEach(pl => {
+                const plPhone = clean10DigitPhone(pl.phone || pl.contact);
+                html += `
+                    <div class="p-3 mb-2 rounded-3 bg-white border d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-bold m-0">${pl.name || pl.devoteeName || 'Devotee'}</h6>
+                            <small class="text-muted">📞 +91 ${plPhone} | संकल्प: <b>${pl.sevaPlan || 'Monthly Nirman'}</b></small>
+                        </div>
+                        <div class="text-end">
+                            <h6 class="fw-bold text-primary m-0 currency-font">₹${parseFloat(pl.pledgeAmount || 0).toLocaleString('en-IN')}</h6>
+                            <span class="badge bg-success">ACTIVE PLEDGE</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch(e) {
+            container.innerHTML = `<div class="text-center py-3 text-muted">संकल्प सूची लोड नहीं हो सकी।</div>`;
+        }
+    }
+
+    // 5. 🎯 PRODUCTION TOPIC PUSH DISPATCHER (TARGETED ONLY TO THIS MAHARAJ'S DISCIPLES)
+    window.handleSendLeaderTargetedPush = async function(e) {
+        e.preventDefault();
+        const title = document.getElementById("ldrPushTitle").value.trim();
+        const body = document.getElementById("ldrPushBody").value.trim();
+        const img = document.getElementById("ldrPushImg").value.trim();
+        const action = document.getElementById("ldrPushAction").value;
+        const btn = document.getElementById("btnSendLeaderPush");
+
+        if (!title || !body) { 
+            showCustomAlert("अपूर्ण जानकारी", "कृपया शीर्षक और संदेश दोनों लिखें।", "warning"); 
+            return; 
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> शिष्यों के फोन पर भेजा जा रहा है...';
+
+        const cleanLeaderId = clean10DigitPhone(activeLeaderId);
+        const leaderTopic = `leader_${cleanLeaderId}`;
+
+        try {
+            await fetch('/api/send-push', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: title,
+                    body: body,
+                    imageUrl: img,
+                    actionUrl: action,
+                    topic: leaderTopic,
+                    targetLeaderId: cleanLeaderId,
+                    leaderId: cleanLeaderId,
+                    leaderName: activeLeaderName,
+                    sender: activeLeaderName
+                })
+            }).catch(e => console.log("Push trigger notice:", e));
+
+            await addDoc(collection(db, "targeted_notifications"), {
+                leaderId: cleanLeaderId,
+                targetLeaderId: cleanLeaderId,
+                leaderName: activeLeaderName,
+                title: title,
+                body: body,
+                imageUrl: img || "",
+                actionUrl: action,
+                sentAt: Date.now(),
+                createdAt: Date.now(),
+                devoteeCount: myDevoteesList.length
+            });
+
+            const reportHtml = `
+                <div>👥 <b>टारगेटेड शिष्य:</b> ${myDevoteesList.length} भक्त</div>
+                <div>📡 <b>चैनल:</b> <span class="badge bg-dark">${leaderTopic}</span></div>
+                <div>🔒 <b>गोपनीयता:</b> केवल आपके शिष्यों के मोबाइल पर डिलीवर हुआ।</div>
+            `;
+
+            showCustomAlert(
+                "शिष्य ब्रॉडकास्ट प्रेषित!", 
+                `केवल आपके मार्गदर्शन में जुड़े शिष्यों के मोबाइल पर पावन संदेश भेज दिया गया है।`, 
+                "success", 
+                reportHtml
+            );
+
+            document.getElementById("ldrPushTitle").value = '';
+            document.getElementById("ldrPushBody").value = '';
+            document.getElementById("ldrPushImg").value = '';
+
+        } catch(err) {
+            console.error("Leader Push Error:", err);
+            showCustomAlert("त्रुटि", err.message, "error");
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i> Send Push Broadcast (My Disciples Only)';
+    };
+
+    // 6. DEVOTEES HISTORY MODAL
+    window.openDevoteeHistoryModal = function(phone, name) {
+        const cleanPhone = clean10DigitPhone(phone);
+        document.getElementById("modalDevoteeName").innerText = name;
+        document.getElementById("modalDevoteeContact").innerText = `📞 +91 ${cleanPhone}`;
+
+        const devDonations = myDonationsList.filter(d => {
+            const dp = clean10DigitPhone(d.contact || d.devoteePhone || d.phone || d.mobile);
+            return dp === cleanPhone;
+        });
+
+        const tbody = document.getElementById("modalDevoteeDonationsTable");
+
+        if (devDonations.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted fw-bold py-3">कोई ट्रांजैक्शन नहीं मिला।</td></tr>`;
+        } else {
+            let html = '';
+            devDonations.forEach(d => {
+                const amt = d.parsedAmount || parseFloat(d.amount || d.donationAmount || 0);
+                const sevaName = d.sevaType || d.seva || d.sevaName || d.title || 'Mandir Nirman';
+                html += `
+                    <tr>
+                        <td><small class="fw-bold currency-font">${d.id.substring(0, 12)}...</small></td>
+                        <td>${formatRecordDate(d.date || d.createdAt)}</td>
+                        <td><span class="badge bg-light text-dark border">${sevaName}</span></td>
+                        <td><b class="text-success currency-font">₹${amt.toLocaleString('en-IN')}</b></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        devoteeHistoryModalObj.show();
+    };
+
+    // 7. EXPORT CSV UTILITIES
+    window.exportMyDevoteesCSV = function() {
+        let csv = "Name,Phone,City,PAN,Gotra,TotalSevaAmount,AccountStatus\n";
+        myDevoteesList.forEach(d => {
+            const devPhone = clean10DigitPhone(d.contact || d.id || d.phone);
+            const status = d.isBlocked ? 'SUSPENDED' : 'ACTIVE';
+            csv += `"${d.name || d.devoteeName || ''}","+91 ${devPhone}","${d.city || ''}","${d.pan || ''}","${d.gotra || ''}","${d.totalSevaAmount || 0}","${status}"\n`;
+        });
+        downloadCSV(csv, `Devotees_${activeLeaderName.replace(/\s+/g, '_')}.csv`);
+    };
+
+    window.exportMyDonationsCSV = function() {
+        let csv = "TxnID,DevoteeName,Phone,SevaType,Amount,Date\n";
+        const listToExport = filteredLeaderDonations.length > 0 ? filteredLeaderDonations : myDonationsList;
+        listToExport.forEach(d => {
+            const dPhone = clean10DigitPhone(d.devoteePhone || d.contact || d.phone || d.mobile);
+            const dName = d.devoteeName || d.name || d.donorName || '';
+            const seva = d.sevaType || d.seva || d.sevaName || d.title || '';
+            const amt = d.parsedAmount || d.amount || d.donationAmount || 0;
+            const dateStr = formatRecordDate(d.date || d.createdAt);
+            csv += `"${d.id}","${dName}","+91 ${dPhone}","${seva}","${amt}","${dateStr}"\n`;
+        });
+        downloadCSV(csv, `Seva_Report_${activeLeaderName.replace(/\s+/g, '_')}.csv`);
+    };
+
+    function downloadCSV(csvContent, filename) {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    }
+
+    // ⚡ INITIAL LOAD
+    verifyDeviceSecurity();
+    if (localStorage.getItem("isLeaderUnlocked") === "true" && activeLeaderId) {
+        document.getElementById("leaderHeaderName").innerText = activeLeaderName;
+        document.getElementById("leaderAuthModal").classList.add("d-none");
+        resetIdleTimer();
+        fetchLeaderDevotees();
+    }
+</script>
+
+<script type="module" id="ent-pro">
+/* ENTERPRISE-PRO LEADER v1: dialogs, toasts, charts, mouse physics, mobile cards */
+(()=>{
+const css=`
+.neu-card,.stat-widget,.leaderboard-card{position:relative;--mx:50%;--my:50%}
+.neu-card::after,.stat-widget::after,.leaderboard-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(280px circle at var(--mx) var(--my),rgba(247,147,30,.13),transparent 70%)}
+.neu-card:hover::after,.stat-widget:hover::after,.leaderboard-card:hover::after{opacity:1}
+.ep-aura{position:fixed;left:0;top:0;width:32px;height:32px;margin:-16px 0 0 -16px;border:1.5px solid rgba(247,147,30,.6);border-radius:50%;pointer-events:none;z-index:2000001;transition:width .2s,height .2s,margin .2s,background .2s}
+.ep-aura.on{width:54px;height:54px;margin:-27px 0 0 -27px;background:rgba(247,147,30,.12)}
+@media (hover:hover) and (pointer:fine){.custom-table-container{cursor:grab}.custom-table-container.ep-drag{cursor:grabbing;user-select:none}.custom-table-container::-webkit-scrollbar{height:12px;width:12px}}
+.ep-toasts{position:fixed;top:14px;right:14px;z-index:2000000;display:flex;flex-direction:column;gap:10px;width:min(380px,calc(100vw - 28px))}
+.ep-toast{position:relative;overflow:hidden;display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:14px;background:#fff;color:#0F172A;font-weight:700;font-size:.86rem;box-shadow:0 18px 40px rgba(15,23,42,.22);border:1px solid #E5E9F0;animation:epIn .45s cubic-bezier(.2,1.2,.3,1) both;cursor:pointer}
+.ep-toast i{margin-top:2px;font-size:1.1rem}.ep-toast.ok i{color:#16A34A}.ep-toast.err i{color:#DC2626}.ep-toast.warn i{color:#F7931E}
+.ep-toast b{position:absolute;left:0;bottom:0;height:3px;width:100%;transform-origin:left;animation:epBar var(--d) linear forwards}
+.ep-toast.ok b{background:#16A34A}.ep-toast.err b{background:#DC2626}.ep-toast.warn b{background:#F7931E}
+.ep-toast.out{animation:epOut .3s ease forwards}
+@keyframes epIn{from{opacity:0;transform:translateX(40px) scale(.95)}to{opacity:1;transform:none}}
+@keyframes epOut{to{opacity:0;transform:translateX(40px)}}@keyframes epBar{to{transform:scaleX(0)}}
+.ep-ov{position:fixed;inset:0;z-index:2000002;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(6,8,14,.55);backdrop-filter:blur(6px);opacity:0;transition:opacity .22s}
+.ep-ov.show{opacity:1}
+.ep-dlg{width:100%;max-width:400px;background:#fff;border-radius:22px;padding:28px 24px 22px;text-align:center;box-shadow:0 40px 90px rgba(0,0,0,.45);transform:translateY(24px) scale(.9);transition:transform .35s cubic-bezier(.2,1.25,.3,1)}
+.ep-ov.show .ep-dlg{transform:none}
+.ep-ic{width:66px;height:66px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:#D37407;background:#FFF1DB;animation:epPulse 1.8s ease-in-out infinite}
+.ep-dlg.dg .ep-ic{color:#DC2626;background:#FEE2E2}
+@keyframes epPulse{0%,100%{box-shadow:0 0 0 0 rgba(247,147,30,.35)}50%{box-shadow:0 0 0 14px rgba(247,147,30,0)}}
+.ep-dlg h5{font-weight:800;margin:0 0 8px;color:#0F172A}.ep-dlg p{white-space:pre-line;color:#475569;font-size:.88rem;font-weight:600;line-height:1.6;margin:0 0 20px}
+.ep-bt{display:flex;gap:10px}.ep-bt button{flex:1;border:0;border-radius:12px;padding:12px;font-weight:800;font-size:.85rem;cursor:pointer;transition:transform .15s,filter .15s}
+.ep-bt button:active{transform:scale(.96)}.ep-no{background:#F1F5F9;color:#334155}
+.ep-yes{color:#fff;background:linear-gradient(135deg,#F7931E,#D37407)}.ep-dlg.dg .ep-yes{background:linear-gradient(135deg,#EF4444,#B91C1C)}
+.stat-icon-box{flex-shrink:0}.ep-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-bottom:22px}
+.ep-c{background:#fff;border:1px solid #E5E9F0;border-radius:16px;padding:18px;box-shadow:0 1px 2px rgba(15,23,42,.04),0 2px 8px rgba(15,23,42,.04);min-width:0}
+.ep-c h6{font-weight:800;font-size:.9rem;margin:0 0 2px}.ep-c small{color:#64748B;font-weight:600}.ep-c .cv{position:relative;height:250px;margin-top:10px}
+.s8{grid-column:span 8}.s4{grid-column:span 4}.s6{grid-column:span 6}
+.ep-kpi{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.ep-kpi div{background:#F8FAFC;border:1px solid #E5E9F0;border-radius:12px;padding:14px}
+.ep-kpi small{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em}.ep-kpi b{font-family:'JetBrains Mono',monospace;font-size:1.05rem;word-break:break-word}
+@media (max-width:991px){.s8,.s4,.s6{grid-column:span 12}.ep-c .cv{height:220px}}
+@media (max-width:767px){
+.custom-table{min-width:0!important}.custom-table thead{display:none}
+.custom-table,.custom-table tbody,.custom-table tr,.custom-table td{display:block;width:100%}
+.custom-table tbody tr{width:auto;margin:10px 0;padding:6px 14px;border:1px solid #E5E9F0;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.05)}
+.custom-table td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0!important;border-bottom:1px dashed #E8ECF2!important;background:transparent!important;text-align:right}
+.custom-table td:last-child{border-bottom:0!important}
+.custom-table td::before{content:attr(data-label);flex-shrink:0;text-align:left;font-size:.66rem;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:.05em}
+.custom-table td[colspan]{justify-content:center}.custom-table td[colspan]::before{display:none}
+.custom-table-container{max-height:none;border:0;background:transparent;overflow:visible}}
+@media (prefers-reduced-motion:reduce){.ep-aura{display:none}}`;
+const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+const $=(s,r=document)=>r.querySelector(s);
+
+/* TOASTS (alert replacement) */
+const tw=document.createElement('div');tw.className='ep-toasts';document.body.appendChild(tw);
+const IC={ok:'fa-circle-check',err:'fa-circle-xmark',warn:'fa-lock'};
+function toast(m,t){const e=document.createElement('div'),ms=t==='err'?6500:4200;e.className='ep-toast '+t;e.style.setProperty('--d',ms+'ms');
+ e.innerHTML='<i class="fas '+IC[t]+'"></i><span></span><b></b>';$('span',e).textContent=m;tw.appendChild(e);
+ const x=()=>{e.classList.add('out');setTimeout(()=>e.remove(),300)};e.onclick=x;setTimeout(x,ms)}
+window.alert=m=>{m=String(m);const t=/^\u26A0|^Error|\u0924\u094D\u0930\u0941\u091F\u093F|permission|denied|missing|failed|network|error/i.test(m)?'err':/^\uD83D\uDD12/.test(m)?'warn':'ok';
+ toast(m.replace(/^(\u2705|\u26A0\uFE0F?|\uD83D\uDD12|\uD83C\uDF89)\s*/,''),t)};
+
+/* CONFIRM DIALOG */
+function dlg(msg){return new Promise(res=>{const dg=/BAN|BLOCK|\u0921\u093F\u0932\u0940\u091F|DELETE/i.test(msg),o=document.createElement('div');o.className='ep-ov';
+ o.innerHTML='<div class="ep-dlg '+(dg?'dg':'')+'" role="dialog" aria-modal="true"><div class="ep-ic"><i class="fas '+(dg?'fa-triangle-exclamation':'fa-circle-question')+'"></i></div><h5>\u092A\u0941\u0937\u094D\u091F\u093F \u0915\u0930\u0947\u0902</h5><p></p><div class="ep-bt"><button class="ep-no">\u0930\u0926\u094D\u0926 \u0915\u0930\u0947\u0902</button><button class="ep-yes">\u0939\u093E\u0901, \u0906\u0917\u0947 \u092C\u0922\u093C\u0947\u0902</button></div></div>';
+ $('p',o).textContent=msg.replace(/^\u26A0\uFE0F?\s*/,'');document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('show'));
+ const k=e=>{if(e.key==='Escape')c(false)};const c=v=>{document.removeEventListener('keydown',k);o.classList.remove('show');setTimeout(()=>o.remove(),250);res(v)};
+ $('.ep-yes',o).onclick=()=>c(true);$('.ep-no',o).onclick=()=>c(false);o.onclick=e=>{if(e.target===o)c(false)};document.addEventListener('keydown',k);($(dg?'.ep-no':'.ep-yes',o)).focus()})}
+const oc=window.confirm;
+['setLeaderStatus','deleteLeaderMaster','toggleDevoteeInstantBan','deleteDevoteeMaster','toggleDeviceBan'].forEach(n=>{const f=window[n];if(typeof f!=='function')return;
+ window[n]=function(...a){let m=null;window.confirm=x=>{m=x;return false};try{f.apply(this,a)}finally{window.confirm=oc}
+  if(m===null)return;dlg(m).then(ok=>{if(!ok)return;window.confirm=()=>true;try{f.apply(this,a)}finally{window.confirm=oc}})}});
+
+/* PUSH IMAGE: abhi ke liye chhupa diya (JS same rahi). Wapas laane ke liye HIDE_PUSH_IMAGE=false */
+const HIDE_PUSH_IMAGE=true;
+if(HIDE_PUSH_IMAGE){const im=$('#ldrPushImg');if(im){const c=im.closest('[class*="col-"]');if(c){c.style.display='none';im.value='';const a=$('#ldrPushAction');const ac=a&&a.closest('[class*="col-"]');if(ac){ac.classList.remove('col-md-6');ac.classList.add('col-md-12')}}}}
+/* TOPBAR TITLE FIX */
+const T={'tab-dashboard':'Mandir Live Overview','tab-leaderboard':'Maharaj Leaderboard','tab-leaders':'Leaders Management','tab-devotees':'Devotees Directory','tab-donations':'Global Seva Records','tab-broadcast':'Push Broadcast Engine','tab-security':'Device Bans & Security','tab-settings':'Master App Control'};
+const sw=window.switchTab;if(typeof sw==='function')window.switchTab=function(id,el){sw.call(this,id,el);const h=$('#topbarTitle');if(h&&T[id])h.textContent=T[id]};
+
+/* MOUSE: drag-scroll, spotlight, aura */
+document.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button)return;const c=e.target.closest('.custom-table-container');
+ if(!c||e.target.closest('button,a,input,select,textarea'))return;const x=e.clientX,y=e.clientY,sl=c.scrollLeft,sy=c.scrollTop;let mv=false;
+ const m=v=>{const dx=v.clientX-x,dy=v.clientY-y;if(!mv&&Math.abs(dx)+Math.abs(dy)>4){mv=true;c.classList.add('ep-drag')}if(mv){c.scrollLeft=sl-dx;c.scrollTop=sy-dy}};
+ const u=()=>{removeEventListener('pointermove',m);removeEventListener('pointerup',u);c.classList.remove('ep-drag');if(mv)c.addEventListener('click',v=>v.stopPropagation(),{capture:true,once:true})};
+ addEventListener('pointermove',m);addEventListener('pointerup',u)});
+let ax=-100,ay=-100,tx=-100,ty=-100,aura=null;
+if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches){aura=document.createElement('div');aura.className='ep-aura';document.body.appendChild(aura);
+ (function f(){ax+=(tx-ax)*.2;ay+=(ty-ay)*.2;aura.style.transform='translate('+ax+'px,'+ay+'px)';requestAnimationFrame(f)})()}
+document.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;tx=e.clientX;ty=e.clientY;
+ const c=e.target.closest('.neu-card,.stat-widget,.leaderboard-card');if(c){const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')}
+ if(aura)aura.classList.toggle('on',!!e.target.closest('button,a,.nav-link,select,input,.action-pill'))},{passive:true});
+
+/* MOBILE CARD TABLES: data-label */
+const lab=()=>document.querySelectorAll('.custom-table').forEach(t=>{if(!t.tHead)return;const h=[...t.tHead.rows[0].cells].map(c=>c.textContent.trim());
+ t.querySelectorAll('tbody tr').forEach(r=>[...r.cells].forEach((c,i)=>{if(!c.hasAttribute('colspan')&&h[i]&&c.dataset.label!==h[i])c.dataset.label=h[i]}))});
+
+/* IMAGES: optional logo + temple banner (only if files exist) */
+const pr=(u,f)=>{const i=new Image();i.onload=()=>f(u);i.src=u};
+pr('images/logo.webp',u=>{const ic=$('.sidebar-brand>i');if(ic){const im=new Image();im.src=u;im.alt='Logo';ic.replaceWith(im)}});
+pr('images/temple-banner.webp',u=>{const c=$('#tab-dashboard>.neu-card');if(c){c.style.background='linear-gradient(135deg,rgba(10,12,18,.9),rgba(10,12,18,.5)),url('+u+') center/cover'}});
+
+/* CHARTS (leader): built from the donations table already on screen */
+const ov=$('#tab-overview');let ch={};
+if(ov){const g=document.createElement('div');g.className='ep-grid';
+ g.innerHTML='<div class="ep-c s8"><h6>\u0938\u0947\u0935\u093E \u0938\u0902\u0915\u0932\u0928 \u091F\u094D\u0930\u0947\u0902\u0921</h6><small>\u092A\u093F\u091B\u0932\u0947 30 \u0926\u093F\u0928 (\u20B9)</small><div class="cv"><canvas id="epTrend"></canvas></div></div>'+
+ '<div class="ep-c s4"><h6>\u0938\u0947\u0935\u093E \u092A\u094D\u0930\u0915\u093E\u0930</h6><small>Category split</small><div class="cv"><canvas id="epSeva"></canvas></div></div>'+
+ '<div class="ep-c s6"><h6>\u0936\u0940\u0930\u094D\u0937 5 \u0938\u0947\u0935\u093E\u0915\u0930\u094D\u0924\u093E</h6><small>\u0938\u092C\u0938\u0947 \u0905\u0927\u093F\u0915 \u0938\u0947\u0935\u093E</small><div class="cv"><canvas id="epDonor"></canvas></div></div>'+
+ '<div class="ep-c s6"><h6>Quick Insights</h6><small>\u0906\u092A\u0915\u0947 \u0936\u093F\u0937\u094D\u092F\u094B\u0902 \u0915\u0940 \u0938\u0947\u0935\u093E \u0938\u0947</small><div class="ep-kpi"><div><small>Average Seva</small><b id="kAvg">\u20B90</b></div><div><small>Highest Seva</small><b id="kMax">\u20B90</b></div><div><small>Total Receipts</small><b id="kCnt">0</b></div><div><small>Goal Progress</small><b id="kGoal">0%</b></div></div></div>';
+ const q=ov.querySelector(':scope>.neu-card');q?ov.insertBefore(g,q):ov.appendChild(g);
+ const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';s.async=true;s.onload=()=>draw();document.head.appendChild(s)}
+const inr=n=>'\u20B9'+Math.round(n).toLocaleString('en-IN');
+function rows(){return[...document.querySelectorAll('#leaderDonationsTableBody tr')].filter(r=>r.cells.length>=4).map(r=>({d:new Date($('small',r.cells[0])?.textContent),n:($('.fw-bold',r.cells[1])||r.cells[1]).textContent.trim(),s:r.cells[2].textContent.trim(),a:+r.cells[3].textContent.replace(/[^\d.]/g,'')||0}))}
+function top(rs,k,n){const m={};rs.forEach(r=>m[r[k]]=(m[r[k]]||0)+r.a);return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,n)}
+function mk(id,cfg){const c=$('#'+id);if(!c||!window.Chart)return;if(ch[id]){ch[id].data=cfg.data;ch[id].update();return}ch[id]=new Chart(c,cfg)}
+const PAL=['#FF9933','#3B82F6','#10B981','#8B5CF6','#EF4444','#F59E0B'];
+function draw(){if(!window.Chart||!ov)return;
+ if($('#searchDonationInput').value||$('#filterSevaCategory').value||$('#periodDonationFilter').value!=='all')return;
+ const rs=rows();if(!rs.length)return;const gt=($('#goalCollectedText')||{}).textContent||'';
+ const sg=JSON.stringify(rs.map(r=>[+r.d,r.n,r.s,r.a]))+gt+new Date().toDateString();if(sg===window.__epSig)return;window.__epSig=sg;
+ const days=[],val=[],now=new Date();now.setHours(0,0,0,0);
+ for(let i=29;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);days.push(d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
+  val.push(rs.filter(r=>!isNaN(r.d)&&r.d.getFullYear()===d.getFullYear()&&r.d.getMonth()===d.getMonth()&&r.d.getDate()===d.getDate()).reduce((a,r)=>a+r.a,0))}
+ const cx=$('#epTrend').getContext('2d'),gr=cx.createLinearGradient(0,0,0,250);gr.addColorStop(0,'rgba(255,153,51,.35)');gr.addColorStop(1,'rgba(255,153,51,0)');
+ const o={responsive:true,maintainAspectRatio:false,animation:{duration:900,easing:'easeOutQuart'}};
+ mk('epTrend',{type:'line',data:{labels:days,datasets:[{data:val,borderColor:'#FF9933',backgroundColor:gr,fill:true,tension:.4,pointRadius:2,borderWidth:2.5}]},options:{...o,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>inr(c.parsed.y)}}},scales:{y:{ticks:{callback:v=>inr(v)},grid:{color:'#EEF1F6'}},x:{grid:{display:false},ticks:{maxTicksLimit:8}}}}});
+ const S=top(rs,'s',6),D=top(rs,'n',5);
+ mk('epSeva',{type:'doughnut',data:{labels:S.map(x=>x[0]),datasets:[{data:S.map(x=>x[1]),backgroundColor:PAL,borderWidth:2,borderColor:'#fff'}]},options:{...o,cutout:'62%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>c.label+': '+inr(c.parsed)}}}}});
+ mk('epDonor',{type:'bar',data:{labels:D.map(x=>x[0]),datasets:[{data:D.map(x=>x[1]),backgroundColor:PAL,borderRadius:8}]},options:{...o,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>inr(c.parsed.x)}}},scales:{x:{ticks:{callback:v=>inr(v)},grid:{color:'#EEF1F6'}},y:{grid:{display:false}}}}});
+ const tot=rs.reduce((a,r)=>a+r.a,0),m=gt.match(/\((\d+)%\)/);
+ const set=(id,t)=>{const e=$('#'+id);if(e&&e.textContent!==t)e.textContent=t};
+ set('kAvg',inr(tot/rs.length));set('kMax',inr(Math.max(...rs.map(r=>r.a))));set('kCnt',String(rs.length));set('kGoal',(m?m[1]:'0')+'%')}
+let tm;new MutationObserver(rs=>{if(rs.every(r=>{const e=r.target.nodeType===1?r.target:r.target.parentElement;return e&&e.closest('.ep-grid')}))return;clearTimeout(tm);tm=setTimeout(()=>{lab();draw()},120)}).observe($('.admin-content')||document.body,{childList:true,subtree:true});
+lab();
+})();
+
+</script>
+</body>
+</html>
