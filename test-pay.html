@@ -3,71 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhonePe Live Diagnostic Test</title>
-    <!-- Live Mobile Developer Console (Inspect Network & Errors on Mobile) -->
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
+    <title>PhonePe Live Diagnostic & Failure Inspector</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; background: #f4f6f8; color: #333; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 480px; margin: auto; }
+        .card { background: white; padding: 22px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 480px; margin: auto; }
         h2 { margin-top: 0; color: #5f259f; font-size: 20px; text-align: center; }
-        .field { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px; }
+        .field { margin-bottom: 14px; }
+        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 13px; }
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
-        button { width: 100%; padding: 14px; background: #5f259f; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        button:disabled { background: #999; }
-        #logs { margin-top: 20px; padding: 12px; background: #1e1e1e; color: #00ff66; font-family: monospace; font-size: 12px; border-radius: 8px; max-height: 250px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+        button { width: 100%; padding: 13px; background: #5f259f; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 6px; }
+        button.secondary { background: #0284c7; }
+        #logs { margin-top: 16px; padding: 14px; background: #111; color: #00ff66; font-family: monospace; font-size: 12px; border-radius: 8px; max-height: 280px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>ISKCON Live Payment Diagnostic</h2>
+    <h2>PhonePe Live Failure Inspector</h2>
     <div class="field">
         <label>Donor Name</label>
-        <input type="text" id="name" value="Santosh Devotee">
+        <input type="text" id="name" value="Santosh Mishra">
     </div>
     <div class="field">
-        <label>Mobile Number (10 Digit)</label>
+        <label>Mobile Number</label>
         <input type="tel" id="phone" value="9552865929">
     </div>
     <div class="field">
-        <label>Test Amount (INR)</label>
+        <label>Amount (INR)</label>
         <input type="number" id="amount" value="10">
     </div>
-    <div class="field">
-        <label>Seva Name</label>
-        <input type="text" id="seva" value="Mandir Seva">
-    </div>
-    <button id="payBtn" onclick="startPayment()">Generate & Proceed to PhonePe</button>
 
-    <div id="logs">System Ready. Click the button to inspect live logs...</div>
+    <button id="payBtn" onclick="initiatePayment()">1. Generate Payment Link</button>
+    <button id="checkBtn" class="secondary" onclick="checkFailureReason()">2. Inspect Why Payment Failed (Get Raw Reason)</button>
+
+    <div id="logs">System ready. Click button 1 to initiate or button 2 to inspect failure reason...</div>
 </div>
 
 <script>
-    function log(msg, type = "INFO") {
+    let currentOrderId = localStorage.getItem("last_test_order_id") || "";
+
+    function log(msg, type = "LOG") {
         const box = document.getElementById("logs");
         const time = new Date().toLocaleTimeString();
-        box.innerText += `\n[${time}] [${type}] ${typeof msg === 'object' ? JSON.stringify(msg, null, 2) : msg}`;
+        box.innerText += `\n[${time}] [${type}]\n${typeof msg === 'object' ? JSON.stringify(msg, null, 2) : msg}\n`;
         box.scrollTop = box.scrollHeight;
-        console.log(`[${type}]`, msg);
     }
 
-    async function startPayment() {
+    async function initiatePayment() {
         const btn = document.getElementById("payBtn");
         btn.disabled = true;
-        btn.innerText = "Connecting to PhonePe...";
-        log("Initiating payment request from domain: " + window.location.origin);
+        log("Initiating payment session...", "START");
 
         const payload = {
             name: document.getElementById("name").value.trim(),
             phone: document.getElementById("phone").value.trim(),
             amount: document.getElementById("amount").value.trim(),
-            seva: document.getElementById("seva").value.trim()
+            seva: "Mandir Seva"
         };
 
         try {
-            log("Sending payload to /api/create-link...");
             const res = await fetch('/api/create-link', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -75,25 +69,45 @@
             });
 
             const data = await res.json();
-            log(data, res.ok ? "RESPONSE_OK" : "RESPONSE_ERROR");
+            log(data, "API_RESPONSE");
 
             if (res.ok && data.payment_url) {
-                log("Payment URL generated successfully: " + data.payment_url);
-                log("Redirecting in SAME window in 2 seconds...");
+                currentOrderId = data.orderId;
+                localStorage.setItem("last_test_order_id", currentOrderId);
+                log("Order ID saved: " + currentOrderId);
+                log("Redirecting to PhonePe in 3 seconds...");
                 setTimeout(() => {
-                    // Strictly same window redirect to preserve HTTP referer
                     window.location.href = data.payment_url;
-                }, 2000);
+                }, 3000);
             } else {
-                alert("Payment initiation failed: " + (data.error || "Unknown error"));
                 btn.disabled = false;
-                btn.innerText = "Generate & Proceed to PhonePe";
+                alert("Initiation failed: " + data.error);
+            }
+        } catch (e) {
+            log(e.message, "ERROR");
+            btn.disabled = false;
+        }
+    }
+
+    async function checkFailureReason() {
+        if (!currentOrderId) {
+            currentOrderId = prompt("Enter the Order ID to check (e.g., TXN...):");
+        }
+        if (!currentOrderId) return;
+
+        log("Fetching detailed diagnostics for: " + currentOrderId, "INSPECT");
+        try {
+            const res = await fetch(`/api/verify-payment?orderId=${currentOrderId}`);
+            const data = await res.json();
+            log(data, "DIAGNOSTIC_RESULT");
+
+            if (data.errorContext) {
+                alert("PhonePe Internal Reason: " + JSON.stringify(data.errorContext));
+            } else if (data.state) {
+                alert("Order State in PhonePe: " + data.state);
             }
         } catch (err) {
-            log(err.message, "FETCH_EXCEPTION");
-            alert("Network error: " + err.message);
-            btn.disabled = false;
-            btn.innerText = "Generate & Proceed to PhonePe";
+            log(err.message, "INSPECT_ERROR");
         }
     }
 </script>
