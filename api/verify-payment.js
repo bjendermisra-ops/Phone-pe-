@@ -1,112 +1,72 @@
 export default async function handler(req, res) {
-    // Dynamic CORS Setup
-    const origin = req.headers.origin ? req.headers.origin : '*';
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Origin', origin);
+    const origin = req.headers.origin || '*';
+    if (origin !== '*') {
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
+    if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const { payment_id } = req.method === 'POST' ? req.body : req.query;
+        const payment_id = (req.method === 'POST' ? req.body?.payment_id || req.body?.orderId : req.query?.payment_id || req.query?.orderId);
 
         if (!payment_id) {
-            return res.status(400).json({ error: 'Transaction ID / UTR is required.' });
+            return res.status(400).json({ error: 'Order ID is required.' });
         }
 
-        const cleanTxId = payment_id.trim();
-
-        // PhonePe V2 Sandbox Credentials
-        const clientId = "ISKCONISONLINE_260731175";
-        const clientSecret = "YTE4YjFjODItMzQzMi00MDY0LTk5MmYtMWRiMTc5Y2ZhZDMz";
-        const clientVersion = 1;
+        const cleanTxId = payment_id.toString().trim();
+        const clientId = "SU2608031047283544010005";
+        const clientSecret = "c869bf25-6f08-43b3-8b9b-dcdd5a066eb7";
         const merchantId = "ISKCONISONLINE";
+        const clientVersion = 1;
 
-        const tokenPayload = new URLSearchParams();
-        tokenPayload.append("client_id", clientId);
-        tokenPayload.append("client_version", clientVersion.toString());
-        tokenPayload.append("client_secret", clientSecret);
-        tokenPayload.append("grant_type", "client_credentials");
+        // 1. Get Status Token
+        const tokenPayload = new URLSearchParams({
+            client_id: clientId,
+            client_version: clientVersion.toString(),
+            client_secret: clientSecret,
+            grant_type: "client_credentials"
+        });
 
-        let accessToken = null;
+        const tokenRes = await fetch("https://api.phonepe.com/apis/identity-manager/v1/oauth/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: tokenPayload.toString()
+        });
 
-        // --- STEP 1: Attempt OAuth Token Generation via pg-sandbox ---
-        try {
-            const tokenUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
-            const tokenResponse = await fetch(tokenUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: tokenPayload.toString()
-            });
-
-            const tokenData = await tokenResponse.json();
-            if (tokenResponse.status === 200 && tokenData.access_token) {
-                accessToken = tokenData.access_token;
-            }
-        } catch (err) {}
-
-        // --- STEP 1.5: If pg-sandbox fails, fallback to apphub UAT server ---
-        if (!accessToken) {
-            try {
-                const fallbackTokenUrl = "https://api-preprod.phonepe.com/apis/apphub/v1/oauth/token";
-                const fallbackResponse = await fetch(fallbackTokenUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: tokenPayload.toString()
-                });
-
-                const fallbackData = await fallbackResponse.json();
-                if (fallbackResponse.status === 200 && fallbackData.access_token) {
-                    accessToken = fallbackData.access_token;
-                }
-            } catch (fallbackErr) {}
+        const tokenData = await tokenRes.json().catch(() => ({}));
+        if (!tokenRes.ok || !tokenData.access_token) {
+            return res.status(500).json({ error: "Failed to authenticate status checker." });
         }
 
-        if (!accessToken) {
-            return res.status(500).json({ error: "Failed to generate status check OAuth token." });
-        }
-
-        // STEP 2: Call V2 Sandbox Status Check API securely (No 'pg/' inside URL in Sandbox) [6.3.6]
-        const statusUrl = `https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/${cleanTxId}/status`;
+        // 2. Fetch Full Diagnostic Details (?details=true&errorContext=true)
+        const statusUrl = `https://api.phonepe.com/apis/pg/checkout/v2/order/${cleanTxId}/status?details=true&errorContext=true`;
 
         const response = await fetch(statusUrl, {
             method: "GET",
             headers: {
-                "Authorization": "O-Bearer " + accessToken,
+                "Authorization": `O-Bearer ${tokenData.access_token}`,
                 "X-MERCHANT-ID": merchantId,
-                "accept": "application/json"
+                "Accept": "application/json"
             }
         });
 
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
 
-        // PhonePe V2 returns COMPLETED or SUCCESS status [6.3.3]
-        if (response.status === 200 && (data.state === "COMPLETED" || data.state === "SUCCESS")) {
-            return res.status(200).json({ 
-                status: 'success', 
-                message: 'Transaction successfully verified by PhonePe V2!',
-                verified_payment_id: cleanTxId,
-                payment_details: {
-                    contact: 'UPI',
-                    method: 'PHONEPE V2'
-                }
-            });
-        } else {
-            return res.status(400).json({ 
-                error: `PhonePe Status: ${data.state || 'FAILED'}. message: ${data.message || ''}` 
-            });
-        }
+        return res.status(200).json({
+            httpStatus: response.status,
+            state: data.state || 'UNKNOWN',
+            responseCode: data.responseCode || data.code,
+            errorContext: data.errorContext || null,
+            paymentDetails: data.paymentDetails || null,
+            rawData: data
+        });
 
     } catch (error) {
-        console.error("Verification server error: ", error);
-        return res.status(500).json({ error: 'Server PhonePe V2 status verification failed.' });
+        return res.status(500).json({ error: error.message });
     }
 }
